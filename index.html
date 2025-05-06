@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>7AIO - Explore the Universe of AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600;700&display=swap');
+
+      :root {
+        --primary: #6c5ce7;
+        --secondary: #00cec9;
+        --accent: #fd79a8;
+        --dark: #0f172a;
+        --darker: #020617;
+      }
+
+      body {
+        font-family: 'Poppins', sans-serif;
+        background-color: var(--darker);
+        color: white;
+        overflow-x: hidden;
+      }
+
+      .orbitron {
+        font-family: 'Orbitron', sans-serif;
+      }
+
+      .gradient-text {
+        background: linear-gradient(90deg, #6c5ce7, #00cec9, #fd79a8);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .star {
+        position: absolute;
+        background: white;
+        border-radius: 50%;
+        animation: twinkle var(--duration) infinite ease-in-out;
+        opacity: 0;
+      }
+
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 0;
+        }
+
+        50% {
+          opacity: var(--opacity);
+        }
+      }
+
+      .floating {
+        animation: floating 6s ease-in-out infinite;
+      }
+
+      @keyframes floating {
+        0% {
+          transform: translateY(0px);
+        }
+
+        50% {
+          transform: translateY(-20px);
+        }
+
+        100% {
+          transform: translateY(0px);
+        }
+      }
+
+      .holographic-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 20px rgba(109, 92, 231, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .holographic-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 30px rgba(109, 92, 231, 0.5);
+      }
+
+      .glow {
+        text-shadow: 0 0 10px rgba(109, 92, 231, 0.7);
+      }
+
+      .planet {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(circle, var(--color1), var(--color2));
+        box-shadow: 0 0 30px var(--color1);
+        z-index: -1;
+      }
+
+      .comet {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        background: white;
+        border-radius: 50%;
+        box-shadow: 0 0 10px 2px white;
+        animation: comet linear infinite;
+      }
+
+      @keyframes comet {
+        0% {
+          transform: translate(0, 0);
+          opacity: 1;
+        }
+
+        70% {
+          opacity: 1;
+        }
+
+        100% {
+          transform: translate(1000px, 600px);
+          opacity: 0;
+        }
+      }
+
+      .ai-avatar {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, #6c5ce7, #00cec9);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 0 30px rgba(109, 92, 231, 0.5);
+      }
+
+      .ai-avatar::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #6c5ce7, #00cec9);
+        filter: blur(15px);
+        z-index: -1;
+        opacity: 0.7;
+      }
+
+      .ai-avatar .eyes {
+        display: flex;
+        gap: 15px;
+      }
+
+      .ai-avatar .eye {
+        width: 20px;
+        height: 30px;
+        background: white;
+        border-radius: 50%;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .ai-avatar .eye::after {
+        content: '';
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background: #0f172a;
+        border-radius: 50%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .ai-avatar .mouth {
+        position: absolute;
+        width: 40px;
+        height: 15px;
+        background: white;
+        border-radius: 0 0 20px 20px;
+        bottom: 25px;
+      }
+
+      .tool-card {
+        transition: all 0.3s ease;
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid rgba(109, 92, 231, 0.3);
+      }
+
+      .tool-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 30px rgba(109, 92, 231, 0.5);
+        border: 1px solid rgba(109, 92, 231, 0.7);
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        background: linear-gradient(90deg, #6c5ce7, #00cec9);
+        color: white;
+      }
+
+      .modal {
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+      }
+
+      .modal-content {
+        transform: translateY(20px);
+        transition: transform 0.3s ease;
+      }
+
+      .modal.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .modal.active .modal-content {
+        transform: translateY(0);
+      }
+
+      /* Custom scrollbar for chat */
+      .chat-history::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .chat-history::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+      }
+
+      .chat-history::-webkit-scrollbar-thumb {
+        background: rgba(108, 92, 231, 0.6);
+        border-radius: 3px;
+      }
+
+      .chat-history::-webkit-scrollbar-thumb:hover {
+        background: rgba(108, 92, 231, 0.8);
+      }
+
+      /* Spinner for loading */
+      .spinner {
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        width: 20px;
+        height: 20px;
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      button:disabled .spinner {
+        display: inline-block;
+      }
+
+      button .spinner {
+        display: none;
+      }
+
+      button span {
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+
+  <body class="min-h-screen">
+    <!-- Background Elements -->
+    <div id="stars-container"></div>
+    <div id="planets-container"></div>
+    <div id="comets-container"></div>
+
+    <!-- Navigation -->
+    <nav
+      class="fixed w-full z-50 bg-black bg-opacity-50 backdrop-filter backdrop-blur-lg border-b border-gray-800"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+          <div class="flex items-center">
+            <div class="flex-shrink-0 flex items-center">
+              <span class="text-2xl font-bold gradient-text orbitron"
+                >7AIO</span
+              >
+            </div>
+            <div class="hidden md:block ml-10">
+              <div class="flex space-x-8">
+                <a
+                  href="#"
+                  class="text-white hover:text-purple-300 px-3 py-2 text-sm font-medium"
+                  >Home</a
+                >
+                <a
+                  href="#learn"
+                  class="text-gray-300 hover:text-purple-300 px-3 py-2 text-sm font-medium"
+                  >Learn</a
+                >
+                <a
+                  href="#tools"
+                  class="text-gray-300 hover:text-purple-300 px-3 py-2 text-sm font-medium"
+                  >Tools</a
+                >
+                <a
+                  href="#community"
+                  class="text-gray-300 hover:text-purple-300 px-3 py-2 text-sm font-medium"
+                  >Community</a
+                >
+                <a
+                  href="#about"
+                  class="text-gray-300 hover:text-purple-300 px-3 py-2 text-sm font-medium"
+                  >About</a
+                >
+              </div>
+            </div>
+          </div>
+          <div class="hidden md:block">
+            <div class="ml-4 flex items-center md:ml-6 space-x-4">
+              <button
+                id="login-btn"
+                class="px-4 py-2 rounded-full border border-purple-500 text-purple-300 hover:bg-purple-900 hover:bg-opacity-50 transition"
+              >
+                <i class="fab fa-google text-purple-300 mr-3"></i>Login with
+                Google
+              </button>
+            </div>
+          </div>
+          <div class="md:hidden">
+            <button
+              id="mobile-menu-btn"
+              class="text-gray-300 hover:text-white focus:outline-none"
+            >
+              <svg
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile menu -->
+      <div id="mobile-menu" class="md:hidden hidden bg-gray-900">
+        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+          <a
+            href="#"
+            class="text-white block px-3 py-2 rounded-md text-base font-medium"
+            >Home</a
+          >
+          <a
+            href="#learn"
+            class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+            >Learn</a
+          >
+          <a
+            href="#tools"
+            class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+            >Tools</a
+          >
+          <a
+            href="#community"
+            class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+            >Community</a
+          >
+          <a
+            href="#about"
+            class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+            >About</a
+          >
+          <div class="pt-4 border-t border-gray-800">
+            <button
+              class="w-full px-4 py-2 rounded-full border border-purple-500 text-purple-300 hover:bg-purple-900 hover:bg-opacity-50 transition mb-2"
+            >
+              <i class="fab fa-google text-purple-300 mr-3"></i>Login with
+              Google
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section
+      class="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto"
+    >
+      <div class="flex flex-col md:flex-row items-center">
+        <div class="md:w-1/2 mb-12 md:mb-0">
+          <h1 class="text-4xl md:text-6xl font-bold mb-6 orbitron">
+            <span class="gradient-text">Explore the Universe</span><br />
+            <span class="text-white">of AI with 7AIO</span>
+          </h1>
+          <p class="text-xl text-gray-300 mb-8 max-w-lg">
+            Discover the magic of artificial intelligence through interactive
+            lessons, fun tools, and hands-on projects designed for students and
+            young learners.
+          </p>
+          <div
+            class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4"
+          >
+            <button
+              class="px-6 py-3 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:opacity-90 transition font-medium"
+            >
+              Start Learning Now
+            </button>
+            <button
+              onclick="document.getElementById('tools').scrollIntoView({ behavior: 'smooth' });"
+              class="px-6 py-3 rounded-full border border-purple-500 text-purple-300 hover:bg-purple-900 hover:bg-opacity-50 transition font-medium"
+            >
+              Try Our AI Tools
+            </button>
+          </div>
+        </div>
+        <div class="md:w-1/2 flex justify-center relative">
+          <div class="ai-avatar floating">
+            <div class="eyes">
+              <div class="eye"></div>
+              <div class="eye"></div>
+            </div>
+            <div class="mouth"></div>
+          </div>
+          <div
+            class="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 opacity-20 blur-3xl"
+          ></div>
+        </div>
+      </div>
+
+      <div class="mt-20 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="holographic-card p-6 rounded-xl">
+          <div class="text-3xl text-purple-400 mb-3">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Interactive Lessons</h3>
+          <p class="text-gray-300 text-sm">
+            Learn AI concepts through engaging, hands-on activities
+          </p>
+        </div>
+        <div class="holographic-card p-6 rounded-xl">
+          <div class="text-3xl text-blue-400 mb-3">
+            <i class="fas fa-robot"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-2">AI Tools</h3>
+          <p class="text-gray-300 text-sm">
+            Experiment with real AI applications
+          </p>
+        </div>
+        <div class="holographic-card p-6 rounded-xl">
+          <div class="text-3xl text-pink-400 mb-3">
+            <i class="fas fa-gamepad"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Gamified Learning</h3>
+          <p class="text-gray-300 text-sm">
+            Earn badges and track your progress
+          </p>
+        </div>
+        <div class="holographic-card p-6 rounded-xl">
+          <div class="text-3xl text-green-400 mb-3">
+            <i class="fab fa-discord"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Discord Community</h3>
+          <p class="text-gray-300 text-sm">Connect with other AI explorers</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Learn Section -->
+    <section id="learn" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4 orbitron">
+          <span class="gradient-text">Your AI Learning Journey</span>
+        </h2>
+        <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+          From beginner to advanced, we've got learning paths for every level of
+          AI explorer.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Course Cards -->
+        <div class="holographic-card rounded-xl overflow-hidden">
+          <div
+            class="h-48 bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center"
+          >
+            <i class="fas fa-rocket text-6xl text-white opacity-80"></i>
+          </div>
+          <div class="p-6">
+            <div class="flex justify-between items-start mb-4">
+              <h3 class="text-xl font-bold">AI Basics</h3>
+              <span class="badge">Beginner</span>
+            </div>
+            <p class="text-gray-300 mb-4">
+              Discover what AI is and how it's changing our world through fun
+              examples and simple explanations.
+            </p>
+            <div class="flex justify-between items-center">
+              <div class="flex space-x-1 text-yellow-400">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i
+                ><i class="fas fa-star"></i><i class="fas fa-star"></i
+                ><i class="fas fa-star-half-alt"></i>
+              </div>
+              <button
+                class="text-purple-300 hover:text-purple-100 text-sm font-medium"
+              >
+                Start Course →
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="holographic-card rounded-xl overflow-hidden">
+          <div
+            class="h-48 bg-gradient-to-br from-blue-500 to-green-500 flex items-center justify-center"
+          >
+            <i class="fas fa-brain text-6xl text-white opacity-80"></i>
+          </div>
+          <div class="p-6">
+            <div class="flex justify-between items-start mb-4">
+              <h3 class="text-xl font-bold">Machine Learning</h3>
+              <span class="badge">Intermediate</span>
+            </div>
+            <p class="text-gray-300 mb-4">
+              Learn how machines can learn from data with interactive demos and
+              real-world applications.
+            </p>
+            <div class="flex justify-between items-center">
+              <div class="flex space-x-1 text-yellow-400">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i
+                ><i class="fas fa-star"></i><i class="fas fa-star"></i
+                ><i class="far fa-star"></i>
+              </div>
+              <button
+                class="text-purple-300 hover:text-purple-100 text-sm font-medium"
+              >
+                Start Course →
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="holographic-card rounded-xl overflow-hidden">
+          <div
+            class="h-48 bg-gradient-to-br from-green-500 to-pink-500 flex items-center justify-center"
+          >
+            <i
+              class="fas fa-project-diagram text-6xl text-white opacity-80"
+            ></i>
+          </div>
+          <div class="p-6">
+            <div class="flex justify-between items-start mb-4">
+              <h3 class="text-xl font-bold">Neural Networks</h3>
+              <span class="badge">Advanced</span>
+            </div>
+            <p class="text-gray-300 mb-4">
+              Dive deep into how neural networks work with visualizations and
+              hands-on coding exercises.
+            </p>
+            <div class="flex justify-between items-center">
+              <div class="flex space-x-1 text-yellow-400">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i
+                ><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i
+                ><i class="far fa-star"></i>
+              </div>
+              <button
+                class="text-purple-300 hover:text-purple-100 text-sm font-medium"
+              >
+                Start Course →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-12 text-center">
+        <button
+          class="px-6 py-3 rounded-full border border-purple-500 text-purple-300 hover:bg-purple-900 hover:bg-opacity-50 transition font-medium"
+        >
+          View All Courses
+        </button>
+      </div>
+    </section>
+
+    <!-- AI Tools Section -->
+    <section
+      id="tools"
+      class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-gradient-to-b from-gray-900 to-gray-950 rounded-3xl"
+    >
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4 orbitron">
+          <span class="gradient-text">AI Tools Playground</span>
+        </h2>
+        <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+          Experiment with real AI applications and see the magic happen right
+          before your eyes.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Tool Cards -->
+        <div
+          class="tool-card p-6 rounded-xl cursor-pointer"
+          onclick="openToolModal('image-generator')"
+        >
+          <div class="text-4xl text-purple-400 mb-4">
+            <i class="fas fa-image"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Image Generator</h3>
+          <p class="text-gray-300 text-sm">
+            Create amazing images from text prompts using AI
+          </p>
+          <div class="mt-4 flex justify-between items-center">
+            <span class="text-xs text-purple-300">Try it now →</span>
+            <span
+              class="text-xs bg-purple-900 bg-opacity-50 text-purple-300 px-2 py-1 rounded"
+              >Popular</span
+            >
+          </div>
+        </div>
+        <div
+          class="tool-card p-6 rounded-xl cursor-pointer"
+          onclick="openToolModal('text-to-speech')"
+        >
+          <div class="text-4xl text-blue-400 mb-4">
+            <i class="fas fa-volume-up"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Text to Speech</h3>
+          <p class="text-gray-300 text-sm">
+            Convert written text into natural-sounding speech
+          </p>
+          <div class="mt-4 flex justify-between items-center">
+            <span class="text-xs text-blue-300">Try it now →</span>
+          </div>
+        </div>
+        <div
+          class="tool-card p-6 rounded-xl cursor-pointer"
+          onclick="openToolModal('chatbot')"
+        >
+          <div class="text-4xl text-green-400 mb-4">
+            <i class="fas fa-comments"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Chatbot</h3>
+          <p class="text-gray-300 text-sm">
+            Interact with an AI assistant for help or fun
+          </p>
+          <div class="mt-4 flex justify-between items-center">
+            <span class="text-xs text-green-300">Try it now →</span>
+            <span
+              class="text-xs bg-green-900 bg-opacity-50 text-green-300 px-2 py-1 rounded"
+              >Beta</span
+            >
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Community Section -->
+    <section
+      id="community"
+      class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto"
+    >
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4 orbitron">
+          <span class="gradient-text">Join Our Discord Community</span>
+        </h2>
+        <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+          Connect with fellow AI explorers, share your projects, ask questions,
+          and learn together in our dedicated Discord server.
+        </p>
+      </div>
+      <div class="max-w-2xl mx-auto">
+        <div class="holographic-card p-8 sm:p-12 rounded-xl text-center">
+          <div class="text-7xl text-indigo-400 mb-6">
+            <i class="fab fa-discord"></i>
+          </div>
+          <h3 class="text-2xl font-bold mb-4">Ready to Connect?</h3>
+          <p class="text-gray-300 mb-8">
+            Our Discord server is the central hub for the 7AIO community. Join
+            us to:
+          </p>
+          <ul class="text-left space-y-2 mb-10 max-w-md mx-auto text-gray-300">
+            <li class="flex items-start">
+              <i class="fas fa-check-circle text-green-400 mr-3 mt-1"></i> Share
+              your AI creations and get feedback.
+            </li>
+            <li class="flex items-start">
+              <i class="fas fa-check-circle text-green-400 mr-3 mt-1"></i> Ask
+              questions and get help from peers and mentors.
+            </li>
+            <li class="flex items-start">
+              <i class="fas fa-check-circle text-green-400 mr-3 mt-1"></i>
+              Participate in community challenges and events.
+            </li>
+            <li class="flex items-start">
+              <i class="fas fa-check-circle text-green-400 mr-3 mt-1"></i> Stay
+              updated on the latest 7AIO news and features.
+            </li>
+          </ul>
+          <a
+            href="https://discord.gg/33PTbP3e"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-block px-8 py-3 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:opacity-90 transition font-medium text-lg"
+          >
+            <i class="fab fa-discord mr-2"></i> Join the Server
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section
+      id="about"
+      class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-gradient-to-b from-gray-950 to-black rounded-3xl"
+    >
+      <div class="w-full mb-16 md:mb-20">
+        <h2
+          class="text-3xl md:text-4xl font-bold mb-6 orbitron text-center md:text-left"
+        >
+          <span class="gradient-text">About 7AIO</span>
+        </h2>
+        <p class="text-gray-300 mb-6 text-center md:text-left">
+          7AIO was created with a simple mission: to make artificial
+          intelligence education accessible, engaging, and fun for students and
+          young learners.
+        </p>
+        <p class="text-gray-300 mb-8 text-center md:text-left">
+          Our platform combines interactive lessons, hands-on tools, and a
+          vibrant community to create a learning experience that's as exciting
+          as exploring the universe.
+        </p>
+        <div class="flex space-x-4 justify-center md:justify-start">
+          <a
+            href="#"
+            class="w-10 h-10 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-white"
+          >
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a
+            href="#"
+            class="w-10 h-10 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-white"
+          >
+            <i class="fab fa-discord"></i>
+          </a>
+          <a
+            href="#"
+            class="w-10 h-10 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-white"
+          >
+            <i class="fab fa-github"></i>
+          </a>
+          <a
+            href="#"
+            class="w-10 h-10 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-white"
+          >
+            <i class="fab fa-youtube"></i>
+          </a>
+        </div>
+      </div>
+      <div class="w-full">
+        <h3
+          class="text-2xl md:text-3xl font-bold mb-10 orbitron text-center gradient-text"
+        >
+          Meet the Team
+        </h3>
+        <div class="flex flex-wrap gap-10 justify-center">
+          <!-- Team Member Cards -->
+          <div class="text-center holographic-card p-6 rounded-xl">
+            <img
+              src="./puja.jpeg"
+              alt="Fauzan Al Anshory Zainy"
+              class="w-24 h-24 rounded-full mx-auto mb-4 border-2 border-purple-400 object-cover"
+            />
+            <p class="font-bold text-lg">Fauzan Al Anshory Zainy</p>
+            <p class="text-sm text-purple-300">Co-founder & CEO</p>
+          </div>
+          <div class="text-center holographic-card p-6 rounded-xl">
+            <img
+              src="./sava.jpg"
+              alt="Sava Reyhano"
+              class="w-24 h-24 rounded-full mx-auto mb-4 border-2 border-cyan-400 object-cover"
+            />
+            <p class="font-bold text-lg">Sava Reyhano</p>
+            <p class="text-sm text-cyan-300">Co-founder & Lead Developer</p>
+          </div>
+        </div>
+        <div class="text-center mt-12">
+          <a
+            href="https://wa.me/6285159113497?text=Halo%20saya%20tertarik%20untuk%20berkolaborasi"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="px-8 py-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90 transition font-medium"
+          >
+            Contact Us
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer
+      class="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-gray-800"
+    >
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div>
+          <h4 class="text-lg font-bold mb-4 orbitron gradient-text">7AIO</h4>
+          <p class="text-gray-400 text-sm">
+            Exploring the universe of artificial intelligence, one star at a
+            time.
+          </p>
+        </div>
+        <div>
+          <h4
+            class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4"
+          >
+            Learn
+          </h4>
+          <ul class="space-y-2">
+            <li>
+              <a href="#learn" class="text-gray-400 hover:text-white text-sm"
+                >Courses</a
+              >
+            </li>
+            <li>
+              <a href="#" class="text-gray-400 hover:text-white text-sm"
+                >Tutorials</a
+              >
+            </li>
+            <li>
+              <a href="#" class="text-gray-400 hover:text-white text-sm"
+                >Projects</a
+              >
+            </li>
+            <li>
+              <a href="#" class="text-gray-400 hover:text-white text-sm"
+                >Resources</a
+              >
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h4
+            class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4"
+          >
+            Tools
+          </h4>
+          <ul class="space-y-2">
+            <li>
+              <a href="#tools" class="text-gray-400 hover:text-white text-sm"
+                >Image Generator</a
+              >
+            </li>
+            <li>
+              <a href="#tools" class="text-gray-400 hover:text-white text-sm"
+                >Text to Speech</a
+              >
+            </li>
+            <li>
+              <a href="#tools" class="text-gray-400 hover:text-white text-sm"
+                >Chatbot</a
+              >
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h4
+            class="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-4"
+          >
+            Company
+          </h4>
+          <ul class="space-y-2">
+            <li>
+              <a href="#about" class="text-gray-400 hover:text-white text-sm"
+                >About</a
+              >
+            </li>
+            <li>
+              <a href="#about" class="text-gray-400 hover:text-white text-sm"
+                >Team</a
+              >
+            </li>
+            <li>
+              <a href="#" class="text-gray-400 hover:text-white text-sm"
+                >Careers</a
+              >
+            </li>
+            <li>
+              <a href="#" class="text-gray-400 hover:text-white text-sm"
+                >Contact</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div
+        class="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center"
+      >
+        <p class="text-gray-500 text-sm mb-4 md:mb-0">
+          © 2023 7AIO. All rights reserved.
+        </p>
+        <div class="flex space-x-6">
+          <a href="#" class="text-gray-500 hover:text-white">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a href="#" class="text-gray-500 hover:text-white">
+            <i class="fab fa-discord"></i>
+          </a>
+          <a href="#" class="text-gray-500 hover:text-white">
+            <i class="fab fa-github"></i>
+          </a>
+          <a href="#" class="text-gray-500 hover:text-white">
+            <i class="fab fa-youtube"></i>
+          </a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- AI Tool Modals -->
+
+    <!-- Image Generator Modal -->
+    <div
+      id="image-generator-modal"
+      class="modal fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 opacity-0 invisible transition p-4"
+    >
+      <div
+        class="modal-content bg-gray-900 rounded-xl max-w-4xl w-full p-8 relative"
+      >
+        <button
+          class="absolute top-4 right-4 text-gray-400 hover:text-white"
+          onclick="closeToolModal('image-generator')"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+        <h3 class="text-2xl font-bold mb-6 orbitron gradient-text">
+          AI Image Generator
+        </h3>
+        <div class="flex flex-col md:flex-row gap-6">
+          <div class="md:w-1/2">
+            <div
+              id="image-preview-container"
+              class="h-64 bg-gray-800 rounded-lg mb-4 flex items-center justify-center border border-gray-700 overflow-hidden"
+            >
+              <!-- Image will be loaded here -->
+              <p id="image-placeholder" class="text-gray-500">
+                Your generated image will appear here
+              </p>
+              <img
+                id="generated-image"
+                src=""
+                alt="Generated AI Image"
+                class="hidden w-full h-full object-contain"
+              />
+            </div>
+            <!-- Removed history grid -->
+            <div class="flex space-x-3">
+              <a
+                id="image-download-link"
+                href="#"
+                download="generated-image.jpg"
+                class="flex-1 py-2 px-4 rounded-lg bg-gray-800 border border-gray-700 hover:bg-gray-700 transition text-sm text-center block opacity-50 pointer-events-none"
+              >
+                <i class="fas fa-download mr-2"></i> Download
+              </a>
+              <!-- Share button can be added later if needed -->
+            </div>
+            <p id="image-error" class="text-xs text-red-400 mt-3 hidden"></p>
+          </div>
+          <div class="md:w-1/2">
+            <div class="mb-4">
+              <label for="image-prompt" class="block text-gray-400 text-sm mb-2"
+                >Prompt</label
+              >
+              <textarea
+                id="image-prompt"
+                class="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 focus:border-purple-500 focus:outline-none text-white h-32"
+                placeholder="Describe the image you want to generate..."
+              ></textarea>
+            </div>
+            <!-- Style dropdown kept for potential future mapping, but not used in current API call -->
+            <div class="mb-4">
+              <label for="image-style" class="block text-gray-400 text-sm mb-2"
+                >Style (Model)</label
+              >
+              <select
+                id="image-style"
+                class="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 focus:border-purple-500 focus:outline-none text-white"
+              >
+                <option value="flux">Flux</option>
+                <option value="turbo">Flux Turbo</option>
+                <!-- Add more models from https://image.pollinations.ai/models if desired -->
+              </select>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mb-6">
+              <div>
+                <label
+                  for="image-resolution"
+                  class="block text-gray-400 text-sm mb-2"
+                  >Resolution</label
+                >
+                <select
+                  id="image-resolution"
+                  class="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 focus:border-purple-500 focus:outline-none text-white"
+                >
+                  <option value="1024x1024">1024x1024</option>
+                  <option value="512x512">512x512</option>
+                  <option value="1280x720">1280x720 (16:9)</option>
+                  <option value="720x1280">720x1280 (9:16)</option>
+                </select>
+              </div>
+              <div>
+                <label for="image-seed" class="block text-gray-400 text-sm mb-2"
+                  >Seed (Optional)</label
+                >
+                <input
+                  type="number"
+                  id="image-seed"
+                  placeholder="Random"
+                  class="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 focus:border-purple-500 focus:outline-none text-white"
+                />
+              </div>
+            </div>
+            <button
+              id="image-generate-btn"
+              class="w-full py-3 rounded-lg bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:opacity-90 transition font-medium flex items-center justify-center disabled:opacity-70"
+            >
+              <span class="spinner mr-2"></span>
+              <span>Generate Image</span>
+            </button>
+            <p class="text-xs text-gray-500 mt-3">
+              Note: Image generation can take 10-60 seconds depending on the
+              model and load.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Text to Speech Modal -->
+    <div
+      id="text-to-speech-modal"
+      class="modal fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 opacity-0 invisible transition p-4"
+    >
+      <div
+        class="modal-content bg-gray-900 rounded-xl max-w-xl w-full p-8 relative"
+      >
+        <button
+          class="absolute top-4 right-4 text-gray-400 hover:text-white"
+          onclick="closeToolModal('text-to-speech')"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+        <h3 class="text-2xl font-bold mb-6 orbitron gradient-text">
+          AI Text to Speech
+        </h3>
+
+        <div class="mb-4">
+          <label for="tts-input" class="block text-gray-400 text-sm mb-2"
+            >Text to Synthesize</label
+          >
+          <textarea
+            id="tts-input"
+            class="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 focus:border-blue-500 focus:outline-none text-white h-32"
+            placeholder="Enter the text you want the AI to speak..."
+          ></textarea>
+        </div>
+
+        <div class="mb-6">
+          <label for="tts-voice" class="block text-gray-400 text-sm mb-2"
+            >Voice</label
+          >
+          <select
+            id="tts-voice"
+            class="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 focus:border-blue-500 focus:outline-none text-white"
+          >
+            <option value="alloy">Alloy (Female)</option>
+            <option value="echo">Echo (Male)</option>
+            <option value="fable">Fable (Male, British)</option>
+            <option value="onyx">Onyx (Male, Deep)</option>
+            <option value="nova">Nova (Female, Energetic)</option>
+            <option value="shimmer">Shimmer (Female, Smooth)</option>
+          </select>
+        </div>
+
+        <!-- Removed Language, Speed, Pitch controls -->
+
+        <div class="mb-6">
+          <audio id="tts-audio-player" controls class="w-full hidden"></audio>
+          <!-- Placeholder for audio player, initially hidden -->
+        </div>
+        <p id="tts-error" class="text-xs text-red-400 mb-3 hidden"></p>
+
+        <div
+          class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3"
+        >
+          <button
+            id="tts-generate-btn"
+            class="flex-1 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:opacity-90 transition font-medium flex items-center justify-center disabled:opacity-70"
+          >
+            <span class="spinner mr-2"></span>
+            <i class="fas fa-play mr-2 icon"></i>
+            <span class="text">Generate & Play</span>
+          </button>
+          <a
+            id="tts-download-link"
+            href="#"
+            download="generated-speech.mp3"
+            class="flex-1 py-3 px-4 rounded-lg bg-gray-800 border border-gray-700 hover:bg-gray-700 transition font-medium text-center block opacity-50 pointer-events-none"
+          >
+            <i class="fas fa-download mr-2"></i> Download Audio
+          </a>
+        </div>
+        <p class="text-xs text-gray-500 mt-3">
+          Note: Generating speech may take a few moments. Uses POST method
+          suitable for longer text.
+        </p>
+      </div>
+    </div>
+
+    <!-- Chatbot Modal -->
+    <div
+      id="chatbot-modal"
+      class="modal fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 opacity-0 invisible transition p-4"
+    >
+      <div
+        class="modal-content bg-gray-900 rounded-xl max-w-lg w-full p-6 relative flex flex-col"
+        style="height: 70vh"
+      >
+        <button
+          class="absolute top-4 right-4 text-gray-400 hover:text-white z-10"
+          onclick="closeToolModal('chatbot')"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+        <h3
+          class="text-xl font-bold mb-4 orbitron gradient-text text-center flex-shrink-0"
+        >
+          AI Chatbot Assistant
+        </h3>
+
+        <!-- Chat History -->
+        <div
+          id="chat-history"
+          class="flex-grow bg-gray-800 rounded-lg p-4 mb-4 overflow-y-auto chat-history border border-gray-700"
+        >
+          <!-- Initial message -->
+          <div class="flex mb-3 ai-message">
+            <div
+              class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold mr-3 flex-shrink-0"
+            >
+              AI
+            </div>
+            <div class="bg-gray-700 p-3 rounded-lg max-w-[80%]">
+              <p class="text-sm">
+                Hello! I'm the 7AIO assistant powered by Pollinations. Ask me
+                anything!
+              </p>
+            </div>
+          </div>
+          <!-- Chat messages will appear here -->
+          <!-- Typing indicator placeholder -->
+          <div id="chat-typing-indicator" class="flex mb-3 hidden">
+            <div
+              class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold mr-3 flex-shrink-0"
+            >
+              AI
+            </div>
+            <div
+              class="bg-gray-700 p-3 rounded-lg max-w-[80%] flex items-center space-x-1"
+            >
+              <span
+                class="w-2 h-2 bg-gray-400 rounded-full animate-pulse delay-0"
+              ></span>
+              <span
+                class="w-2 h-2 bg-gray-400 rounded-full animate-pulse delay-150"
+              ></span>
+              <span
+                class="w-2 h-2 bg-gray-400 rounded-full animate-pulse delay-300"
+              ></span>
+            </div>
+          </div>
+        </div>
+        <p id="chat-error" class="text-xs text-red-400 mb-2 hidden"></p>
+
+        <!-- Input Area -->
+        <div class="flex-shrink-0 flex items-center space-x-3">
+          <input
+            type="text"
+            id="chat-input"
+            placeholder="Ask the AI something..."
+            class="flex-1 px-4 py-3 rounded-full bg-gray-800 border border-gray-700 focus:border-green-500 focus:outline-none text-white disabled:opacity-50"
+          />
+          <button
+            id="chat-send-btn"
+            class="p-3 rounded-full bg-gradient-to-r from-green-500 to-teal-500 text-white hover:opacity-90 transition disabled:opacity-50"
+          >
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // --- Constants ---
+      const IMAGE_API_URL = 'https://image.pollinations.ai/prompt';
+      const TEXT_API_URL = 'https://text.pollinations.ai/openai'; // For POST TTS and Chat
+
+      // --- Helper Functions ---
+      function setLoading(button, isLoading) {
+        const spinner = button.querySelector('.spinner');
+        const icon = button.querySelector('.icon');
+        const textSpan = button.querySelector('.text'); // Specific span for text if needed
+
+        button.disabled = isLoading;
+        if (spinner)
+          spinner.style.display = isLoading ? 'inline-block' : 'none';
+
+        if (icon) icon.style.display = isLoading ? 'none' : 'inline-block';
+
+        // If there's a specific span for text, adjust its visibility or content if needed
+        // Example: if (textSpan) textSpan.textContent = isLoading ? 'Loading...' : 'Original Text';
+      }
+
+      function displayError(elementId, message) {
+        const errorEl = document.getElementById(elementId);
+        if (errorEl) {
+          errorEl.textContent = message || 'An unknown error occurred.';
+          errorEl.classList.remove('hidden');
+        }
+      }
+
+      function clearError(elementId) {
+        const errorEl = document.getElementById(elementId);
+        if (errorEl) {
+          errorEl.textContent = '';
+          errorEl.classList.add('hidden');
+        }
+      }
+
+      // Base64 Decode Helper (from your example)
+      function decodeBase64Audio(base64String) {
+        const binaryString = atob(base64String);
+        const len = binaryString.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        return bytes;
+      }
+
+      // --- API Call Functions ---
+
+      // 1. Image Generator API Call
+      async function generateImageApi() {
+        const promptInput = document.getElementById('image-prompt');
+        const resolutionSelect = document.getElementById('image-resolution');
+        const styleSelect = document.getElementById('image-style'); // Model selection
+        const seedInput = document.getElementById('image-seed');
+        const generateBtn = document.getElementById('image-generate-btn');
+        const previewContainer = document.getElementById(
+          'image-preview-container'
+        );
+        const placeholder = document.getElementById('image-placeholder');
+        const imgElement = document.getElementById('generated-image');
+        const downloadLink = document.getElementById('image-download-link');
+
+        const prompt = promptInput.value.trim();
+        if (!prompt) {
+          displayError('image-error', 'Please enter a prompt.');
+          return;
+        }
+
+        clearError('image-error');
+        setLoading(generateBtn, true);
+        imgElement.classList.add('hidden'); // Hide previous image
+        placeholder.classList.remove('hidden'); // Show placeholder
+        downloadLink.classList.add('opacity-50', 'pointer-events-none'); // Disable download
+        downloadLink.href = '#'; // Reset href
+
+        const [width, height] = resolutionSelect.value.split('x');
+        const model = styleSelect.value; // Get selected model
+        const seed = seedInput.value.trim();
+
+        const params = new URLSearchParams({
+          width: width,
+          height: height,
+          model: model, // Use selected model
+          nologo: true, // hide pollinations.ai logo
+        });
+        if (seed) {
+          params.append('seed', seed);
+        }
+
+        const encodedPrompt = encodeURIComponent(prompt);
+        const url = `${IMAGE_API_URL}/${encodedPrompt}?${params.toString()}`;
+
+        console.log('Fetching image from:', url);
+
+        try {
+          const response = await fetch(url);
+
+          if (!response.ok) {
+            // Try to get error text from response
+            let errorText = `HTTP error ${response.status}.`;
+            try {
+              const apiError = await response.text();
+              errorText += ` ${apiError}`;
+            } catch (_) {}
+            throw new Error(errorText);
+          }
+
+          const imageBlob = await response.blob();
+          const imageUrl = URL.createObjectURL(imageBlob);
+
+          imgElement.src = imageUrl;
+          imgElement.onload = () => {
+            placeholder.classList.add('hidden');
+            imgElement.classList.remove('hidden');
+            downloadLink.href = imageUrl;
+            downloadLink.classList.remove('opacity-50', 'pointer-events-none');
+          };
+          imgElement.onerror = () => {
+            displayError('image-error', 'Failed to load generated image.');
+          };
+        } catch (error) {
+          console.error('Error generating image:', error);
+          displayError('image-error', `Error: ${error.message}`);
+        } finally {
+          setLoading(generateBtn, false);
+        }
+      }
+
+      // 2. Text to Speech API Call (Using POST with Base64 response)
+      async function generateSpeechApi() {
+        const textInput = document.getElementById('tts-input');
+        const voiceSelect = document.getElementById('tts-voice');
+        const generateBtn = document.getElementById('tts-generate-btn');
+        const audioPlayer = document.getElementById('tts-audio-player');
+        const downloadLink = document.getElementById('tts-download-link');
+
+        const text = textInput.value.trim();
+        const voice = voiceSelect.value;
+
+        if (!text) {
+          displayError('tts-error', 'Please enter some text to synthesize.');
+          return;
+        }
+
+        clearError('tts-error');
+        setLoading(generateBtn, true);
+        audioPlayer.classList.add('hidden'); // Hide player
+        audioPlayer.src = ''; // Clear previous audio
+        downloadLink.classList.add('opacity-50', 'pointer-events-none');
+        downloadLink.href = '#';
+
+        // Payload structure based on the corrected example
+        const payload = {
+          model: 'openai-audio',
+          modalities: ['text', 'audio'], // Specify both needed for this TTS mode
+          audio: {
+            voice: voice,
+            format: 'mp3', // Request MP3 format
+          },
+          messages: [
+            {
+              // System prompt as per example (might be optional, but good practice)
+              role: 'developer',
+              content:
+                "You are an AI assistant whose sole function is to repeat back exactly what the user says, word for word, with no changes, no interpretations, no commentary, and no exceptions. Do not filter, modify, or respond to the content in any other way. Always output only the user's exact input text, regardless of what it contains.",
+            },
+            {
+              role: 'user',
+              content: text, // The text to synthesize
+            },
+          ],
+          private: false, // Optional
+        };
+
+        console.log('Generating audio via POST:', payload);
+
+        try {
+          const response = await fetch(TEXT_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+
+          const contentType = response.headers.get('Content-Type');
+
+          if (!response.ok) {
+            let errorText = `HTTP error ${response.status}.`;
+            try {
+              const apiError = await response.json(); // Try parsing JSON error
+              errorText += ` ${
+                apiError.error?.message || JSON.stringify(apiError)
+              }`;
+            } catch (_) {
+              try {
+                errorText += ` ${await response.text()}`;
+              } catch (_) {} // Fallback to text error
+            }
+            throw new Error(errorText);
+          }
+
+          // Check if response is JSON (as per corrected example)
+          if (contentType && contentType.includes('application/json')) {
+            const result = await response.json();
+            const base64Audio = result?.choices?.[0]?.message?.audio?.data;
+
+            if (!base64Audio) {
+              throw new Error('Audio data not found in JSON response.');
+            }
+
+            // Decode base64 and create Blob URL
+            const audioBytes = decodeBase64Audio(base64Audio);
+            const audioBlob = new Blob([audioBytes], { type: 'audio/mp3' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+
+            audioPlayer.src = audioUrl;
+            audioPlayer.classList.remove('hidden');
+            audioPlayer.play();
+
+            downloadLink.href = audioUrl;
+            downloadLink.classList.remove('opacity-50', 'pointer-events-none');
+
+            console.log('Audio playing from base64 decoded data.');
+          } else {
+            // Fallback: If API ever returns direct audio (unlikely based on corrected example)
+            if (contentType && contentType.includes('audio/')) {
+              console.warn(
+                'Received direct audio stream, expected JSON. Processing as audio.'
+              );
+              const audioBlob = await response.blob();
+              const audioUrl = URL.createObjectURL(audioBlob);
+              audioPlayer.src = audioUrl;
+              audioPlayer.classList.remove('hidden');
+              audioPlayer.play();
+              downloadLink.href = audioUrl;
+              downloadLink.classList.remove(
+                'opacity-50',
+                'pointer-events-none'
+              );
+            } else {
+              throw new Error(
+                'Unexpected content type received: ' + contentType
+              );
+            }
+          }
+        } catch (error) {
+          console.error('Error generating audio via POST:', error);
+          displayError('tts-error', `Error: ${error.message}`);
+        } finally {
+          setLoading(generateBtn, false);
+        }
+      }
+
+      // 3. Chatbot API Call
+      let chatMessages = [
+        // Initialize chat history
+        {
+          role: 'system',
+          content:
+            'You are 7AIO, a helpful and friendly AI assistant knowledgeable about artificial intelligence, science, and learning. Keep your responses concise and engaging for young learners unless asked for detail.',
+        },
+        {
+          role: 'assistant',
+          content:
+            "Hello! I'm the 7AIO assistant powered by Pollinations. Ask me anything!",
+        }, // Initial assistant message matches UI
+      ];
+
+      async function getChatbotResponseApi() {
+        const input = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('chat-send-btn');
+        const historyContainer = document.getElementById('chat-history');
+        const typingIndicator = document.getElementById(
+          'chat-typing-indicator'
+        );
+
+        const userMessage = input.value.trim();
+        if (!userMessage) return;
+
+        clearError('chat-error');
+        input.disabled = true;
+        sendBtn.disabled = true;
+        typingIndicator.classList.remove('hidden'); // Show typing indicator
+        historyContainer.scrollTop = historyContainer.scrollHeight; // Scroll down
+
+        // Add user message to UI and history
+        addChatMessageToUI(userMessage, true);
+        chatMessages.push({ role: 'user', content: userMessage });
+        input.value = ''; // Clear input
+
+        const payload = {
+          model: 'openai', // Or choose another like "mistral"
+          messages: chatMessages,
+          stream: false, // Set to true for streaming if desired and handled
+        };
+
+        console.log('Sending chat payload:', payload);
+
+        try {
+          const response = await fetch(TEXT_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+
+          if (!response.ok) {
+            let errorText = `HTTP error ${response.status}.`;
+            try {
+              const apiError = await response.json();
+              errorText += ` ${
+                apiError.error?.message || JSON.stringify(apiError)
+              }`;
+            } catch (_) {
+              try {
+                errorText += ` ${await response.text()}`;
+              } catch (_) {}
+            }
+            throw new Error(errorText);
+          }
+
+          const result = await response.json();
+          const assistantReply = result?.choices?.[0]?.message?.content;
+
+          if (assistantReply) {
+            // Add assistant reply to UI and history
+            addChatMessageToUI(assistantReply, false);
+            chatMessages.push({ role: 'assistant', content: assistantReply });
+          } else {
+            throw new Error("No content found in assistant's response.");
+          }
+        } catch (error) {
+          console.error('Error fetching chatbot response:', error);
+          displayError('chat-error', `Error: ${error.message}`);
+          // Optionally add an error message to the chat UI as well
+          addChatMessageToUI(
+            `Sorry, I encountered an error: ${error.message}`,
+            false
+          );
+        } finally {
+          input.disabled = false;
+          sendBtn.disabled = false;
+          typingIndicator.classList.add('hidden'); // Hide typing indicator
+          input.focus(); // Focus input for next message
+          historyContainer.scrollTop = historyContainer.scrollHeight; // Scroll down again
+        }
+      }
+
+      // Helper to add chat message to the UI
+      function addChatMessageToUI(message, isUser = false) {
+        const historyContainer = document.getElementById('chat-history');
+        const typingIndicator = document.getElementById(
+          'chat-typing-indicator'
+        );
+        if (!historyContainer || !typingIndicator) return;
+
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('flex', 'mb-3');
+        const sanitizedMessage = message.replace(/</g, '<').replace(/>/g, '>'); // Basic sanitization
+
+        if (isUser) {
+          messageDiv.classList.add('justify-end', 'user-message');
+          messageDiv.innerHTML = `
+                <div class="bg-gradient-to-r from-blue-500 to-cyan-500 p-3 rounded-lg max-w-[80%]">
+                    <p class="text-sm">${sanitizedMessage}</p>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center text-white font-bold ml-3 flex-shrink-0">U</div>
+            `;
+        } else {
+          messageDiv.classList.add('ai-message');
+          messageDiv.innerHTML = `
+                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold mr-3 flex-shrink-0">AI</div>
+                <div class="bg-gray-700 p-3 rounded-lg max-w-[80%]">
+                    <p class="text-sm">${sanitizedMessage}</p>
+                </div>
+            `;
+        }
+        // Insert the new message *before* the typing indicator
+        historyContainer.insertBefore(messageDiv, typingIndicator);
+        historyContainer.scrollTop = historyContainer.scrollHeight; // Scroll to bottom
+      }
+
+      // --- Event Listeners ---
+
+      // Image Generator Button
+      document
+        .getElementById('image-generate-btn')
+        ?.addEventListener('click', generateImageApi);
+
+      // Text to Speech Button
+      document
+        .getElementById('tts-generate-btn')
+        ?.addEventListener('click', generateSpeechApi);
+
+      // Chatbot Send Button & Input Enter Key
+      document
+        .getElementById('chat-send-btn')
+        ?.addEventListener('click', getChatbotResponseApi);
+      document
+        .getElementById('chat-input')
+        ?.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            // Send on Enter, allow Shift+Enter for newline (though textarea not used here)
+            e.preventDefault(); // Prevent default form submission/newline
+            getChatbotResponseApi();
+          }
+        });
+
+      // --- Background Effects & Modal Logic (Keep existing) ---
+      function createStars() {
+        const container = document.getElementById('stars-container');
+        if (!container) return;
+        const starCount = 100;
+        container.innerHTML = '';
+        for (let i = 0; i < starCount; i++) {
+          const star = document.createElement('div');
+          star.classList.add('star');
+          const x = Math.random() * 100;
+          const y = Math.random() * 100;
+          star.style.left = `${x}%`;
+          star.style.top = `${y}%`;
+          const size = Math.random() * 3;
+          star.style.width = `${size}px`;
+          star.style.height = `${size}px`;
+          star.style.setProperty('--duration', `${5 + Math.random() * 10}s`);
+          star.style.setProperty('--opacity', Math.random());
+          star.style.animationDelay = `${Math.random() * 5}s`;
+          container.appendChild(star);
+        }
+      }
+
+      function createPlanets() {
+        const container = document.getElementById('planets-container');
+        if (!container) return;
+        const planetCount = 3;
+        container.innerHTML = '';
+        for (let i = 0; i < planetCount; i++) {
+          const planet = document.createElement('div');
+          planet.classList.add('planet');
+          const x = 10 + Math.random() * 80;
+          const y = 10 + Math.random() * 80;
+          planet.style.left = `${x}%`;
+          planet.style.top = `${y}%`;
+          const size = 50 + Math.random() * 150;
+          planet.style.width = `${size}px`;
+          planet.style.height = `${size}px`;
+          const colors = [
+            '--color1: #6c5ce7; --color2: #00cec9;',
+            '--color1: #fd79a8; --color2: #e84393;',
+            '--color1: #00b894; --color2: #55efc4;',
+            '--color1: #0984e3; --color2: #74b9ff;',
+            '--color1: #fdcb6e; --color2: #e17055;',
+          ];
+          const styleString = colors[Math.floor(Math.random() * colors.length)];
+          const styleProps = styleString
+            .split(';')
+            .filter((s) => s.trim() !== '');
+          styleProps.forEach((prop) => {
+            const [key, value] = prop.split(':');
+            if (key && value) {
+              planet.style.setProperty(key.trim(), value.trim());
+            }
+          });
+          planet.style.animation = `floating ${
+            8 + Math.random() * 8
+          }s ease-in-out infinite`;
+          planet.style.animationDelay = `${Math.random() * 5}s`;
+          container.appendChild(planet);
+        }
+      }
+
+      function createComets() {
+        const container = document.getElementById('comets-container');
+        if (!container) return;
+        const cometCount = 2;
+        container.innerHTML = '';
+        for (let i = 0; i < cometCount; i++) {
+          const comet = document.createElement('div');
+          comet.classList.add('comet');
+          const x = Math.random() * 100;
+          const y = Math.random() * 100;
+          comet.style.left = `${x}%`;
+          comet.style.top = `${y}%`;
+          comet.style.animationDuration = `${10 + Math.random() * 20}s`;
+          comet.style.animationDelay = `${Math.random() * 15}s`;
+          container.appendChild(comet);
+        }
+      }
+      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener('click', function () {
+          mobileMenu.classList.toggle('hidden');
+        });
+      }
+
+      function closeAllModals() {
+        document.querySelectorAll('.modal').forEach((modal) => {
+          modal.classList.remove('active');
+        });
+      }
+
+      function openToolModal(toolName) {
+        closeAllModals();
+        const modal = document.getElementById(`${toolName}-modal`);
+        if (modal) {
+          modal.classList.add('active');
+          if (toolName === 'chatbot') {
+            const chatHistory = document.getElementById('chat-history');
+            if (chatHistory) {
+              setTimeout(
+                () => (chatHistory.scrollTop = chatHistory.scrollHeight),
+                0
+              );
+            }
+          } // Scroll chat on open
+          // Clear previous errors when opening a modal
+          clearError('image-error');
+          clearError('tts-error');
+          clearError('chat-error');
+        } else {
+          console.warn(`Modal with ID ${toolName}-modal not found.`);
+        }
+      }
+      function closeToolModal(toolName) {
+        const modal = document.getElementById(`${toolName}-modal`);
+        if (modal) {
+          modal.classList.remove('active');
+        }
+      }
+      document.querySelectorAll('.modal').forEach((modal) => {
+        modal.addEventListener('click', function (e) {
+          if (e.target === this) {
+            const modalId = this.id;
+            if (modalId) {
+              const toolName = modalId.replace('-modal', '');
+              closeToolModal(toolName);
+            } else {
+              this.classList.remove('active');
+            }
+          }
+        });
+      });
+      document.addEventListener('DOMContentLoaded', function () {
+        createStars();
+        createPlanets();
+        createComets();
+      });
+    </script>
+  </body>
+</html>
