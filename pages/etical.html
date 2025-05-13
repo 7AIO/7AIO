@@ -1,0 +1,562 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Ethical AI- Space Station Adventure</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+            .space-bg {
+                background: linear-gradient(0deg, #000000 0%, #1a1a2e 100%);
+                background-image: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=1000');
+                background-size: cover;
+                background-position: center;
+                background-attachment: fixed;
+            }
+            .panel-glass {
+                background: rgba(15, 23, 42, 0.7);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            }
+            .star {
+                position: absolute;
+                background-color: white;
+                border-radius: 50%;
+                animation: twinkle var(--duration) infinite ease-in-out;
+            }
+            @keyframes twinkle {
+                0%, 100% { opacity: 0.2; }
+                50% { opacity: 1; }
+            }
+            .language-btn {
+                transition: all 0.3s ease;
+            }
+            .language-btn:hover {
+                transform: scale(1.1);
+            }
+            .ai-icon {
+                transition: all 0.3s ease;
+            }
+            .ai-icon:hover {
+                transform: rotate(15deg) scale(1.1);
+            }
+            .quiz-option {
+                transition: all 0.2s ease;
+            }
+            .quiz-option:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            }
+            .fade-in {
+                animation: fadeIn 0.5s ease-in;
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+        </style>
+    </head>
+    <body class="space-bg min-h-screen text-white font-sans">
+        <!-- Stars background -->
+        <div id="stars-container" class="fixed inset-0 overflow-hidden z-0"></div>
+
+        <div class="container mx-auto px-4 py-8 relative z-10">
+            <!-- Header with language toggle -->
+            <header class="flex justify-between items-center mb-8">
+                <div class="flex items-center">
+                    <i class="fas fa-robot text-3xl text-blue-400 mr-3 ai-icon"></i>
+                    <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500" id="title">AI in Everyday Life</h1>
+                </div>
+                <div class="flex space-x-2">
+                    <button class="language-btn bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-full font-medium" id="en-btn">
+                        <i class="fas fa-globe mr-2"></i> English
+                    </button>
+                    <button class="language-btn bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-full font-medium" id="id-btn">
+                        <i class="fas fa-globe-asia mr-2"></i> Bahasa
+                    </button>
+                </div>
+            </header>
+
+            <!-- Main content -->
+            <main class="max-w-4xl mx-auto">
+                <!-- Introduction section -->
+                <section class="panel-glass rounded-xl p-6 mb-8 fade-in">
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="md:w-2/3 md:pr-8">
+                            <h2 class="text-2xl font-bold mb-4 text-blue-300" id="intro-title">Welcome to the Space Station!</h2>
+                            <p class="mb-4 text-lg" id="intro-text">
+                                Artificial Intelligence is the ability of machines to mimic human thinking and decision-making to make life easier. 
+                                Here aboard our futuristic space station, AI helps with everything from climate control to meal planning - 
+                                just like it does in homes on Earth!
+                            </p>
+                            <p class="text-purple-300 italic" id="intro-analogy">
+                                Think of AI like a helpful robot crew member that never sleeps, always learning how to assist you better.
+                            </p>
+                        </div>
+                        <div class="md:w-1/3 mt-6 md:mt-0 flex justify-center">
+                            <img src="https://cdn-icons-png.flaticon.com/512/1163/1163624.png" alt="Space Station" class="w-48 h-48 object-contain">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Smart Devices section -->
+                <section class="panel-glass rounded-xl p-6 mb-8 fade-in" id="smart-devices">
+                    <h2 class="text-2xl font-bold mb-4 text-green-300 flex items-center">
+                        <i class="fas fa-home mr-3"></i>
+                        <span id="smart-devices-title">1. Smart Devices</span>
+                    </h2>
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="md:w-1/3 mb-6 md:mb-0 flex justify-center">
+                            <img src="https://cdn-icons-png.flaticon.com/512/3466/3466568.png" alt="Smart Home" class="w-40 h-40 object-contain">
+                        </div>
+                        <div class="md:w-2/3 md:pl-8">
+                            <p class="mb-4" id="smart-devices-text">
+                                On our space station, AI manages all environmental systems automatically. The lights adjust to your circadian rhythm, 
+                                oxygen levels are optimized, and gravity fields stabilize without you lifting a finger - just like smart thermostats 
+                                and lights in modern Earth homes.
+                            </p>
+                            <div class="bg-gray-800 rounded-lg p-4 mt-4">
+                                <p class="font-medium text-yellow-300 mb-2" id="earth-example-title">Earth Example:</p>
+                                <p id="earth-example-1">
+                                    Your smart fridge notices you're low on milk and adds it to your grocery list, 
+                                    or your home adjusts the temperature before you arrive based on your schedule.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Voice Assistants section -->
+                <section class="panel-glass rounded-xl p-6 mb-8 fade-in" id="voice-assistants">
+                    <h2 class="text-2xl font-bold mb-4 text-yellow-300 flex items-center">
+                        <i class="fas fa-microphone-alt mr-3"></i>
+                        <span id="voice-assistants-title">2. Voice Assistants</span>
+                    </h2>
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="md:w-2/3 md:pr-8">
+                            <p class="mb-4" id="voice-assistants-text">
+                                Astronauts communicate with the station's AI through natural voice commands. 
+                                "Computer, prepare the laboratory for experiments" or "Set wake-up alarm for 07:00 Mars time" - 
+                                just like asking Alexa to play music or Google Assistant to set reminders.
+                            </p>
+                            <div class="bg-gray-800 rounded-lg p-4 mt-4">
+                                <p class="font-medium text-yellow-300 mb-2" id="earth-example-2-title">Earth Example:</p>
+                                <p id="earth-example-2">
+                                    You ask your smart speaker about the weather, to play your favorite song, 
+                                    or to add items to your shopping list without touching any device.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="md:w-1/3 mt-6 md:mt-0 flex justify-center">
+                            <img src="https://cdn-icons-png.flaticon.com/512/2491/2491905.png" alt="Voice Assistant" class="w-40 h-40 object-contain">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Recommendation Engines section -->
+                <section class="panel-glass rounded-xl p-6 mb-8 fade-in" id="recommendation-engines">
+                    <h2 class="text-2xl font-bold mb-4 text-pink-300 flex items-center">
+                        <i class="fas fa-lightbulb mr-3"></i>
+                        <span id="recommendation-title">3. Recommendation Engines</span>
+                    </h2>
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="md:w-1/3 mb-6 md:mb-0 flex justify-center">
+                            <img src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png" alt="Recommendations" class="w-40 h-40 object-contain">
+                        </div>
+                        <div class="md:w-2/3 md:pl-8">
+                            <p class="mb-4" id="recommendation-text">
+                                The station's AI studies your preferences to suggest personalized meals, entertainment, 
+                                and even exercise routines. After noticing you enjoy jazz music during meals, 
+                                it might create the perfect dinner playlist - similar to how Netflix recommends shows or 
+                                Spotify creates Discover Weekly playlists.
+                            </p>
+                            <div class="bg-gray-800 rounded-lg p-4 mt-4">
+                                <p class="font-medium text-yellow-300 mb-2" id="earth-example-3-title">Earth Example:</p>
+                                <p id="earth-example-3">
+                                    Online stores suggest products you might like, video platforms recommend your next watch, 
+                                    or food apps propose recipes based on your past choices and ingredients you have.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Interactive Quiz -->
+                <section class="panel-glass rounded-xl p-6 mb-8 fade-in" id="quiz-section">
+                    <h2 class="text-2xl font-bold mb-6 text-purple-300" id="quiz-title">Space Station AI Quiz</h2>
+                    <div id="quiz-container">
+                        <div class="quiz-question mb-8" id="q1">
+                            <p class="text-lg font-medium mb-4" id="q1-text">1. What does AI stand for?</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <button class="quiz-option bg-gray-800 hover:bg-gray-700 p-4 rounded-lg text-left" data-correct="true" id="q1-option1">
+                                    Artificial Intelligence
+                                </button>
+                                <button class="quiz-option bg-gray-800 hover:bg-gray-700 p-4 rounded-lg text-left" data-correct="false" id="q1-option2">
+                                    Automated Instructions
+                                </button>
+                                <button class="quiz-option bg-gray-800 hover:bg-gray-700 p-4 rounded-lg text-left" data-correct="false" id="q1-option3">
+                                    Advanced Internet
+                                </button>
+                                <button class="quiz-option bg-gray-800 hover:bg-gray-700 p-4 rounded-lg text-left" data-correct="false" id="q1-option4">
+                                    Alien Interaction
+                                </button>
+                            </div>
+                            <div class="mt-4 hidden" id="q1-feedback">
+                                <p class="text-green-400 font-medium"><i class="fas fa-check-circle mr-2"></i> <span id="q1-correct">Correct! AI stands for Artificial Intelligence.</span></p>
+                            </div>
+                        </div>
+
+                        <div class="quiz-question mb-8" id="q2">
+                            <p class="text-lg font-medium mb-4" id="q2-text">2. Which of these is an example of AI in smart devices?</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <button class="quiz-option bg-gray-800 hover:bg-gray-700 p-4 rounded-lg text-left" data-correct="false" id="q2-option1">
+                                    A hammer
+                                </button>
+                                <button class="quiz-option bg-gray-800 hover:bg-gray-700 p-4 rounded-lg text-left" data-correct="true" id="q2-option2">
+                                    A thermostat that learns your schedule
+                                </button>
+                                <button class="quiz-option bg-gray-800 hover:bg-gray-700 p-4 rounded-lg text-left" data-correct="false" id="q2-option3">
+                                    A regular light bulb
+                                </button>
+                                <button class="quiz-option bg-gray-800 hover:bg-gray-700 p-4 rounded-lg text-left" data-correct="false" id="q2-option4">
+                                    A manual typewriter
+                                </button>
+                            </div>
+                            <div class="mt-4 hidden" id="q2-feedback">
+                                <p class="text-green-400 font-medium"><i class="fas fa-check-circle mr-2"></i> <span id="q2-correct">Right! Smart thermostats use AI to learn your habits and adjust automatically.</span></p>
+                            </div>
+                        </div>
+
+                        <div class="quiz-question mb-8" id="q3">
+                            <p class="text-lg font-medium mb-4" id="q3-text">3. What technology allows you to say "Computer, play my favorite music"?</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <button class="quiz-option bg-gray-800 hover:bg-gray-700 p-4 rounded-lg text-left" data-correct="false" id="q3-option1">
+                                    Virtual Reality
+                                </button>
+                                <button class="quiz-option bg-gray-800 hover:bg-gray-700 p-4 rounded-lg text-left" data-correct="true" id="q3-option2">
+                                    Voice Assistant AI
+                                </button>
+                                <button class="quiz-option bg-gray-800 hover:bg-gray-700 p-4 rounded-lg text-left" data-correct="false" id="q3-option3">
+                                    Blockchain
+                                </button>
+                                <button class="quiz-option bg-gray-800 hover:bg-gray-700 p-4 rounded-lg text-left" data-correct="false" id="q3-option4">
+                                    3D Printing
+                                </button>
+                            </div>
+                            <div class="mt-4 hidden" id="q3-feedback">
+                                <p class="text-green-400 font-medium"><i class="fas fa-check-circle mr-2"></i> <span id="q3-correct">Exactly! Voice assistants use AI to understand and respond to spoken commands.</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6 text-center hidden" id="quiz-results">
+                        <p class="text-xl font-bold mb-2" id="results-text">You scored <span id="score">3</span>/3!</p>
+                        <p class="text-blue-300" id="results-message">Perfect! You're ready to command your own AI space station!</p>
+                        <button class="mt-4 bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-full font-medium" id="retry-btn">
+                            <i class="fas fa-redo mr-2"></i> <span id="retry-text">Try Again</span>
+                        </button>
+                    </div>
+                    <div class="text-center mt-6">
+                        <button class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-full font-medium" id="check-answers-btn">
+                            <i class="fas fa-check-circle mr-2"></i> <span id="check-answers-text">Check Answers</span>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Conclusion -->
+                <section class="panel-glass rounded-xl p-6 mb-8 text-center fade-in" id="conclusion-section">
+                    <h2 class="text-2xl font-bold mb-4 text-blue-300" id="conclusion-title">Mission Complete!</h2>
+                    <p class="text-lg mb-4" id="conclusion-text">
+                        You've now seen how AI helps both astronauts and Earthlings in daily life. 
+                        From smart environments to voice commands and personalized recommendations, 
+                        AI is becoming an invisible helper all around us!
+                    </p>
+                    <p class="text-yellow-300 italic" id="final-thought">
+                        Next time you ask your phone for directions or get a perfect recommendation, 
+                        remember - you're experiencing the same kind of technology that powers space stations!
+                    </p>
+                    <div class="mt-6 flex justify-center">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2809/2809593.png" alt="Celebration" class="w-32 h-32 object-contain">
+                    </div>
+                </section>
+            </main>
+
+            <footer class="text-center text-gray-400 mt-12 text-sm">
+                <p id="footer-text">AI Space Station Learning Module © 2023 | Made with <i class="fas fa-heart text-red-400"></i> for future astronauts</p>
+            </footer>
+        </div>
+
+        <script>
+            // Create stars
+            function createStars() {
+                const container = document.getElementById('stars-container');
+                const starCount = 100;
+                
+                for (let i = 0; i < starCount; i++) {
+                    const star = document.createElement('div');
+                    const size = Math.random() * 3;
+                    const duration = 2 + Math.random() * 3;
+                    
+                    star.classList.add('star');
+                    star.style.width = `${size}px`;
+                    star.style.height = `${size}px`;
+                    star.style.left = `${Math.random() * 100}%`;
+                    star.style.top = `${Math.random() * 100}%`;
+                    star.style.setProperty('--duration', `${duration}s`);
+                    
+                    container.appendChild(star);
+                }
+            }
+
+            // Quiz functionality
+            function setupQuiz() {
+                const options = document.querySelectorAll('.quiz-option');
+                const checkBtn = document.getElementById('check-answers-btn');
+                const retryBtn = document.getElementById('retry-btn');
+                let score = 0;
+                let answered = 0;
+                const totalQuestions = 3;
+
+                options.forEach(option => {
+                    option.addEventListener('click', function() {
+                        if (this.closest('.quiz-question').getAttribute('data-answered')) return;
+                        
+                        const isCorrect = this.getAttribute('data-correct') === 'true';
+                        const questionId = this.closest('.quiz-question').id;
+                        const feedback = document.querySelector(`#${questionId} #${questionId}-feedback`);
+                        
+                        if (isCorrect) {
+                            this.classList.add('bg-green-800', 'border-green-400');
+                            this.classList.remove('bg-gray-800', 'hover:bg-gray-700');
+                            score++;
+                        } else {
+                            this.classList.add('bg-red-800', 'border-red-400');
+                            this.classList.remove('bg-gray-800', 'hover:bg-gray-700');
+                            // Highlight correct answer
+                            const correctOption = document.querySelector(`#${questionId} .quiz-option[data-correct="true"]`);
+                            correctOption.classList.add('bg-green-800', 'border-green-400');
+                            correctOption.classList.remove('bg-gray-800', 'hover:bg-gray-700');
+                        }
+                        
+                        feedback.classList.remove('hidden');
+                        this.closest('.quiz-question').setAttribute('data-answered', 'true');
+                        answered++;
+                        
+                        if (answered === totalQuestions) {
+                            showResults();
+                        }
+                    });
+                });
+
+                checkBtn.addEventListener('click', function() {
+                    const unansweredQuestions = document.querySelectorAll('.quiz-question:not([data-answered])');
+                    
+                    if (unansweredQuestions.length > 0) {
+                        alert(currentLanguage === 'en' ? 'Please answer all questions first!' : 'Silakan jawab semua pertanyaan terlebih dahulu!');
+                        return;
+                    }
+                    
+                    showResults();
+                });
+
+                retryBtn.addEventListener('click', function() {
+                    resetQuiz();
+                });
+
+                function showResults() {
+                    const results = document.getElementById('quiz-results');
+                    const scoreElement = document.getElementById('score');
+                    const messageElement = document.getElementById('results-message');
+                    
+                    scoreElement.textContent = score;
+                    
+                    if (score === totalQuestions) {
+                        messageElement.textContent = currentLanguage === 'en' 
+                            ? "Perfect! You're ready to command your own AI space station!" 
+                            : "Sempurna! Anda siap memimpin stasiun luar angkasa AI Anda sendiri!";
+                    } else if (score >= totalQuestions / 2) {
+                        messageElement.textContent = currentLanguage === 'en' 
+                            ? "Good job! You understand the basics of everyday AI." 
+                            : "Kerja bagus! Anda memahami dasar-dasar AI sehari-hari.";
+                    } else {
+                        messageElement.textContent = currentLanguage === 'en' 
+                            ? "Keep learning! AI is all around us - you'll notice it more every day." 
+                            : "Terus belajar! AI ada di sekitar kita - Anda akan semakin menyadarinya.";
+                    }
+                    
+                    results.classList.remove('hidden');
+                    checkBtn.classList.add('hidden');
+                }
+
+                function resetQuiz() {
+                    options.forEach(option => {
+                        option.classList.remove('bg-green-800', 'border-green-400', 'bg-red-800', 'border-red-400');
+                        option.classList.add('bg-gray-800', 'hover:bg-gray-700');
+                    });
+                    
+                    document.querySelectorAll('.quiz-question').forEach(q => {
+                        q.removeAttribute('data-answered');
+                    });
+                    
+                    document.querySelectorAll('#quiz-container .hidden').forEach(el => {
+                        el.classList.add('hidden');
+                    });
+                    
+                    document.getElementById('quiz-results').classList.add('hidden');
+                    checkBtn.classList.remove('hidden');
+                    score = 0;
+                    answered = 0;
+                }
+            }
+
+            // Language toggle
+            let currentLanguage = 'en';
+            const translations = {
+                en: {
+                    title: "AI in Everyday Life",
+                    introTitle: "Welcome to the Space Station!",
+                    introText: "Artificial Intelligence is the ability of machines to mimic human thinking and decision-making to make life easier. Here aboard our futuristic space station, AI helps with everything from climate control to meal planning - just like it does in homes on Earth!",
+                    introAnalogy: "Think of AI like a helpful robot crew member that never sleeps, always learning how to assist you better.",
+                    smartDevicesTitle: "1. Smart Devices",
+                    smartDevicesText: "On our space station, AI manages all environmental systems automatically. The lights adjust to your circadian rhythm, oxygen levels are optimized, and gravity fields stabilize without you lifting a finger - just like smart thermostats and lights in modern Earth homes.",
+                    earthExampleTitle: "Earth Example:",
+                    earthExample1: "Your smart fridge notices you're low on milk and adds it to your grocery list, or your home adjusts the temperature before you arrive based on your schedule.",
+                    voiceAssistantsTitle: "2. Voice Assistants",
+                    voiceAssistantsText: "Astronauts communicate with the station's AI through natural voice commands. 'Computer, prepare the laboratory for experiments' or 'Set wake-up alarm for 07:00 Mars time' - just like asking Alexa to play music or Google Assistant to set reminders.",
+                    earthExample2Title: "Earth Example:",
+                    earthExample2: "You ask your smart speaker about the weather, to play your favorite song, or to add items to your shopping list without touching any device.",
+                    recommendationTitle: "3. Recommendation Engines",
+                    recommendationText: "The station's AI studies your preferences to suggest personalized meals, entertainment, and even exercise routines. After noticing you enjoy jazz music during meals, it might create the perfect dinner playlist - similar to how Netflix recommends shows or Spotify creates Discover Weekly playlists.",
+                    earthExample3Title: "Earth Example:",
+                    earthExample3: "Online stores suggest products you might like, video platforms recommend your next watch, or food apps propose recipes based on your past choices and ingredients you have.",
+                    quizTitle: "Space Station AI Quiz",
+                    q1Text: "1. What does AI stand for?",
+                    q1Option1: "Artificial Intelligence",
+                    q1Option2: "Automated Instructions",
+                    q1Option3: "Advanced Internet",
+                    q1Option4: "Alien Interaction",
+                    q1Correct: "Correct! AI stands for Artificial Intelligence.",
+                    q2Text: "2. Which of these is an example of AI in smart devices?",
+                    q2Option1: "A hammer",
+                    q2Option2: "A thermostat that learns your schedule",
+                    q2Option3: "A regular light bulb",
+                    q2Option4: "A manual typewriter",
+                    q2Correct: "Right! Smart thermostats use AI to learn your habits and adjust automatically.",
+                    q3Text: "3. What technology allows you to say 'Computer, play my favorite music'?",
+                    q3Option1: "Virtual Reality",
+                    q3Option2: "Voice Assistant AI",
+                    q3Option3: "Blockchain",
+                    q3Option4: "3D Printing",
+                    q3Correct: "Exactly! Voice assistants use AI to understand and respond to spoken commands.",
+                    checkAnswersText: "Check Answers",
+                    retryText: "Try Again",
+                    resultsText: "You scored",
+                    resultsMessage1: "Perfect! You're ready to command your own AI space station!",
+                    resultsMessage2: "Good job! You understand the basics of everyday AI.",
+                    resultsMessage3: "Keep learning! AI is all around us - you'll notice it more every day.",
+                    conclusionTitle: "Mission Complete!",
+                    conclusionText: "You've now seen how AI helps both astronauts and Earthlings in daily life. From smart environments to voice commands and personalized recommendations, AI is becoming an invisible helper all around us!",
+                    finalThought: "Next time you ask your phone for directions or get a perfect recommendation, remember - you're experiencing the same kind of technology that powers space stations!",
+                    footerText: "AI Space Station Learning Module © 2023 | Made with ♥ for future astronauts"
+                },
+                id: {
+                    title: "AI dalam Kehidupan Sehari-hari",
+                    introTitle: "Selamat Datang di Stasiun Luar Angkasa!",
+                    introText: "Kecerdasan Buatan adalah kemampuan mesin untuk meniru pemikiran dan pengambilan keputusan manusia untuk mempermudah kehidupan. Di stasiun luar angkasa futuristik kami, AI membantu segala hal mulai dari pengendalian iklim hingga perencanaan makanan - sama seperti di rumah-rumah di Bumi!",
+                    introAnalogy: "Bayangkan AI seperti anggota kru robot yang selalu siap membantu, tidak pernah tidur, dan terus belajar untuk membantu Anda lebih baik.",
+                    smartDevicesTitle: "1. Perangkat Pintar",
+                    smartDevicesText: "Di stasiun luar angkasa kami, AI mengelola semua sistem lingkungan secara otomatis. Lampu menyesuaikan dengan ritme sirkadian Anda, kadar oksigen dioptimalkan, dan medan gravitasi stabil tanpa Anda perlu melakukan apa pun - sama seperti termostat dan lampu pintar di rumah-rumah modern di Bumi.",
+                    earthExampleTitle: "Contoh di Bumi:",
+                    earthExample1: "Kulkas pintar Anda menyadari persediaan susu hampir habis dan menambahkannya ke daftar belanja, atau rumah Anda menyesuaikan suhu sebelum Anda tiba berdasarkan jadwal Anda.",
+                    voiceAssistantsTitle: "2. Asisten Suara",
+                    voiceAssistantsText: "Astronot berkomunikasi dengan AI stasiun melalui perintah suara alami. 'Komputer, siapkan laboratorium untuk eksperimen' atau 'Atur alarm bangun pukul 07:00 waktu Mars' - sama seperti meminta Alexa memutar musik atau Google Assistant mengatur pengingat.",
+                    earthExample2Title: "Contoh di Bumi:",
+                    earthExample2: "Anda bertanya kepada speaker pintar tentang cuaca, meminta memutar lagu favorit, atau menambahkan item ke daftar belanja tanpa menyentuh perangkat apa pun.",
+                    recommendationTitle: "3. Mesin Rekomendasi",
+                    recommendationText: "AI stasiun mempelajari preferensi Anda untuk menyarankan makanan, hiburan, bahkan rutinitas olahraga yang dipersonalisasi. Setelah menyadari Anda menikmati musik jazz saat makan, AI mungkin membuat daftar putar makan malam yang sempurna - mirip dengan bagaimana Netflix merekomendasikan acara atau Spotify membuat playlist Discover Weekly.",
+                    earthExample3Title: "Contoh di Bumi:",
+                    earthExample3: "Toko online menyarankan produk yang mungkin Anda sukai, platform video merekomendasikan tontonan berikutnya, atau aplikasi makanan mengusulkan resep berdasarkan pilihan masa lalu dan bahan yang Anda miliki.",
+                    quizTitle: "Kuis AI Stasiun Luar Angkasa",
+                    q1Text: "1. Apa kepanjangan dari AI?",
+                    q1Option1: "Artificial Intelligence (Kecerdasan Buatan)",
+                    q1Option2: "Automated Instructions (Instruksi Otomatis)",
+                    q1Option3: "Advanced Internet (Internet Canggih)",
+                    q1Option4: "Alien Interaction (Interaksi Alien)",
+                    q1Correct: "Benar! AI adalah singkatan dari Artificial Intelligence (Kecerdasan Buatan).",
+                    q2Text: "2. Manakah contoh AI dalam perangkat pintar?",
+                    q2Option1: "Palu",
+                    q2Option2: "Termostat yang mempelajari jadwal Anda",
+                    q2Option3: "Bohlam lampu biasa",
+                    q2Option4: "Mesin ketik manual",
+                    q2Correct: "Tepat! Termostat pintar menggunakan AI untuk mempelajari kebiasaan Anda dan menyesuaikan secara otomatis.",
+                    q3Text: "3. Teknologi apa yang memungkinkan Anda mengatakan 'Komputer, mainkan musik favorit saya'?",
+                    q3Option1: "Virtual Reality",
+                    q3Option2: "Asisten Suara AI",
+                    q3Option3: "Blockchain",
+                    q3Option4: "Pencetakan 3D",
+                    q3Correct: "Persis! Asisten suara menggunakan AI untuk memahami dan merespons perintah lisan.",
+                    checkAnswersText: "Periksa Jawaban",
+                    retryText: "Coba Lagi",
+                    resultsText: "Skor Anda",
+                    resultsMessage1: "Sempurna! Anda siap memimpin stasiun luar angkasa AI Anda sendiri!",
+                    resultsMessage2: "Kerja bagus! Anda memahami dasar-dasar AI sehari-hari.",
+                    resultsMessage3: "Terus belajar! AI ada di sekitar kita - Anda akan semakin menyadarinya.",
+                    conclusionTitle: "Misi Selesai!",
+                    conclusionText: "Anda telah melihat bagaimana AI membantu astronot dan penduduk Bumi dalam kehidupan sehari-hari. Dari lingkungan pintar hingga perintah suara dan rekomendasi yang dipersonalisasi, AI menjadi asisten tak terlihat di sekitar kita!",
+                    finalThought: "Lain kali Anda meminta petunjuk arah ke ponsel atau mendapatkan rekomendasi yang sempurna, ingat - Anda mengalami teknologi yang sama dengan yang menggerakkan stasiun luar angkasa!",
+                    footerText: "Modul Pembelajaran Stasiun Luar Angkasa AI © 2023 | Dibuat dengan ♥ untuk astronot masa depan"
+                }
+            };
+
+            function toggleLanguage(lang) {
+                currentLanguage = lang;
+                const elements = translations[lang];
+                
+                // Update all text elements
+                for (const [key, value] of Object.entries(elements)) {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        element.textContent = value;
+                    }
+                }
+                
+                // Update button states
+                if (lang === 'en') {
+                    document.getElementById('en-btn').classList.replace('bg-gray-700', 'bg-blue-600');
+                    document.getElementById('en-btn').classList.replace('hover:bg-gray-600', 'hover:bg-blue-700');
+                    document.getElementById('id-btn').classList.replace('bg-blue-600', 'bg-gray-700');
+                    document.getElementById('id-btn').classList.replace('hover:bg-blue-700', 'hover:bg-gray-600');
+                } else {
+                    document.getElementById('id-btn').classList.replace('bg-gray-700', 'bg-blue-600');
+                    document.getElementById('id-btn').classList.replace('hover:bg-gray-600', 'hover:bg-blue-700');
+                    document.getElementById('en-btn').classList.replace('bg-blue-600', 'bg-gray-700');
+                    document.getElementById('en-btn').classList.replace('hover:bg-blue-700', 'hover:bg-gray-600');
+                }
+            }
+
+            // Initialize
+            document.addEventListener('DOMContentLoaded', function() {
+                createStars();
+                setupQuiz();
+                
+                // Language toggle buttons
+                document.getElementById('en-btn').addEventListener('click', () => toggleLanguage('en'));
+                document.getElementById('id-btn').addEventListener('click', () => toggleLanguage('id'));
+                
+                // Animate sections on scroll
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('fade-in');
+                        }
+                    });
+                }, { threshold: 0.1 });
+                
+                document.querySelectorAll('section').forEach(section => {
+                    observer.observe(section);
+                });
+            });
+        </script>
+    </body>
+    </html>

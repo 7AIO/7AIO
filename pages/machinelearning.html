@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7AIO - Machine Learning Space Expedition</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6c5ce7',
+                        secondary: '#00cec9',
+                        accent: '#fd79a8',
+                        dark: '#0f172a',
+                        darker: '#020617',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #020617;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, #6c5ce7, #00cec9, #fd79a8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite ease-in-out;
+            opacity: 0;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; }
+            50% { opacity: var(--opacity); }
+        }
+        
+        .floating {
+            animation: floating 6s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .holographic-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(109, 92, 231, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .holographic-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(109, 92, 231, 0.5);
+        }
+        
+        .planet {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--color1), var(--color2));
+            box-shadow: 0 0 30px var(--color1);
+            z-index: -1;
+        }
+        
+        #training-visualization {
+            width: 100%;
+            height: 300px;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 12px;
+            border: 1px solid rgba(109, 92, 231, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .data-point {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .decision-boundary {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: rgba(109, 92, 231, 0.7);
+            transform-origin: left center;
+            transition: transform 0.5s ease;
+        }
+        
+        .prediction-line {
+            position: absolute;
+            width: 2px;
+            height: 100%;
+            background: rgba(253, 121, 168, 0.7);
+            left: 50%;
+            top: 0;
+        }
+        
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(109, 92, 231, 0.3);
+            outline: none;
+            cursor: pointer;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #6c5ce7;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(109, 92, 231, 0.7);
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(109, 92, 231, 0.2);
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #6c5ce7, #00cec9);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .moon-surface {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(to bottom, #3d3d3d, #1a1a1a);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .crater {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.2);
+            box-shadow: inset 5px 5px 10px rgba(0,0,0,0.3);
+        }
+        
+        .mineral-sample {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .mineral-sample:hover {
+            transform: scale(1.2);
+        }
+        
+        .rocket {
+            position: absolute;
+            width: 40px;
+            height: 60px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c5ce7'%3E%3Cpath d='M12 2.5c0 0 4.5 2.04 4.5 10.5 0 2.49-1.04 5.57-1.6 7H9.1c-.56-1.43-1.6-4.51-1.6-7C7.5 4.54 12 2.5 12 2.5zm0 2c-1.03 0-4.5.81-4.5 9 0 1.8.53 4.34 1 5.5h7c.47-1.16 1-3.7 1-5.5 0-8.19-3.47-9-4.5-9zm0-2c1.08 0 4.5.76 4.5 9 0 2.25-.58 5.11-1.35 6.5h-6.3C7.08 18.61 6.5 15.75 6.5 13.5c0-8.24 3.42-9 4.5-9z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            transition: left 0.5s ease, top 0.5s ease;
+        }
+        
+        .ai-astronaut {
+            width: 150px;
+            height: 150px;
+        }
+        
+        .ai-avatar {
+            width: 120px;
+            height: 120px;
+            background: rgba(108, 92, 231, 0.3);
+            border-radius: 50%;
+            border: 2px solid rgba(108, 92, 231, 0.7);
+            box-shadow: 0 0 20px rgba(108, 92, 231, 0.5);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .ai-avatar::before {
+            content: '';
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            background: rgba(108, 92, 231, 0.7);
+            border-radius: 40%;
+            animation: rotate 8s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg) translate(-20px) rotate(0deg); }
+            100% { transform: rotate(360deg) translate(-20px) rotate(-360deg); }
+        }
+        
+        .eyes {
+            display: flex;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .eye {
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            margin: 0 5px;
+            position: relative;
+        }
+        
+        .eye::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #00cec9;
+            border-radius: 50%;
+            top: 5px;
+            left: 5px;
+            animation: blink 4s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { transform: scale(1); }
+            98% { transform: scale(1); }
+            99% { transform: scale(0.1); }
+        }
+        
+        .mouth {
+            width: 30px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 5px;
+            margin-top: 15px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .confusion-matrix {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            width: 200px;
+            margin: 0 auto;
+        }
+        
+        .matrix-cell {
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .matrix-header {
+            background: rgba(109, 92, 231, 0.3);
+        }
+        
+        .matrix-tp {
+            background: rgba(0, 206, 201, 0.2);
+        }
+        
+        .matrix-fp {
+            background: rgba(253, 121, 168, 0.2);
+        }
+        
+        .matrix-fn {
+            background: rgba(253, 121, 168, 0.2);
+        }
+        
+        .matrix-tn {
+            background: rgba(0, 206, 201, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Background Elements -->
+    <div id="stars-container"></div>
+    <div id="planets-container"></div>
+    
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-black bg-opacity-50 backdrop-filter backdrop-blur-lg border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <span class="text-2xl font-bold gradient-text orbitron">7AIO</span>
+                    </div>
+                </div>
+                <div>
+                    <button class="px-4 py-2 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:opacity-90 transition">
+                        <i class="fas fa-robot mr-2"></i> AI Assistant
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Lesson Content -->
+    <section class="pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6 orbitron">
+                <span class="gradient-text">Machine Learning Space Expedition</span>
+            </h1>
+            <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                Join our AI astronaut as it learns to classify minerals on a distant moon!
+            </p>
+        </div>
+        
+        <!-- Mission Briefing -->
+        <div class="holographic-card rounded-xl p-8 mb-16">
+            <h2 class="text-2xl font-bold mb-6 orbitron gradient-text">Mission Briefing</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <p class="text-gray-300 mb-4">
+                        <span class="text-purple-300">Mission Objective:</span> Train an AI astronaut to identify valuable minerals on the lunar surface.
+                    </p>
+                    <p class="text-gray-300 mb-4">
+                        <span class="text-blue-300">Challenge:</span> The AI has never seen these minerals before and must learn from samples it collects.
+                    </p>
+                    <p class="text-gray-300 mb-6">
+                        <span class="text-pink-300">Analogy:</span> Just like our AI astronaut, machine learning models learn patterns from data (mineral samples) to make predictions about new, unseen data.
+                    </p>
+                    <div class="flex space-x-4">
+                        <div class="flex-1 holographic-card rounded-lg p-4">
+                            <div class="text-purple-400 mb-2"><i class="fas fa-vial"></i></div>
+                            <h3 class="font-bold mb-1">Training Data</h3>
+                            <p class="text-gray-400 text-sm">Labeled mineral samples the AI learns from</p>
+                        </div>
+                        <div class="flex-1 holographic-card rounded-lg p-4">
+                            <div class="text-blue-400 mb-2"><i class="fas fa-brain"></i></div>
+                            <h3 class="font-bold mb-1">Model</h3>
+                            <p class="text-gray-400 text-sm">The AI's "brain" that learns patterns</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-center">
+                    <div class="ai-astronaut relative">
+                        <div class="ai-avatar floating">
+                            <div class="eyes">
+                                <div class="eye"></div>
+                                <div class="eye"></div>
+                            </div>
+                            <div class="mouth"></div>
+                        </div>
+                        <div class="absolute -bottom-8 -left-8 w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 opacity-20 blur-3xl"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Interactive Lesson -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+            <!-- Step 1: Data Collection -->
+            <div class="lg:col-span-2 holographic-card rounded-xl p-8">
+                <h2 class="text-2xl font-bold mb-6 orbitron gradient-text">1. Data Collection Phase</h2>
+                <p class="text-gray-300 mb-6">
+                    Our AI astronaut has landed on the moon's surface and is collecting mineral samples. 
+                    Each sample has different properties (color, density, radioactivity) that will help the AI learn.
+                </p>
+                
+                <div class="moon-surface" id="moon-surface">
+                    <!-- Craters will be added by JS -->
+                    <!-- Mineral samples will be added by JS -->
+                    <div class="rocket" id="rocket" style="left: 50%; top: 30%;"></div>
+                </div>
+                
+                <div class="mt-6 flex justify-between items-center">
+                    <div>
+                        <h3 class="font-bold mb-1">Collected Samples</h3>
+                        <div class="flex space-x-2">
+                            <span id="helium-count" class="text-xs bg-purple-900 bg-opacity-50 text-purple-300 px-2 py-1 rounded">Helium-3: 0</span>
+                            <span id="platinum-count" class="text-xs bg-blue-900 bg-opacity-50 text-blue-300 px-2 py-1 rounded">Platinum: 0</span>
+                            <span id="common-count" class="text-xs bg-gray-800 text-gray-300 px-2 py-1 rounded">Common: 0</span>
+                        </div>
+                    </div>
+                    <button id="collect-samples-btn" class="px-4 py-2 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:opacity-90 transition">
+                        <i class="fas fa-meteor mr-2"></i> Collect Samples
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Key Concepts -->
+            <div class="holographic-card rounded-xl p-8">
+                <h2 class="text-2xl font-bold mb-6 orbitron gradient-text">Key Concepts</h2>
+                
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="font-bold text-purple-300 mb-2">Training Data</h3>
+                        <p class="text-gray-300 text-sm">
+                            The labeled examples (mineral samples) used to teach the AI model. More diverse data leads to better learning.
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-bold text-blue-300 mb-2">Features</h3>
+                        <p class="text-gray-300 text-sm">
+                            The measurable characteristics of each sample (color, density, etc.) that the model uses to learn patterns.
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-bold text-pink-300 mb-2">Labels</h3>
+                        <p class="text-gray-300 text-sm">
+                            The correct answers (mineral types) for each sample that help the model learn what to look for.
+                        </p>
+                    </div>
+                    
+                    <div class="holographic-card rounded-lg p-4 mt-6">
+                        <div class="text-yellow-400 mb-2"><i class="fas fa-lightbulb"></i></div>
+                        <h3 class="font-bold mb-1">Space Fact</h3>
+                        <p class="text-gray-400 text-sm">
+                            Just like astronauts train extensively before missions, AI models need quality training data to perform well on real-world tasks.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Step 2: Training the Model -->
+        <div class="holographic-card rounded-xl p-8 mb-16">
+            <h2 class="text-2xl font-bold mb-6 orbitron gradient-text">2. Training the AI Astronaut</h2>
+            <p class="text-gray-300 mb-6">
+                Now that we've collected samples, our AI astronaut needs to learn from them. This is the <span class="text-purple-300">training phase</span> where the model adjusts its internal parameters to minimize mistakes.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Training Visualization</h3>
+                    <div id="training-visualization">
+                        <!-- Data points will be added by JS -->
+                        <div class="decision-boundary" id="decision-boundary" style="transform: rotate(0deg);"></div>
+                        <div class="prediction-line" id="prediction-line"></div>
+                    </div>
+                    
+                    <div class="slider-container mt-4">
+                        <label class="block text-gray-400 text-sm mb-2">Training Epochs: <span id="epoch-count">0</span>/100</label>
+                        <input type="range" min="0" max="100" value="0" class="slider" id="epoch-slider">
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar" id="training-progress"></div>
+                    </div>
+                    
+                    <div class="flex justify-between text-sm text-gray-400">
+                        <span>Loss: <span id="loss-value">0.00</span></span>
+                        <span>Accuracy: <span id="accuracy-value">0%</span></span>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="font-bold text-lg mb-4">How the AI Learns</h3>
+                    <p class="text-gray-300 mb-4">
+                        The AI starts by making random guesses (initial decision boundary). Through training, it:
+                    </p>
+                    <ol class="list-decimal list-inside text-gray-300 space-y-2 mb-6">
+                        <li>Makes predictions on training data</li>
+                        <li>Calculates how wrong it was (loss)</li>
+                        <li>Adjusts its parameters to reduce mistakes</li>
+                        <li>Repeats until it performs well</li>
+                    </ol>
+                    
+                    <div class="holographic-card rounded-lg p-4">
+                        <div class="text-green-400 mb-2"><i class="fas fa-cogs"></i></div>
+                        <h3 class="font-bold mb-1">Gradient Descent</h3>
+                        <p class="text-gray-400 text-sm">
+                            The optimization algorithm that helps the AI adjust its parameters, like a spaceship navigating to the lowest point in a crater.
+                        </p>
+                    </div>
+                    
+                    <button id="start-training-btn" class="mt-6 w-full py-3 rounded-lg bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:opacity-90 transition font-medium" disabled>
+                        <i class="fas fa-play mr-2"></i> Start Training
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Step 3: Evaluating the Model -->
+        <div class="holographic-card rounded-xl p-8">
+            <h2 class="text-2xl font-bold mb-6 orbitron gradient-text">3. Mission Evaluation</h2>
+            <p class="text-gray-300 mb-6">
+                Our trained AI astronaut is now ready to classify new, unseen mineral samples. Let's see how well it performs!
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Test New Samples</h3>
+                    <div class="moon-surface" id="test-surface">
+                        <!-- Test samples will be added by JS -->
+                    </div>
+                    
+                    <div class="mt-4 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold mb-1">AI Predictions</h3>
+                            <div class="flex space-x-2">
+                                <span id="test-helium-count" class="text-xs bg-purple-900 bg-opacity-50 text-purple-300 px-2 py-1 rounded">Helium-3: 0</span>
+                                <span id="test-platinum-count" class="text-xs bg-blue-900 bg-opacity-50 text-blue-300 px-2 py-1 rounded">Platinum: 0</span>
+                                <span id="test-common-count" class="text-xs bg-gray-800 text-gray-300 px-2 py-1 rounded">Common: 0</span>
+                            </div>
+                        </div>
+                        <button id="test-samples-btn" class="px-4 py-2 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:opacity-90 transition" disabled>
+                            <i class="fas fa-flask mr-2"></i> Test Samples
+                        </button>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Performance Metrics</h3>
+                    
+                    <div class="holographic-card rounded-lg p-6 mb-6">
+                        <h4 class="font-bold mb-4 text-center">Confusion Matrix</h4>
+                        <div class="confusion-matrix">
+                            <div class="matrix-cell matrix-header"></div>
+                            <div class="matrix-cell matrix-header">Predicted H-3</div>
+                            <div class="matrix-cell matrix-header">Predicted Pt</div>
+                            
+                            <div class="matrix-cell matrix-header">Actual H-3</div>
+                            <div class="matrix-cell matrix-tp" id="true-positives">0</div>
+                            <div class="matrix-cell matrix-fn" id="false-negatives">0</div>
+                            
+                            <div class="matrix-cell matrix-header">Actual Pt</div>
+                            <div class="matrix-cell matrix-fp" id="false-positives">0</div>
+                            <div class="matrix-cell matrix-tn" id="true-negatives">0</div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="holographic-card rounded-lg p-4">
+                            <div class="text-blue-400 mb-2"><i class="fas fa-bullseye"></i></div>
+                            <h3 class="font-bold mb-1">Precision</h3>
+                            <p class="text-gray-400 text-sm">
+                                When the AI says "Helium-3", how often is it right?
+                            </p>
+                            <div class="text-2xl font-bold mt-2" id="precision-value">0%</div>
+                        </div>
+                        <div class="holographic-card rounded-lg p-4">
+                            <div class="text-green-400 mb-2"><i class="fas fa-search"></i></div>
+                            <h3 class="font-bold mb-1">Recall</h3>
+                            <p class="text-gray-400 text-sm">
+                                What percentage of actual Helium-3 did the AI find?
+                            </p>
+                            <div class="text-2xl font-bold mt-2" id="recall-value">0%</div>
+                        </div>
+                    </div>
+                    
+                    <div class="holographic-card rounded-lg p-4 mt-4">
+                        <div class="text-purple-400 mb-2"><i class="fas fa-star"></i></div>
+                        <h3 class="font-bold mb-1">Mission Success!</h3>
+                        <p class="text-gray-400 text-sm">
+                            Our AI astronaut has learned to classify minerals with <span id="final-accuracy">0%</span> accuracy! Just like real machine learning models, it can now make predictions on new data.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Next Steps -->
+        <div class="mt-16 text-center">
+            <h2 class="text-2xl font-bold mb-6 orbitron gradient-text">Continue Your AI Journey</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                <a href="#" class="holographic-card rounded-xl p-6 hover:border-purple-500 transition border border-gray-800">
+                    <div class="text-3xl text-purple-400 mb-3"><i class="fas fa-layer-group"></i></div>
+                    <h3 class="text-xl font-bold mb-2">Neural Networks</h3>
+                    <p class="text-gray-300 text-sm">Explore how more complex AI models work</p>
+                </a>
+                <a href="#" class="holographic-card rounded-xl p-6 hover:border-blue-500 transition border border-gray-800">
+                    <div class="text-3xl text-blue-400 mb-3"><i class="fas fa-chart-line"></i></div>
+                    <h3 class="text-xl font-bold mb-2">Real-world Applications</h3>
+                    <p class="text-gray-300 text-sm">See how ML is used in space exploration</p>
+                </a>
+                <a href="#" class="holographic-card rounded-xl p-6 hover:border-pink-500 transition border border-gray-800">
+                    <div class="text-3xl text-pink-400 mb-3"><i class="fas fa-code"></i></div>
+                    <h3 class="text-xl font-bold mb-2">Hands-on Lab</h3>
+                    <p class="text-gray-300 text-sm">Build your own classification model</p>
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <script>
+        // Create stars
+        function createStars() {
+            const container = document.getElementById('stars-container');
+            const

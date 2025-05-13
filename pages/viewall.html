@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code & AI Collaboration Hub | 7AIO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/min/vs/loader.js"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+        
+        .glow-button {
+            transition: all 0.3s ease;
+        }
+        
+        .glow-button:hover {
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.7);
+            transform: translateY(-2px);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+            background: linear-gradient(145deg, #1e293b, #1a2535);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .code-editor {
+            height: 500px;
+            border: 1px solid #334155;
+        }
+        
+        .tab-active {
+            border-bottom: 2px solid #6366f1;
+            color: #6366f1;
+            font-weight: 600;
+        }
+        
+        .participant-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #4f46e5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .chat-message {
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .accordion-open {
+            max-height: 1000px;
+        }
+        
+        .ai-assistant {
+            position: fixed;
+            right: 0;
+            top: 0;
+            height: 100vh;
+            width: 350px;
+            background-color: #1e293b;
+            border-left: 1px solid #334155;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+        
+        .ai-assistant.open {
+            transform: translateX(0);
+        }
+        
+        .message-ai {
+            background-color: #334155;
+            border-radius: 0.5rem 0.5rem 0.5rem 0;
+        }
+        
+        .message-user {
+            background-color: #4f46e5;
+            border-radius: 0.5rem 0.5rem 0 0.5rem;
+        }
+        
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #94a3b8;
+            border-radius: 50%;
+            margin-right: 3px;
+            animation: bounce 1.5s infinite ease-in-out;
+        }
+        
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        @media (max-width: 768px) {
+            .ai-assistant {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="bg-slate-900 border-b border-slate-700 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-2">
+                <span class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">7AIO</span>
+            </a>
+            <div class="hidden md:flex space-x-6">
+                <a href="/" class="text-slate-300 hover:text-white">Home</a>
+                <a href="/courses" class="text-slate-300 hover:text-white">Courses</a>
+                <a href="/code-hub" class="text-white font-medium">Code Hub</a>
+                <a href="#" class="text-slate-300 hover:text-white">Community</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md glow-button">
+                    Sign In
+                </button>
+                <button class="md:hidden text-slate-300">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- AI Assistant Toggle Button -->
+    <button id="ai-assistant-toggle" class="fixed right-4 bottom-4 bg-indigo-600 hover:bg-indigo-700 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg glow-button z-50">
+        <i class="fas fa-robot text-xl"></i>
+    </button>
+
+    <!-- AI Assistant Sidebar -->
+    <div id="ai-assistant" class="ai-assistant">
+        <div class="h-full flex flex-col">
+            <div class="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-800">
+                <h3 class="font-semibold flex items-center">
+                    <i class="fas fa-robot text-indigo-400 mr-2"></i> AI Coding Assistant
+                </h3>
+                <button id="close-ai-assistant" class="text-slate-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-4 space-y-4" id="ai-chat-messages">
+                <div class="message-ai p-3 max-w-[80%]">
+                    <p>Hello! I'm your AI coding assistant. How can I help you today?</p>
+                    <p class="text-xs text-slate-400 mt-1">You can ask me to:</p>
+                    <ul class="text-xs text-slate-400 list-disc pl-4 mt-1">
+                        <li>Explain code concepts</li>
+                        <li>Debug errors</li>
+                        <li>Generate code snippets</li>
+                        <li>Optimize your code</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="p-4 border-t border-slate-700 bg-slate-800">
+                <div class="relative">
+                    <textarea id="ai-chat-input" rows="2" placeholder="Ask the AI assistant..." class="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 pr-10 resize-none"></textarea>
+                    <button id="send-ai-message" class="absolute right-2 bottom-2 text-indigo-400 hover:text-indigo-300">
+                        <i class="far fa-paper-plane"></i>
+                    </button>
+                </div>
+                <div id="typing-indicator" class="typing-indicator text-xs text-slate-400 mt-2 hidden">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span>AI is typing</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent">
+                Code & AI Collaboration Hub
+            </h1>
+            <p class="text-xl text-slate-400 max-w-3xl mx-auto">
+                A space for real-time coding collaboration, sharing projects, and discovering the latest tools and resources in AI development.
+            </p>
+        </div>
+
+        <!-- Grid Layout -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Live Coding Section -->
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 card-hover" onclick="window.location.href='./livecoding.html';">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold flex items-center">
+                        <i class="fas fa-code mr-3 text-blue-400"></i> Live Coding Rooms
+                    </h2>
+                    <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md glow-button">
+                        Create Room
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="bg-slate-900 rounded-lg p-4 border border-slate-700">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="font-medium">AI Chatbot Workshop</h3>
+                                <p class="text-sm text-slate-400">Python • 3 participants</p>
+                            </div>
+                            <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-sm">
+                                Join
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-900 rounded-lg p-4 border border-slate-700">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="font-medium">Data Visualization</h3>
+                                <p class="text-sm text-slate-400">JavaScript • 2 participants</p>
+                            </div>
+                            <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-sm">
+                                Join
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-900 rounded-lg p-4 border border-slate-700">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="font-medium">Web Scraping with AI</h3>
+                                <p class="text-sm text-slate-400">Python • 1 participant</p>
+                            </div>
+                            <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-sm">
+                                Join
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center pt-2">
+                        <button class="text-indigo-400 hover:text-indigo-300 text-sm">
+                            View All Rooms <i class="fas fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Saved Projects Section -->
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 card-hover">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold flex items-center">
+                        <i class="fas fa-folder mr-3 text-yellow-400"></i> Saved Projects
+                    </h2>
+                    <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md glow-button">
+                        New Project
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="bg-slate-900 rounded-lg p-4 border border-slate-700">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="font-medium">AI Chatbot</h3>
+                                <p class="text-sm text-slate-400">Python • 2 days ago</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="text-slate-400 hover:text-indigo-400">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-slate-400 hover:text-red-400">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-900 rounded-lg p-4 border border-slate-700">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="font-medium">Data Dashboard</h3>
+                                <p class="text-sm text-slate-400">JavaScript • 1 week ago</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="text-slate-400 hover:text-indigo-400">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-slate-400 hover:text-red-400">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-900 rounded-lg p-4 border border-slate-700">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="font-medium">ML Model Trainer</h3>
+                                <p class="text-sm text-slate-400">Python • 2 weeks ago</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="text-slate-400 hover:text-indigo-400">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-slate-400 hover:text-red-400">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center pt-2">
+                        <button class="text-indigo-400 hover:text-indigo-300 text-sm">
+                            View All Projects <i class="fas fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI News Feed Section -->
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 card-hover md:col-span-2">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold flex items-center">
+                        <i class="fas fa-newspaper mr-3 text-purple-400"></i> AI News Feed
+                    </h2>
+                    <button class="text-indigo-400 hover:text-indigo-300 text-sm">
+                        Refresh <i class="fas fa-sync-alt ml-1"></i>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-slate-900 rounded-lg overflow-hidden border border-slate-700">
+                        <img src="https://source.unsplash.com/random/600x400/?ai,technology" alt="AI News" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <div class="flex items-center mb-2">
+                                <span class="text-xs bg-indigo-900 text-indigo-300 px-2 py-1 rounded">Research</span>
+                                <span class="text-xs text-slate-500 ml-2">2 hours ago</span>
+                            </div>
+                            <h3 class="text-lg font-semibold mb-2">OpenAI Announces Breakthrough in Multimodal AI</h3>
+                            <p class="text-slate-400 mb-4 text-sm">New research shows significant improvements in AI's ability to understand and generate content across text, images, and audio simultaneously.</p>
+                            <a href="#" target="_blank" class="text-indigo-400 hover:text-indigo-300 text-sm inline-flex items-center">
+                                Read More <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-900 rounded-lg overflow-hidden border border-slate-700">
+                        <img src="https://source.unsplash.com/random/600x400/?coding,ai" alt="AI News" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <div class="flex items-center mb-2">
+                                <span class="text-xs bg-emerald-900 text-emerald-300 px-2 py-1 rounded">Productivity</span>
+                                <span class="text-xs text-slate-500 ml-2">5 hours ago</span>
+                            </div>
+                            <h3 class="text-lg font-semibold mb-2">GitHub Copilot X: The AI Pair Programmer Gets Smarter</h3>
+                            <p class="text-slate-400 mb-4 text-sm">Microsoft unveils major updates to GitHub Copilot with new chat interface and support for pull requests and documentation.</p>
+                            <a href="#" target="_blank" class="text-indigo-400 hover:text-indigo-300 text-sm inline-flex items-center">
+                                Read More <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- GitHub Trending Section -->
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 card-hover">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold flex items-center">
+                        <i class="fab fa-github mr-3 text-green-400"></i> Trending Repos
+                    </h2>
+                    <button class="text-indigo-400 hover:text-indigo-300 text-sm">
+                        View More <i class="fas fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="bg-slate-900 rounded-lg p-4 border border-slate-700">
+                        <div class="flex items-center mb-3">
+                            <i class="fab fa-github text-xl mr-3 text-slate-400"></i>
+                            <div>
+                                <h3 class="font-medium">Auto-GPT</h3>
+                                <p class="text-xs text-slate-500">Stars: 142k</p>
+                            </div>
+                        </div>
+                        <p class="text-slate-400 mb-3 text-sm">An experimental open-source attempt to make GPT-4 fully autonomous.</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded">Python</span>
+                            <span class="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded">AI</span>
+                            <span class="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded">GPT-4</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-900 rounded-lg p-4 border border-slate-700">
+                        <div class="flex items-center mb-3">
+                            <i class="fab fa-github text-xl mr-3 text-slate-400"></i>
+                            <div>
+                                <h3 class="font-medium">Stable Diffusion</h3>
+                                <p class="text-xs text-slate-500">Stars: 58k</p>
+                            </div>
+                        </div>
+                        <p class="text-slate-400 mb-3 text-sm">High-Resolution Image Synthesis with Latent Diffusion Models</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded">Python</span>
+                            <span class="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded">AI Art</span>
+                            <span class="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded">Diffusion</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI Tools Section -->
+            <div class="bg-slate-800 rounded-xl p-6 border border-slate-700 card-hover">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold flex items-center">
+                        <i class="fas fa-tools mr-3 text-red-400"></i> AI Tools
+                    </h2>
+                    <button class="text-indigo-400 hover:text-indigo-300 text-sm">
+                        View All <i class="fas fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="bg-slate-900 rounded-lg p-4 border border-slate-700">
+                        <div class="flex items-center mb-3">
+                            <i class="fas fa-robot text-xl mr-3 text-indigo-400"></i>
+                            <div>
+                                <h3 class="font-medium">LangChain v0.1</h3>
+                                <p class="text-xs text-slate-500">Updated 3 days ago</p>
+                            </div>
+                        </div>
+                        <p class="text-slate-400 mb-3 text-sm">Build LLM-powered applications with improved memory handling and agent support.</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded">Python</span>
+                            <span class="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded">LLMs</span>
+                            <span class="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded">AI Agents</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-900 rounded-lg p-4 border border-slate-700">
+                        <div class="flex items-center mb-3">
+                            <i class="fas fa-brain text-xl mr-3 text-purple-400"></i>
+                            <div>
+                                <h3 class="font-medium">TensorFlow 2.12</h3>
+                                <p class="text-xs text-slate-500">Updated 1 week ago</p>
+                            </div>
+                        </div>
+                        <p class="text-slate-400 mb-3 text-sm">Latest version with improved performance and new Keras features.</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded">Python</span>
+                            <span class="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded">ML</span>
+                            <span class="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded">Deep Learning</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // AI Assistant Toggle
+        const aiAssistantToggle = document.getElementById('ai-assistant-toggle');
+        const aiAssistant = document.getElementById('ai-assistant');
+        const closeAiAssistant = document.getElementById('close-ai-assistant');
+        
+        aiAssistantToggle.addEventListener('click', () => {
+            aiAssistant.classList.toggle('open');
+        });
+        
+        closeAiAssistant.addEventListener('click', () => {
+            aiAssistant.classList.remove('open');
+        });
+        
+        // AI Chat Functionality
+        const aiChatInput = document.getElementById('ai-chat-input');
+        const sendAiMessage = document.getElementById('send-ai-message');
+        const aiChatMessages = document.getElementById('ai-chat-messages');
+        const typingIndicator = document.getElementById('typing-indicator');
+        
+        sendAiMessage.addEventListener('click', sendMessage);
+        aiChatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        function sendMessage() {
+            const message = aiChatInput.value.trim();
+            if (message) {
+                // Add user message
+                const userMessage = document.createElement('div');
+                userMessage.className = 'flex justify-end mb-4';
+                userMessage.innerHTML = `
+                    <div class="message-user p-3 max-w-[80%]">
+                        <p>${message}</p>
+                    </div>
+                `;
+                aiChatMessages.appendChild(userMessage);
+                aiChatInput.value = '';
+                
+                // Show typing indicator
+                typingIndicator.classList.remove('hidden');
+                
+                // Scroll to bottom
+                aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+                
+                // Simulate AI response after delay
+                setTimeout(() => {
+                    typingIndicator.classList.add('hidden');
+                    
+                    // Add AI response
+                    const aiResponse = document.createElement('div');
+                    aiResponse.className = 'mb-4';
+                    aiResponse.innerHTML = `
+                        <div class="message-ai p-3 max-w-[80%]">
+                            <p>${getAIResponse(message)}</p>
+                        </div>
+                    `;
+                    aiChatMessages.appendChild(aiResponse);
+                    
+                    // Scroll to bottom
+                    aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+                }, 1500);
+            }
+        }
+        
+        function getAIResponse(message) {
+            const responses = [
+                "I can help with that! Here's a code snippet that might help: `const result = await fetch('api/data');`",
+                "That's an interesting question. The error you're seeing typically occurs when the variable is undefined. Have you checked your imports?",
+                "For optimizing that function, consider using memoization or reducing the computational complexity.",
+                "Here's how you can implement that in Python:\n\n```python\ndef example():\n    return 'Hello World!'\n```",
+                "That concept relates to asynchronous programming. Would you like me to explain how promises work in JavaScript?",
+                "The latest version of that library has some breaking changes. Make sure to check the migration guide.",
+                "For debugging, I recommend adding console.log statements at key points in your code flow.",
+                "That's a common pattern. Here's how you can implement the factory pattern in your language of choice."
+            ];
+            
+            return responses[Math.floor(Math.random() * responses.length)];
+        }
+        
+        // Accordion functionality for mobile
+        const accordionBtns = document.querySelectorAll('.accordion-btn');
+        accordionBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const content = btn.nextElementSibling;
+                const icon = btn.querySelector('i');
+                
+                content.classList.toggle('accordion-open');
+                icon.classList.toggle('rotate-180');
+            });
+        });
+        
+        // Tab switching functionality
+        const tabs = ['coding-tab', 'projects-tab', 'resources-tab'];
+        const sections = ['coding-section', 'projects-section', 'resources-section'];
+        
+        tabs.forEach((tabId, index) => {
+            const tab = document.getElementById(tabId);
+            tab.addEventListener('click', () => {
+                // Update active tab
+                tabs.forEach(t => {
+                    document.getElementById(t).classList.remove('tab-active');
+                });
+                tab.classList.add('tab-active');
+                
+                // Show corresponding section
+                sections.forEach(s => {
+                    document.getElementById(s).classList.add('hidden');
+                });
+                document.getElementById(sections[index]).classList.remove('hidden');
+            });
+        });
+        
+        // Initialize Monaco Editor
+        function initEditor() {
+            require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/min/vs' }});
+            require(['vs/editor/editor.main'], function() {
+                const editor = monaco.editor.create(document.getElementById('code-editor'), {
+                    value: [
+                        '// Welcome to the AI Chatbot Workshop!',
+                        '// This is a collaborative coding environment',
+                        '',
+                        'import openai',
+                        'from typing import List, Dict',
+                        '',
+                        'class Chatbot:',
+                        '    def __init__(self, api_key: str):',
+                        '        self.api_key = api_key',
+                        '        self.memory = []',
+                        '',
+                        '    def respond(self, message: str) -> str:',
+                        '        """Generate a response to user input"""',
+                        '        prompt = self._build_prompt(message)',
+                        '        response = openai.Completion.create(',
+                        '            engine="text-davinci-003",',
+                        '            prompt=prompt,',
+                        '            max_tokens=150',
+                        '        )',
+                        '        return response.choices[0].text.strip()',
+                        '',
+                        '    def _build_prompt(self, message: str) -> str:',
+                        '        """Construct the prompt for the AI"""',
+                        '        return f"User: {message}\\nAI:"',
+                        '',
+                        '# Example usage',
+                        'if __name__ == "__main__":',
+                        '    bot = Chatbot("your-api-key-here")',
+                        '    print(bot.respond("Hello, how are you?"))'
+                    ].join('\n'),
+                    language: 'python',
+                    theme: 'vs-dark',
+                    automaticLayout: true,
+                    minimap: {
+                        enabled: true
+                    }
+                });
+            });
+        }
+        
+        // Initialize editor when page loads
+        window.addEventListener('load', initEditor);
+    </script>
+</body>
+</html>

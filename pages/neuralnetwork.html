@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galactic Neural Networks</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .galaxy-bg {
+            background: radial-gradient(ellipse at center, #0a0e2a 0%, #000000 100%);
+        }
+        .neuron {
+            transition: all 0.3s ease;
+        }
+        .neuron:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px #3b82f6;
+        }
+        .active-neuron {
+            background-color: #3b82f6;
+            box-shadow: 0 0 20px #3b82f6;
+        }
+        .connection {
+            stroke: #4b5563;
+            stroke-width: 2;
+        }
+        .active-connection {
+            stroke: #3b82f6;
+            stroke-width: 3;
+            stroke-opacity: 0.7;
+        }
+        .constellation-path {
+            stroke: #3b82f6;
+            stroke-width: 1;
+            stroke-dasharray: 5, 5;
+            fill: none;
+        }
+        .language-tab {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .language-tab.active {
+            background-color: #1e40af;
+            color: white;
+        }
+        #networkCanvas {
+            background-color: rgba(15, 23, 42, 0.7);
+            border-radius: 0.5rem;
+        }
+        .training-progress {
+            height: 6px;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body class="galaxy-bg text-white min-h-screen font-sans">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header with Language Toggle -->
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                <i class="fas fa-star mr-2"></i> Galactic Neural Networks
+            </h1>
+            <div class="flex space-x-2 bg-gray-800 rounded-lg p-1">
+                <div id="enTab" class="language-tab active px-4 py-1 rounded-md" onclick="switchLanguage('en')">English</div>
+                <div id="idTab" class="language-tab px-4 py-1 rounded-md" onclick="switchLanguage('id')">Bahasa Indonesia</div>
+            </div>
+        </div>
+
+        <!-- Introduction Section -->
+        <section id="introSection" class="mb-12">
+            <div class="en-content">
+                <h2 class="text-2xl font-semibold mb-4 text-blue-300"><i class="fas fa-rocket mr-2"></i> Exploring the Neural Cosmos</h2>
+                <p class="mb-4 text-gray-300">
+                    Just as stars form constellations in the vast universe, artificial neurons connect to create powerful neural networks. 
+                    These cosmic-inspired networks can learn patterns and make decisions, much like how ancient navigators used star patterns to guide their journeys.
+                </p>
+                <p class="mb-6 text-gray-300">
+                    In this interactive lesson, we'll explore how these "constellations of computation" work by building our own galactic neural network!
+                </p>
+            </div>
+            <div class="id-content hidden">
+                <h2 class="text-2xl font-semibold mb-4 text-blue-300"><i class="fas fa-rocket mr-2"></i> Menjelajahi Kosmos Neural</h2>
+                <p class="mb-4 text-gray-300">
+                    Seperti bintang-bintang membentuk rasi di alam semesta yang luas, neuron buatan terhubung untuk menciptakan jaringan neural yang kuat.
+                    Jaringan yang terinspirasi kosmos ini dapat mempelajari pola dan membuat keputusan, mirip dengan bagaimana navigator kuno menggunakan pola bintang untuk memandu perjalanan mereka.
+                </p>
+                <p class="mb-6 text-gray-300">
+                    Dalam pelajaran interaktif ini, kita akan menjelajahi bagaimana "rasi komputasi" ini bekerja dengan membangun jaringan neural galaksi kita sendiri!
+                </p>
+            </div>
+            
+            <div class="flex justify-center my-8">
+                <div class="relative w-full max-w-4xl h-64 rounded-xl overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-purple-900 to-blue-900 opacity-50"></div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="text-center px-8">
+                            <h3 class="text-xl font-bold mb-2 en-content">Ready to explore the neural cosmos?</h3>
+                            <h3 class="text-xl font-bold mb-2 id-content hidden">Siap menjelajahi kosmos neural?</h3>
+                            <button onclick="startLesson()" class="mt-4 px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-full font-medium transition-all transform hover:scale-105">
+                                <span class="en-content">Begin Journey <i class="fas fa-arrow-right ml-1"></i></span>
+                                <span class="id-content hidden">Mulai Perjalanan <i class="fas fa-arrow-right ml-1"></i></span>
+                            </button>
+                        </div>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1534796636912-3b95b3ab598d?q=80&w=1000" alt="Galaxy" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </section>
+
+        <!-- Lesson Content (Hidden Initially) -->
+        <div id="lessonContent" class="hidden">
+            <!-- Neural Network Basics -->
+            <section class="mb-12">
+                <div class="en-content">
+                    <h2 class="text-2xl font-semibold mb-4 text-blue-300"><i class="fas fa-brain mr-2"></i> Cosmic Connections: How Neural Networks Work</h2>
+                    <p class="mb-4 text-gray-300">
+                        A neural network is like a constellation of artificial neurons (stars) connected by pathways (celestial lines). 
+                        These networks have three main layers:
+                    </p>
+                    <ul class="list-disc pl-6 mb-6 text-gray-300 space-y-2">
+                        <li><span class="font-medium text-blue-300">Input Layer:</span> Like stars receiving light from distant galaxies, these neurons receive information.</li>
+                        <li><span class="font-medium text-blue-300">Hidden Layers:</span> The cosmic processing centers where patterns are recognized, like constellations forming shapes.</li>
+                        <li><span class="font-medium text-blue-300">Output Layer:</span> The final result, like a navigator interpreting star patterns to find direction.</li>
+                    </ul>
+                </div>
+                <div class="id-content hidden">
+                    <h2 class="text-2xl font-semibold mb-4 text-blue-300"><i class="fas fa-brain mr-2"></i> Koneksi Kosmik: Cara Kerja Jaringan Neural</h2>
+                    <p class="mb-4 text-gray-300">
+                        Jaringan neural seperti rasi bintang dari neuron buatan (bintang) yang terhubung oleh jalur (garis langit).
+                        Jaringan ini memiliki tiga lapisan utama:
+                    </p>
+                    <ul class="list-disc pl-6 mb-6 text-gray-300 space-y-2">
+                        <li><span class="font-medium text-blue-300">Lapisan Input:</span> Seperti bintang yang menerima cahaya dari galaksi jauh, neuron ini menerima informasi.</li>
+                        <li><span class="font-medium text-blue-300">Lapisan Tersembunyi:</span> Pusat pemrosesan kosmik di mana pola dikenali, seperti rasi bintang yang membentuk bentuk.</li>
+                        <li><span class="font-medium text-blue-300">Lapisan Output:</span> Hasil akhir, seperti navigator yang menafsirkan pola bintang untuk menemukan arah.</li>
+                    </ul>
+                </div>
+
+                <!-- Interactive Network Visualization -->
+                <div class="bg-gray-900 bg-opacity-50 rounded-xl p-6 mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-medium text-blue-300 en-content">Interactive Neural Constellation</h3>
+                        <h3 class="text-lg font-medium text-blue-300 id-content hidden">Rasi Neural Interaktif</h3>
+                        <div class="flex space-x-2">
+                            <button onclick="resetNetwork()" class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm">
+                                <span class="en-content">Reset</span>
+                                <span class="id-content hidden">Atur Ulang</span>
+                            </button>
+                            <button onclick="activateRandomPath()" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 rounded text-sm">
+                                <span class="en-content">Activate Path</span>
+                                <span class="id-content hidden">Aktifkan Jalur</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="relative">
+                        <canvas id="networkCanvas" width="800" height="400" class="w-full h-full"></canvas>
+                        <div class="absolute bottom-4 left-4 text-sm text-gray-400 en-content">
+                            Click on neurons to activate them and see connections light up!
+                        </div>
+                        <div class="absolute bottom-4 left-4 text-sm text-gray-400 id-content hidden">
+                            Klik pada neuron untuk mengaktifkannya dan lihat koneksi menyala!
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Building a Simple Network -->
+            <section class="mb-12">
+                <div class="en-content">
+                    <h2 class="text-2xl font-semibold mb-4 text-blue-300"><i class="fas fa-cogs mr-2"></i> Crafting Your Cosmic Classifier</h2>
+                    <p class="mb-4 text-gray-300">
+                        Let's build a simple neural network to classify celestial objects. Our network will learn to distinguish between stars, planets, and galaxies.
+                    </p>
+                </div>
+                <div class="id-content hidden">
+                    <h2 class="text-2xl font-semibold mb-4 text-blue-300"><i class="fas fa-cogs mr-2"></i> Membuat Pengklasifikasi Kosmik Anda</h2>
+                    <p class="mb-4 text-gray-300">
+                        Mari membangun jaringan neural sederhana untuk mengklasifikasikan objek langit. Jaringan kita akan belajar membedakan antara bintang, planet, dan galaksi.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Network Builder -->
+                    <div class="bg-gray-900 bg-opacity-50 rounded-xl p-6">
+                        <h3 class="text-lg font-medium mb-4 text-blue-300 en-content">Network Builder</h3>
+                        <h3 class="text-lg font-medium mb-4 text-blue-300 id-content hidden">Pembangun Jaringan</h3>
+                        
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-2 en-content">Select layers:</label>
+                            <label class="block text-sm font-medium mb-2 id-content hidden">Pilih lapisan:</label>
+                            <div class="flex space-x-4">
+                                <div>
+                                    <input type="radio" id="simpleNet" name="networkType" value="simple" checked 
+                                           class="mr-2" onchange="updateNetworkBuilder()">
+                                    <label for="simpleNet" class="text-sm en-content">Simple (3 layers)</label>
+                                    <label for="simpleNet" class="text-sm id-content hidden">Sederhana (3 lapisan)</label>
+                                </div>
+                                <div>
+                                    <input type="radio" id="complexNet" name="networkType" value="complex" 
+                                           class="mr-2" onchange="updateNetworkBuilder()">
+                                    <label for="complexNet" class="text-sm en-content">Complex (5 layers)</label>
+                                    <label for="complexNet" class="text-sm id-content hidden">Kompleks (5 lapisan)</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-2 en-content">Neurons per hidden layer:</label>
+                            <label class="block text-sm font-medium mb-2 id-content hidden">Neuron per lapisan tersembunyi:</label>
+                            <input type="range" id="neuronCount" min="2" max="10" value="4" 
+                                   class="w-full" oninput="updateNetworkBuilder()">
+                            <div class="text-center text-sm mt-1">
+                                <span id="neuronCountValue">4</span> 
+                                <span class="en-content">neurons</span>
+                                <span class="id-content hidden">neuron</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <button onclick="trainNetwork()" class="w-full py-2 bg-blue-600 hover:bg-blue-500 rounded font-medium">
+                                <span class="en-content">Train Network</span>
+                                <span class="id-content hidden">Latih Jaringan</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Training Output -->
+                    <div class="bg-gray-900 bg-opacity-50 rounded-xl p-6">
+                        <h3 class="text-lg font-medium mb-4 text-blue-300 en-content">Training Progress</h3>
+                        <h3 class="text-lg font-medium mb-4 text-blue-300 id-content hidden">Progres Pelatihan</h3>
+                        
+                        <div class="mb-4">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="en-content">Training:</span>
+                                <span class="id-content hidden">Pelatihan:</span>
+                                <span id="trainingStatus" class="text-gray-400 en-content">Not started</span>
+                                <span id="trainingStatusId" class="text-gray-400 id-content hidden">Belum dimulai</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2">
+                                <div id="trainingProgress" class="training-progress bg-blue-500 rounded-full h-2" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="en-content">Accuracy:</span>
+                                <span class="id-content hidden">Akurasi:</span>
+                                <span id="accuracyValue" class="text-gray-400">0%</span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2">
+                                <div id="accuracyBar" class="training-progress bg-green-500 rounded-full h-2" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div id="trainingResults" class="mt-6 hidden">
+                            <h4 class="font-medium mb-2 text-blue-300 en-content">Training Complete!</h4>
+                            <h4 class="font-medium mb-2 text-blue-300 id-content hidden">Pelatihan Selesai!</h4>
+                            <p class="text-sm text-gray-300 en-content">
+                                Your cosmic classifier achieved <span id="finalAccuracy" class="font-medium text-green-400">85%</span> accuracy!
+                                It can now distinguish between celestial objects with reasonable confidence.
+                            </p>
+                            <p class="text-sm text-gray-300 id-content hidden">
+                                Pengklasifikasi kosmik Anda mencapai akurasi <span id="finalAccuracyId" class="font-medium text-green-400">85%</span>!
+                                Sekarang dapat membedakan antara objek langit dengan keyakinan yang masuk akal.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Interactive Exercise -->
+            <section class="mb-12">
+                <div class="en-content">
+                    <h2 class="text-2xl font-semibold mb-4 text-blue-300"><i class="fas fa-meteor mr-2"></i> Cosmic Classification Challenge</h2>
+                    <p class="mb-4 text-gray-300">
+                        Test your understanding by classifying these celestial objects using the neural network concepts we've learned.
+                    </p>
+                </div>
+                <div class="id-content hidden">
+                    <h2 class="text-2xl font-semibold mb-4 text-blue-300"><i class="fas fa-meteor mr-2"></i> Tantangan Klasifikasi Kosmik</h2>
+                    <p class="mb-4 text-gray-300">
+                        Uji pemahaman Anda dengan mengklasifikasikan objek langit ini menggunakan konsep jaringan neural yang telah kita pelajari.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Exercise Item 1 -->
+                    <div class="bg-gray-900 bg-opacity-50 rounded-xl p-6 text-center">
+                        <img src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=500" alt="Galaxy" class="w-full h-32 object-cover rounded mb-4">
+                        <h4 class="font-medium mb-2">Andromeda Galaxy</h4>
+                        <div class="flex justify-center space-x-2">
+                            <button onclick="classifyObject('galaxy', this)" class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm">Galaxy</button>
+                            <button onclick="classifyObject('star', this)" class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm">Star</button>
+                            <button onclick="classifyObject('planet', this)" class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm">Planet</button>
+                        </div>
+                        <div id="feedback1" class="mt-2 text-sm hidden"></div>
+                    </div>
+                    
+                    <!-- Exercise Item 2 -->
+                    <div class="bg-gray-900 bg-opacity-50 rounded-xl p-6 text-center">
+                        <img src="https://images.unsplash.com/photo-1614642264763-d0461ebc4e8e?w=500" alt="Sun" class="w-full h-32 object-cover rounded mb-4">
+                        <h4 class="font-medium mb-2">The Sun</h4>
+                        <div class="flex justify-center space-x-2">
+                            <button onclick="classifyObject('galaxy', this)" class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm">Galaxy</button>
+                            <button onclick="classifyObject('star', this)" class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm">Star</button>
+                            <button onclick="classifyObject('planet', this)" class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm">Planet</button>
+                        </div>
+                        <div id="feedback2" class="mt-2 text-sm hidden"></div>
+                    </div>
+                    
+                    <!-- Exercise Item 3 -->
+                    <div class="bg-gray-900 bg-opacity-50 rounded-xl p-6 text-center">
+                        <img src="https://images.unsplash.com/photo-1454789548928-9a90b84e7af3?w=500" alt="Saturn" class="w-full h-32 object-cover rounded mb-4">
+                        <h4 class="font-medium mb-2">Saturn</h4>
+                        <div class="flex justify-center space-x-2">
+                            <button onclick="classifyObject('galaxy', this)" class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm">Galaxy</button>
+                            <button onclick="classifyObject('star', this)" class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm">Star</button>
+                            <button onclick="classifyObject('planet', this)" class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm">Planet</button>
+                        </div>
+                        <div id="feedback3" class="mt-2 text-sm hidden"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Conclusion -->
+            <section class="mb-12">
+                <div class="en-content">
+                    <h2 class="text-2xl font-semibold mb-4 text-blue-300"><i class="fas fa-satellite mr-2"></i> Journey Through the Neural Cosmos</h2>
+                    <p class="mb-4 text-gray-300">
+                        You've successfully navigated through the fundamentals of neural networks using our cosmic analogy! 
+                        Just as constellations helped ancient explorers, these artificial neural networks help us make sense of complex data.
+                    </p>
+                    <p class="mb-6 text-gray-300">
+                        Remember: Each neuron is like a star, and their connections form meaningful patterns - the constellations of artificial intelligence.
+                    </p>
+                </div>
+                <div class="id-content hidden">
+                    <h2 class="text-2xl font-semibold mb-4 text-blue-300"><i class="fas fa-satellite mr-2"></i> Perjalanan Melalui Kosmos Neural</h2>
+                    <p class="mb-4 text-gray-300">
+                        Anda telah berhasil menavigasi dasar-dasar jaringan neural menggunakan analogi kosmik kami!
+                        Seperti rasi bintang membantu penjelajah kuno, jaringan neural buatan ini membantu kita memahami data kompleks.
+                    </p>
+                    <p class="mb-6 text-gray-300">
+                        Ingat: Setiap neuron seperti bintang, dan koneksi mereka membentuk pola yang bermakna - rasi bintang kecerdasan buatan.
+                    </p>
+                </div>
+                
+                <div class="flex justify-center">
+                    <button onclick="resetLesson()" class="px-6 py-2 bg-purple-600 hover:bg-purple-500 rounded-full font-medium">
+                        <span class="en-content">Start Over <i class="fas fa-redo ml-1"></i></span>
+                        <span class="id-content hidden">Mulai Lagi <i class="fas fa-redo ml-1"></i></span>
+                    </button>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // Language Switching
+        function switchLanguage(lang) {
+            if (lang === 'en') {
+                document.getElementById('enTab').classList.add('active');
+                document.getElementById('idTab').classList.remove('active');
+                document.querySelectorAll('.en-content').forEach(el => el.classList.remove('hidden'));
+                document.querySelectorAll('.id-content').forEach(el => el.classList.add('hidden'));
+            } else {
+                document.getElementById('enTab').classList.remove('active');
+                document.getElementById('idTab').classList.add('active');
+                document.querySelectorAll('.en-content').forEach(el => el.classList.add('hidden'));
+                document.querySelectorAll('.id-content').forEach(el => el.classList.remove('hidden'));
+            }
+        }
+
+        // Lesson Navigation
+        function startLesson() {
+            document.getElementById('introSection').classList.add('hidden');
+            document.getElementById('lessonContent').classList.remove('hidden');
+            initNetworkVisualization();
+        }
+
+        function resetLesson() {
+            document.getElementById('introSection').classList.remove('hidden');
+            document.getElementById('lessonContent').classList.add('hidden');
+        }
+
+        // Neural Network Visualization
+        let canvas, ctx;
+        let neurons = [];
+        let connections = [];
+        let activeNeurons = new Set();
+        let activeConnections = new Set();
+
+        function initNetworkVisualization() {
+            canvas = document.getElementById('networkCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // Adjust canvas size for mobile
+            if (window.innerWidth < 800) {
+                canvas.width = window.innerWidth - 40;
+                canvas.height = 300;
+            }
+            
+            createNetworkStructure();
+            drawNetwork();
+            
+            // Add click event
+            canvas.addEventListener('click', handleCanvasClick);
+        }
+
+        function createNetworkStructure() {
+            neurons = [];
+            connections = [];
+            
+            const layers = 3;
+            const neuronRadius = 15;
+            const layerPadding = canvas.width / (layers + 1);
+            
+            // Create neurons
+            for (let l = 0; l < layers; l++) {
+                const layerX = (l + 1) * layerPadding;
+                const neuronsInLayer = l === 1 ? 4 : 3; // Hidden layer has 4 neurons
+                const neuronPadding = canvas.height / (neuronsInLayer + 1);
+                
+                for (let n = 0; n < neuronsInLayer; n++) {
+                    const neuronY = (n + 1) * neuronPadding;
+                    neurons.push({
+                        x: layerX,
+                        y: neuronY,
+                        radius: neuronRadius,
+                        layer: l,
+                        index: n
+                    });
+                }
+            }
+            
+            // Create connections
+            for (let i = 0; i < neurons.length; i++) {
+                const neuron1 = neurons[i];
+                
+                for (let j = 0; j < neurons.length; j++) {
+                    const neuron2 = neurons[j];
+                    
+                    // Connect to next layer only
+                    if (neuron2.layer === neuron1.layer + 1) {
+                        connections.push({
+                            from: i,
+                            to: j,
+                            weight: Math.random()
+                        });
+                    }
+                }
+            }
+        }
+
+        function drawNetwork() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw connections first (so they're behind neurons)
+            connections.forEach((conn, index) => {
+                const fromNeuron = neurons[conn.from];
+                const toNeuron = neurons[conn.to];
+                
+                ctx.beginPath();
+                ctx.moveTo(fromNeuron.x, fromNeuron.y);
+                ctx.lineTo(toNeuron.x, toNeuron.y);
+                ctx.strokeStyle = activeConnections.has(index) ? '#3b82f6' : '#4b5563';
+                ctx.lineWidth = activeConnections.has(index) ? 3 : 2;
+                if (activeConnections.has(index)) ctx.globalAlpha = 0.7;
+                ctx.stroke();
+                ctx.globalAlpha = 1.0;
+            });
+            
+            // Draw neurons
+            neurons.forEach((neuron, index) => {
+                // Draw glow if active
+                if (activeNeurons.has(index)) {
+                    ctx.beginPath();
+                    ctx.arc(neuron.x, neuron.y, neuron.radius + 10, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(59, 130, 246, 0.3)';
+                    ctx.fill();
+                }
+                
+                // Draw neuron
+                ctx.beginPath();
+                ctx.arc(neuron.x, neuron.y, neuron.radius, 0, Math.PI * 2);
+                ctx.fillStyle = activeNeurons.has(index) ? '#3b82f6' : '#1f2937';
+                ctx.fill();
+                ctx.strokeStyle = '#4b5563';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Draw layer indicator
+                ctx.fillStyle = '#9ca3af';
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`${neuron.layer === 0 ? 'Input' : neuron.layer === 1 ? 'Hidden' : 'Output'}`, neuron.x, neuron.y + neuron.radius + 15);
+            });
+            
+            // Draw constellation-style connections
+            if (activeNeurons.size > 0) {
+                ctx.beginPath();
+                let first = true;
+                
+                Array.from(activeNeurons).forEach(neuronIndex => {
+                    const neuron = neurons[neuronIndex];
+                    if (first) {
+                        ctx.moveTo(neuron.x, neuron.y);
+                        first = false;
+                    } else {
+                        ctx.lineTo(neuron.x, neuron.y);
+                    }
+                });
+                
+                ctx.strokeStyle = 'rgba(59, 130, 246, 0.5)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+        }
+
+        function handleCanvasClick(event) {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            
+            // Check if clicked on a neuron
+            for (let i = 0; i < neurons.length; i++) {
+                const neuron = neurons[i];
+                const distance = Math.sqrt((x - neuron.x) ** 2 + (y - neuron.y) ** 2);
+                
+                if (distance <= neuron.radius) {
+                    // Toggle neuron activation
+                    if (activeNeurons.has(i)) {
+                        activeNeurons.delete(i);
+                    } else {
+                        activeNeurons.add(i);
+                    }
+                    
+                    // Update connections
+                    updateActiveConnections();
+                    drawNetwork();
+                    return;
+                }
+            }
+        }
+
+        function updateActiveConnections() {
+            activeConnections = new Set();
+            
+            connections.forEach((conn, index) => {
+                if (activeNeurons.has(conn.from) && activeNeurons.has(conn.to)) {
+                    activeConnections.add(index);
+                }
+            });
+        }
+
+        function resetNetwork() {
+            activeNeurons = new Set();
+            activeConnections = new Set();
+            drawNetwork();
+        }
+
+        function activateRandomPath() {
+            resetNetwork();
+            
+            // Start with random input neuron
+            const inputNeurons = neurons.filter(n => n.layer === 0);
+            const startNeuron = inputNeurons[Math.floor(Math.random() * inputNeurons.length)];
+            const startIndex = neurons.indexOf(startNeuron);
+            activeNeurons.add(startIndex);
+            
+            // Follow random path through network
+            let currentLayer = 0;
+            let currentNeuron = startNeuron;
+            
+            while (currentLayer < 2) {
+                // Find all connections from current neuron to next layer
+                const nextConnections = connections.filter(conn => 
+                    conn.from === neurons.indexOf(currentNeuron) && 
+                    neurons[conn.to].layer === currentLayer + 1
+                );
+                
+                if (nextConnections.length === 0) break;
+                
+                // Pick a random connection
+                const randomConn = nextConnections[Math.floor(Math.random() * nextConnections.length)];
+                activeNeurons.add(randomConn.to);
+                activeConnections.add(connections.indexOf(randomConn));
+                
+                // Move to next layer
+                currentNeuron = neurons[randomConn.to];
+                currentLayer++;
+            }
+            
+            drawNetwork();
+        }
+
+        // Network Builder and Trainer
+        function updateNetworkBuilder() {
+            const neuronCount = document.getElementById('neuronCount').value;
+            document.getElementById('neuronCountValue').textContent = neuronCount;
+        }
+
+        function trainNetwork() {
+            const trainingProgress = document.getElementById('trainingProgress');
+            const accuracyBar = document.getElementById('accuracyBar');
+            const trainingStatus = document.getElementById('trainingStatus');
+            const trainingStatusId = document.getElementById('trainingStatusId');
+            const trainingResults = document.getElementById('trainingResults');
+            const finalAccuracy = document.getElementById('finalAccuracy');
+            const finalAccuracyId = document.getElementById('finalAccuracyId');
+            
+            // Reset UI
+            trainingProgress.style.width = '0%';
+            accuracyBar.style.width = '0%';
+            trainingStatus.textContent = 'In progress...';
+            trainingStatusId.textContent = 'Dalam proses...';
+            trainingResults.classList.add('hidden');
+            
+            // Simulate training
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 5;
+                if (progress > 100) progress = 100;
+                trainingProgress.style.width = `${progress}%`;
+                
+                // Update accuracy (starts improving after 30% progress)
+                if (progress > 30) {
+                    const accuracy = Math.min(progress + Math.random() * 20 - 10, 95);
+                    accuracyBar.style.width = `${accuracy}%`;
+                    document.getElementById('accuracyValue').textContent = `${Math.round(accuracy)}%`;
+                }
+                
+                if (progress === 100) {
+                    clearInterval(interval);
+                    trainingStatus.textContent = 'Completed';
+                    trainingStatusId.textContent = 'Selesai';
+                    
+                    // Show final results
+                    const finalAcc = 85 + Math.floor(Math.random() * 10);
+                    finalAccuracy.textContent = `${finalAcc}%`;
+                    finalAccuracyId.textContent = `${finalAcc}%`;
+                    trainingResults.classList.remove('hidden');
+                }
+            }, 200);
+        }
+
+        // Classification Exercise
+        function classifyObject(correctType, button) {
+            const objectId = button.parentElement.parentElement.querySelector('h4').textContent;
+            const feedbackDiv = button.parentElement.nextElementSibling;
+            
+            let userChoice = '';
+            if (button.textContent === 'Galaxy') userChoice = 'galaxy';
+            if (button.textContent === 'Star') userChoice = 'star';
+            if (button.textContent === 'Planet') userChoice = 'planet';
+            
+            // Determine if correct
+            let isCorrect = false;
+            if (objectId.includes('Andromeda') && userChoice === 'galaxy') isCorrect = true;
+            if (objectId.includes('Sun') && userChoice === 'star') isCorrect = true;
+            if (objectId.includes('Saturn') && userChoice === 'planet') isCorrect = true;
+            
+            // Show feedback
+            feedbackDiv.classList.remove('hidden');
+            if (isCorrect) {
+                feedbackDiv.textContent = document.querySelector('.en-content:not(.hidden)') ? '✓ Correct! This is a ' + correctType : '✓ Benar! Ini adalah ' + (correctType === 'galaxy' ? 'galaksi' : correctType === 'star' ? 'bintang' : 'planet');
+                feedbackDiv.className = 'mt-2 text-sm text-green-400';
+            } else {
+                feedbackDiv.textContent = document.querySelector('.en-content:not(.hidden)') ? '✗ Try again. This is actually a ' + correctType : '✗ Coba lagi. Ini sebenarnya ' + (correctType === 'galaxy' ? 'galaksi' : correctType === 'star' ? 'bintang' : 'planet');
+                feedbackDiv.className = 'mt-2 text-sm text-red-400';
+            }
+            
+            // Disable buttons
+            const buttons = button.parentElement.querySelectorAll('button');
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                if (btn.textContent === correctType.charAt(0).toUpperCase() + correctType.slice(1)) {
+                    btn.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+                    btn.classList.add('bg-green-600', 'hover:bg-green-500');
+                } else {
+                    btn.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+                    btn.classList.add('bg-red-600', 'hover:bg-red-500');
+                }
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateNetworkBuilder();
+        });
+    </script>
+</body>
+</html>

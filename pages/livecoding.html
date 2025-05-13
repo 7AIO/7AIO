@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Coding Component</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/min/vs/loader.js"></script>
+    <style>
+        .editor-container {
+            height: 300px;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+        
+        .participant-list {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .participant-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #4f46e5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.875rem;
+        }
+        
+        .language-selector {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            border: 1px solid #334155;
+            border-radius: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white p-4">
+    <div class="bg-gray-800 p-4 rounded-xl shadow-xl max-w-3xl mx-auto">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold flex items-center">
+                <i class="fas fa-code mr-2 text-blue-400"></i> Live Coding Session
+            </h2>
+            <div class="flex items-center space-x-3">
+                <select class="language-selector" id="language-select">
+                    <option value="javascript">JavaScript</option>
+                    <option value="python">Python</option>
+                    <option value="typescript">TypeScript</option>
+                    <option value="html">HTML</option>
+                    <option value="css">CSS</option>
+                    <option value="java">Java</option>
+                    <option value="csharp">C#</option>
+                </select>
+                <button id="run-code" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm flex items-center">
+                    <i class="fas fa-play mr-1"></i> Run
+                </button>
+            </div>
+        </div>
+        
+        <div id="editor-container" class="editor-container"></div>
+        
+        <div class="flex justify-between items-center mt-4">
+            <div>
+                <p class="text-sm text-gray-400">Collaborators:</p>
+                <div class="participant-list">
+                    <div class="participant-avatar">JD</div>
+                    <div class="participant-avatar">AM</div>
+                    <div class="participant-avatar">+2</div>
+                </div>
+            </div>
+            <button id="share-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-sm flex items-center">
+                <i class="fas fa-share-alt mr-1"></i> Share
+            </button>
+        </div>
+        
+        <div id="output-container" class="mt-4 bg-gray-900 p-3 rounded text-sm font-mono hidden">
+            <p class="text-gray-400">Output:</p>
+            <pre id="code-output" class="text-green-400 mt-1"></pre>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Monaco Editor
+        function initEditor() {
+            require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.43.0/min/vs' }});
+            require(['vs/editor/editor.main'], function() {
+                const editor = monaco.editor.create(document.getElementById('editor-container'), {
+                    value: [
+                        '// Welcome to the live coding session!',
+                        '// This is a collaborative editor',
+                        '',
+                        'function greet(name) {',
+                        '  return `Hello, ${name}!`;',
+                        '}',
+                        '',
+                        '// Try calling the function:',
+                        '// greet("World");'
+                    ].join('\n'),
+                    language: 'javascript',
+                    theme: 'vs-dark',
+                    automaticLayout: true,
+                    minimap: {
+                        enabled: true
+                    }
+                });
+                
+                // Language selector change
+                document.getElementById('language-select').addEventListener('change', function() {
+                    const language = this.value;
+                    monaco.editor.setModelLanguage(editor.getModel(), language);
+                });
+                
+                // Run code button
+                document.getElementById('run-code').addEventListener('click', function() {
+                    const outputContainer = document.getElementById('output-container');
+                    const codeOutput = document.getElementById('code-output');
+                    
+                    // Show output container
+                    outputContainer.classList.remove('hidden');
+                    
+                    // Get the current language
+                    const language = document.getElementById('language-select').value;
+                    
+                    // Simple demo output based on language
+                    let output = '';
+                    switch(language) {
+                        case 'javascript':
+                            output = 'Hello, World!\nFunction executed successfully.';
+                            break;
+                        case 'python':
+                            output = 'Hello, World!\nPython code executed.';
+                            break;
+                        case 'typescript':
+                            output = 'Hello, World!\nType checking complete.';
+                            break;
+                        default:
+                            output = 'Code executed successfully.';
+                    }
+                    
+                    codeOutput.textContent = output;
+                });
+                
+                // Share button
+                document.getElementById('share-btn').addEventListener('click', function() {
+                    alert('Share link copied to clipboard!\n(Simulated for this demo)');
+                });
+            });
+        }
+        
+        // Initialize editor when page loads
+        window.addEventListener('load', initEditor);
+    </script>
+</body>
+</html>

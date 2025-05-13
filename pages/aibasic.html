@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic AI Adventure</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .planet {
+            transition: all 0.5s ease;
+        }
+        
+        .galaxy {
+            background: radial-gradient(circle, rgba(13,17,38,1) 0%, rgba(5,7,17,1) 100%);
+        }
+        
+        .toggle-language {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-language:hover {
+            transform: scale(1.1);
+        }
+        
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .ai-neuron {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            position: relative;
+            margin: 10px;
+            box-shadow: 0 0 15px rgba(167, 119, 227, 0.7);
+        }
+        
+        .ai-connection {
+            position: absolute;
+            background: linear-gradient(to right, #6e8efb, #a777e3);
+            height: 3px;
+            transform-origin: left center;
+            box-shadow: 0 0 5px rgba(167, 119, 227, 0.7);
+        }
+    </style>
+</head>
+<body class="galaxy text-white min-h-screen overflow-x-hidden">
+    <!-- Background stars -->
+    <div id="stars-container" class="fixed top-0 left-0 w-full h-full pointer-events-none"></div>
+    
+    <div class="container mx-auto px-4 py-12 relative z-10">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
+                <span class="en">Cosmic AI Adventure</span>
+                <span class="id" style="display:none">Petualangan AI Kosmik</span>
+            </h1>
+            <p class="text-xl text-blue-200 max-w-3xl mx-auto">
+                <span class="en">Exploring Artificial Intelligence through the wonders of the universe</span>
+                <span class="id" style="display:none">Menjelajahi Kecerdasan Buatan melalui keajaiban alam semesta</span>
+            </p>
+            
+            <!-- Language toggle -->
+            <div class="mt-6 flex justify-center space-x-4">
+                <span class="toggle-language px-4 py-2 rounded-full bg-blue-900 hover:bg-blue-800" onclick="setLanguage('en')">
+                    <i class="fas fa-globe-americas mr-2"></i> English
+                </span>
+                <span class="toggle-language px-4 py-2 rounded-full bg-blue-900 hover:bg-blue-800" onclick="setLanguage('id')">
+                    <i class="fas fa-globe-asia mr-2"></i> Bahasa Indonesia
+                </span>
+            </div>
+        </header>
+        
+        <!-- Navigation -->
+        <nav class="flex justify-center mb-12 overflow-x-auto py-4">
+            <div class="flex space-x-2">
+                <button class="nav-btn px-6 py-3 rounded-full bg-indigo-900 hover:bg-indigo-800 transition-all duration-300" data-section="what-is-ai">
+                    <i class="fas fa-robot mr-2"></i>
+                    <span class="en">What is AI?</span>
+                    <span class="id" style="display:none">Apa itu AI?</span>
+                </button>
+                <button class="nav-btn px-6 py-3 rounded-full bg-indigo-900 hover:bg-indigo-800 transition-all duration-300" data-section="how-ai-works">
+                    <i class="fas fa-cogs mr-2"></i>
+                    <span class="en">How AI Works</span>
+                    <span class="id" style="display:none">Bagaimana AI Bekerja</span>
+                </button>
+                <button class="nav-btn px-6 py-3 rounded-full bg-indigo-900 hover:bg-indigo-800 transition-all duration-300" data-section="ai-examples">
+                    <i class="fas fa-meteor mr-2"></i>
+                    <span class="en">AI Examples</span>
+                    <span class="id" style="display:none">Contoh AI</span>
+                </button>
+                <button class="nav-btn px-6 py-3 rounded-full bg-indigo-900 hover:bg-indigo-800 transition-all duration-300" data-section="ai-future">
+                    <i class="fas fa-rocket mr-2"></i>
+                    <span class="en">AI Future</span>
+                    <span class="id" style="display:none">Masa Depan AI</span>
+                </button>
+            </div>
+        </nav>
+        
+        <!-- Content Sections -->
+        <div class="max-w-4xl mx-auto">
+            <!-- What is AI? -->
+            <section id="what-is-ai" class="content-section active">
+                <div class="bg-gray-900 bg-opacity-70 rounded-xl p-8 backdrop-blur-sm">
+                    <h2 class="text-3xl font-bold mb-6 text-purple-400">
+                        <i class="fas fa-robot mr-3"></i>
+                        <span class="en">What is Artificial Intelligence?</span>
+                        <span class="id" style="display:none">Apa itu Kecerdasan Buatan?</span>
+                    </h2>
+                    
+                    <div class="flex flex-col lg:flex-row gap-8 items-center">
+                        <div class="lg:w-1/2">
+                            <p class="mb-4 text-lg">
+                                <span class="en">Artificial Intelligence (AI) is like creating a mini-universe inside a computer where machines can learn, reason, and make decisions - just like humans do!</span>
+                                <span class="id" style="display:none">Kecerdasan Buatan (AI) seperti menciptakan alam semesta mini di dalam komputer di mana mesin dapat belajar, bernalar, dan membuat keputusan - sama seperti manusia!</span>
+                            </p>
+                            <p class="mb-6 text-lg">
+                                <span class="en">Imagine if each star in the galaxy was a piece of information. AI is like a cosmic explorer that can navigate through these stars, find patterns, and make predictions about where new stars might form!</span>
+                                <span class="id" style="display:none">Bayangkan jika setiap bintang di galaksi adalah sepotong informasi. AI seperti penjelajah kosmik yang dapat menavigasi melalui bintang-bintang ini, menemukan pola, dan membuat prediksi tentang di mana bintang baru mungkin terbentuk!</span>
+                            </p>
+                            
+                            <div class="bg-indigo-900 rounded-lg p-4 mb-6">
+                                <h3 class="font-bold text-xl mb-2 text-yellow-300">
+                                    <i class="fas fa-lightbulb mr-2"></i>
+                                    <span class="en">Cosmic Analogy</span>
+                                    <span class="id" style="display:none">Analogi Kosmik</span>
+                                </h3>
+                                <p>
+                                    <span class="en">AI is like a super-intelligent alien civilization that can process information from millions of stars simultaneously to understand the universe's secrets.</span>
+                                    <span class="id" style="display:none">AI seperti peradaban alien super cerdas yang dapat memproses informasi dari jutaan bintang secara bersamaan untuk memahami rahasia alam semesta.</span>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="lg:w-1/2 flex justify-center">
+                            <div class="relative w-64 h-64">
+                                <div id="ai-universe" class="w-full h-full rounded-full border-2 border-purple-500 relative overflow-hidden">
+                                    <!-- Stars will be added by JavaScript -->
+                                </div>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="text-center">
+                                        <i class="fas fa-robot text-5xl text-purple-400 mb-2"></i>
+                                        <p class="font-bold">
+                                            <span class="en">AI Universe</span>
+                                            <span class="id" style="display:none">Alam Semesta AI</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8">
+                        <button class="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-full font-bold transition-all" onclick="createStarPattern()">
+                            <i class="fas fa-star mr-2"></i>
+                            <span class="en">Create Star Pattern</span>
+                            <span class="id" style="display:none">Buat Pola Bintang</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- How AI Works -->
+            <section id="how-ai-works" class="content-section">
+                <div class="bg-gray-900 bg-opacity-70 rounded-xl p-8 backdrop-blur-sm">
+                    <h2 class="text-3xl font-bold mb-6 text-blue-400">
+                        <i class="fas fa-cogs mr-3"></i>
+                        <span class="en">How AI Works: The Cosmic Network</span>
+                        <span class="id" style="display:none">Bagaimana AI Bekerja: Jaringan Kosmik</span>
+                    </h2>
+                    
+                    <div class="mb-8">
+                        <p class="mb-4 text-lg">
+                            <span class="en">AI learns through artificial neural networks, which are inspired by how our brains work. Imagine each neuron is a star, and the connections between them are cosmic pathways!</span>
+                            <span class="id" style="display:none">AI belajar melalui jaringan saraf tiruan, yang terinspirasi oleh cara otak kita bekerja. Bayangkan setiap neuron adalah bintang, dan koneksi di antara mereka adalah jalur kosmik!</span>
+                        </p>
+                    </div>
+                    
+                    <div class="flex flex-col items-center">
+                        <div id="neural-network" class="relative w-full h-64 mb-8 flex justify-center items-center">
+                            <!-- Neural network visualization will be added by JavaScript -->
+                        </div>
+                        
+                        <div class="w-full max-w-2xl bg-blue-900 rounded-lg p-6">
+                            <h3 class="font-bold text-xl mb-4 text-yellow-300">
+                                <i class="fas fa-brain mr-2"></i>
+                                <span class="en">AI Learning Process</span>
+                                <span class="id" style="display:none">Proses Pembelajaran AI</span>
+                            </h3>
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-start">
+                                    <div class="bg-yellow-500 text-yellow-900 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mr-4 mt-1">
+                                        1
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold">
+                                            <span class="en">Input Data (Starlight)</span>
+                                            <span class="id" style="display:none">Data Input (Cahaya Bintang)</span>
+                                        </h4>
+                                        <p>
+                                            <span class="en">AI receives information like telescopes collect starlight</span>
+                                            <span class="id" style="display:none">AI menerima informasi seperti teleskop mengumpulkan cahaya bintang</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="bg-yellow-500 text-yellow-900 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mr-4 mt-1">
+                                        2
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold">
+                                            <span class="en">Processing (Cosmic Navigation)</span>
+                                            <span class="id" style="display:none">Pemrosesan (Navigasi Kosmik)</span>
+                                        </h4>
+                                        <p>
+                                            <span class="en">Neural networks analyze patterns like mapping constellations</span>
+                                            <span class="id" style="display:none">Jaringan saraf menganalisis pola seperti memetakan rasi bintang</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="bg-yellow-500 text-yellow-900 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mr-4 mt-1">
+                                        3
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold">
+                                            <span class="en">Output (New Discoveries)</span>
+                                            <span class="id" style="display:none">Output (Penemuan Baru)</span>
+                                        </h4>
+                                        <p>
+                                            <span class="en">AI makes predictions like astronomers discovering new planets</span>
+                                            <span class="id" style="display:none">AI membuat prediksi seperti astronom menemukan planet baru</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8">
+                            <button class="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-full font-bold transition-all" onclick="trainNeuralNetwork()">
+                                <i class="fas fa-brain mr-2"></i>
+                                <span class="en">Train Neural Network</span>
+                                <span class="id" style="display:none">Latih Jaringan Saraf</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- AI Examples -->
+            <section id="ai-examples" class="content-section">
+                <div class="bg-gray-900 bg-opacity-70 rounded-xl p-8 backdrop-blur-sm">
+                    <h2 class="text-3xl font-bold mb-6 text-green-400">
+                        <i class="fas fa-meteor mr-3"></i>
+                        <span class="en">AI in Our Universe</span>
+                        <span class="id" style="display:none">AI di Alam Semesta Kita</span>
+                    </h2>
+                    
+                    <p class="mb-8 text-lg">
+                        <span class="en">AI is already transforming our world in amazing ways, just like how telescopes revolutionized our understanding of the cosmos!</span>
+                        <span class="id" style="display:none">AI sudah mengubah dunia kita dengan cara yang menakjubkan, seperti bagaimana teleskop merevolusi pemahaman kita tentang kosmos!</span>
+                    </p>
+                    
+                    <div class="grid md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-green-900 rounded-lg p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-green-600 rounded-full w-12 h-12 flex items-center justify-center mr-4">
+                                    <i class="fas fa-robot text-xl"></i>
+                                </div>
+                                <h3 class="font-bold text-xl">
+                                    <span class="en">Space Exploration</span>
+                                    <span class="id" style="display:none">Eksplorasi Luar Angkasa</span>
+                                </h3>
+                            </div>
+                            <p>
+                                <span class="en">NASA uses AI to analyze cosmic data, navigate rovers on Mars, and identify potentially habitable exoplanets among millions of stars.</span>
+                                <span class="id" style="display:none">NASA menggunakan AI untuk menganalisis data kosmik, menavigasi penjelajah di Mars, dan mengidentifikasi eksoplanet yang berpotensi dihuni di antara jutaan bintang.</span>
+                            </p>
+                        </div>
+                        
+                        <div class="bg-green-900 rounded-lg p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-green-600 rounded-full w-12 h-12 flex items-center justify-center mr-4">
+                                    <i class="fas fa-heartbeat text-xl"></i>
+                                </div>
+                                <h3 class="font-bold text-xl">
+                                    <span class="en">Healthcare</span>
+                                    <span class="id" style="display:none">Kesehatan</span>
+                                </h3>
+                            </div>
+                            <p>
+                                <span class="en">AI helps doctors diagnose diseases by analyzing medical scans with superhuman precision, like spotting tiny anomalies in galaxy images.</span>
+                                <span class="id" style="display:none">AI membantu dokter mendiagnosis penyakit dengan menganalisis pemindaian medis dengan presisi superhuman, seperti menemukan anomali kecil dalam gambar galaksi.</span>
+                            </p>
+                        </div>
+                        
+                        <div class="bg-green-900 rounded-lg p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-green-600 rounded-full w-12 h-12 flex items-center justify-center mr-4">
+                                    <i class="fas fa-language text-xl"></i>
+                                </div>
+                                <h3 class="font-bold text-xl">
+                                    <span class="en">Language Translation</span>
+                                    <span class="id" style="display:none">Penerjemahan Bahasa</span>
+                                </h3>
+                            </div>
+                            <p>
+                                <span class="en">AI translates between languages instantly, helping humans communicate across cultures like interstellar ambassadors.</span>
+                                <span class="id" style="display:none">AI menerjemahkan antar bahasa secara instan, membantu manusia berkomunikasi lintas budaya seperti duta besar antarbintang.</span>
+                            </p>
+                        </div>
+                        
+                        <div class="bg-green-900 rounded-lg p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-green-600 rounded-full w-12 h-12 flex items-center justify-center mr-4">
+                                    <i class="fas fa-car text-xl"></i>
+                                </div>
+                                <h3 class="font-bold text-xl">
+                                    <span class="en">Self-Driving Cars</span>
+                                    <span class="id" style="display:none">Mobil Self-Driving</span>
+                                </h3>
+                            </div>
+                            <p>
+                                <span class="en">Autonomous vehicles use AI to navigate roads like spaceships navigating asteroid fields, making split-second decisions.</span>
+                                <span class="id" style="display:none">Kendaraan otonom menggunakan AI untuk menavigasi jalan seperti pesawat ruang angkasa menavigasi medan asteroid, membuat keputusan sepersekian detik.</span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-green-800 rounded-lg p-6">
+                        <h3 class="font-bold text-xl mb-4 text-yellow-300">
+                            <i class="fas fa-gamepad mr-2"></i>
+                            <span class="en">Interactive Example: AI Meteor Classifier</span>
+                            <span class="id" style="display:none">Contoh Interaktif: Klasifikasi Meteor AI</span>
+                        </h3>
+                        
+                        <div class="flex flex-col md:flex-row gap-6 items-center">
+                            <div class="md:w-1/2">
+                                <div class="bg-black bg-opacity-50 rounded-lg p-4 mb-4">
+                                    <div id="meteor-display" class="h-48 flex items-center justify-center">
+                                        <p class="text-center">
+                                            <span class="en">Click below to generate a cosmic object for AI to classify!</span>
+                                            <span class="id" style="display:none">Klik di bawah untuk menghasilkan objek kosmik untuk diklasifikasikan AI!</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <button class="w-full py-3 bg-green-600 hover:bg-green-700 rounded-lg font-bold" onclick="classifyMeteor()">
+                                    <i class="fas fa-meteor mr-2"></i>
+                                    <span class="en">Generate Cosmic Object</span>
+                                    <span class="id" style="display:none">Hasilkan Objek Kosmik</span>
+                                </button>
+                            </div>
+                            
+                            <div class="md:w-1/2">
+                                <div id="ai-thinking" class="hidden mb-4 text-center">
+                                    <div class="inline-flex space-x-2">
+                                        <div class="w-3 h-3 bg-green-400 rounded-full animate-bounce" style="animation-delay: 0s"></div>
+                                        <div class="w-3 h-3 bg-green-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                                        <div class="w-3 h-3 bg-green-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                                    </div>
+                                    <p class="mt-2">
+                                        <span class="en">AI is analyzing the cosmic object...</span>
+                                        <span class="id" style="display:none">AI sedang menganalisis objek kosmik...</span>
+                                    </p>
+                                </div>
+                                
+                                <div id="ai-result" class="hidden bg-green-700 rounded-lg p-4">
+                                    <h4 class="font-bold mb-2">
+                                        <span class="en">AI Classification Result:</span>
+                                        <span class="id" style="display:none">Hasil Klasifikasi AI:</span>
+                                    </h4>
+                                    <div id="result-content"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- AI Future -->
+            <section id="ai-future" class="content-section">
+                <div class="bg-gray-900 bg-opacity-70 rounded-xl p-8 backdrop-blur-sm">
+                    <h2 class="text-3xl font-bold mb-6 text-yellow-400">
+                        <i class="fas fa-rocket mr-3"></i>
+                        <span class="en">The Future of AI: New Frontiers</span>
+                        <span class="id" style="display:none">Masa Depan AI: Batas Baru</span>
+                    </h2>
+                    
+                    <div class="flex flex-col lg:flex-row gap-8 items-center mb-8">
+                        <div class="lg:w-1/2">
+                            <p class="mb-4 text-lg">
+                                <span class="en">The future of AI is as vast and exciting as the universe itself! We're just beginning to explore its potential.</span>
+                                <span class="id" style="display:none">Masa depan AI seluas dan semenarik alam semesta itu sendiri! Kita baru mulai mengeksplorasi potensinya.</span>
+                            </p>
+                            
+                            <div class="bg-yellow-900 rounded-lg p-4 mb-6">
+                                <h3 class="font-bold text-xl mb-2 text-purple-300">
+                                    <i class="fas fa-star mr-2"></i>
+                                    <span class="en">Future Possibilities</span>
+                                    <span class="id" style="display:none">Kemungkinan Masa Depan</span>
+                                </h3>
+                                <ul class="list-disc pl-5 space-y-2">
+                                    <li>
+                                        <span class="en">Discovering new planets and alien life with AI telescopes</span>
+                                        <span class="id" style="display:none">Menemukan planet baru dan kehidupan alien dengan teleskop AI</span>
+                                    </li>
+                                    <li>
+                                        <span class="en">AI doctors that can predict illnesses before symptoms appear</span>
+                                        <span class="id" style="display:none">Dokter AI yang dapat memprediksi penyakit sebelum gejala muncul</span>
+                                    </li>
+                                    <li>
+                                        <span class="en">Personal AI tutors that adapt to each student's learning style</span>
+                                        <span class="id" style="display:none">Tutor AI pribadi yang beradaptasi dengan gaya belajar setiap siswa</span>
+                                    </li>
+                                    <li>
+                                        <span class="en">Solving climate change by optimizing energy use worldwide</span>
+                                        <span class="id" style="display:none">Mengatasi perubahan iklim dengan mengoptimalkan penggunaan energi di seluruh dunia</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="lg:w-1/2">
+                            <div class="relative w-full h-64">
+                                <div id="future-ai-visualization" class="w-full h-full rounded-xl border-2 border-yellow-500 relative overflow-hidden">
+                                    <!-- Future visualization will be added by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-yellow-800 rounded-lg p-6">
+                        <h3 class="font-bold text-xl mb-4 text-white">
+                            <i class="fas fa-question-circle mr-2"></i>
+                            <span class="en">What Do You Think?</span>
+                            <span class="id" style="display:none">Apa Pendapat Anda?</span>
+                        </h3>
+                        
+                        <p class="mb-4">
+                            <span class="en">Imagine how AI might change our future. Share your ideas!</span>
+                            <span class="id" style="display:none">Bayangkan bagaimana AI mungkin mengubah masa depan kita. Bagikan ide Anda!</span>
+                        </p>
+                        
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <input type="text" id="future-idea" class="flex-grow px-4 py-2 rounded-lg bg-yellow-900 bg-opacity-70 border border-yellow-600 text-white placeholder-yellow-400" 
+                                   placeholder="Your idea about AI's future...">
+                            <button class="px-6 py-2 bg-yellow-600 hover:bg-yellow-700 rounded-lg font-bold" onclick="submitFutureIdea()">
+                                <span class="en">Submit</span>
+                                <span class="id" style="display:none">Kirim</span>
+                            </button>
+                        </div>
+                        
+                        <div id="ideas-container" class="mt-4 space-y-2"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <script>
+        // Create background stars
+        function createStars() {
+            const container = document.getElementById('stars-container');
+            const starCount = 200;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                // Random position
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                
+                // Random size
+                const size = Math.random() * 3;
+                
+                // Random animation duration
+                const duration = 2 + Math.random() * 3;
+                
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.setProperty('--duration', `${duration}s`);
+                
+                container.appendChild(star);
+            }
+        }
+        
+        // Create star pattern in AI universe visualization
+        function createStarPattern() {
+            const container = document.getElementById('ai-universe');
+            container.innerHTML = ''; // Clear previous stars
+            
+            const starCount = 50;
+            const centerX = container.offsetWidth / 2;
+            const centerY = container.offsetHeight / 2;
+            const radius = Math.min(centerX, centerY) * 0.8;
+            
+            // Create constellation-like pattern
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                // Position in a spiral pattern
+                const angle = (i / starCount) * Math.PI * 10;
+                const distance = (i / starCount) * radius;
+                
+                const x = centerX + Math.cos(angle) * distance;
+                const y = centerY + Math.sin(angle) * distance;
+                
+                // Size based on distance from center
+                const size = 1 + (1 - distance/radius) * 3;
+                
+                star.style.left = `${x}px`;
+                star.style.top = `${y}px`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.setProperty('--duration', `${2 + Math.random() * 2}s`);
+                
+                container.appendChild(star);
+            }
+            
+            // Add connecting lines to show patterns
+            const stars = container.querySelectorAll('.star');
+            for (let i = 0; i < stars.length - 1; i++) {
+                if (Math.random() > 0.7) { // Only connect some stars
+                    const line = document.createElement('div');
+                    line.className = 'absolute bg-white opacity-30';
+                    line.style.height = '1px';
+                    
+                    const star1 = stars[i];
+                    const star2 = stars[i+1];
+                    
+                    const x1 = parseFloat(star1.style.left);
+                    const y1 = parseFloat(star1.style.top);
+                    const x2 = parseFloat(star2.style.left);
+                    const y2 = parseFloat(star2.style.top);
+                    
+                    const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+                    const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+                    
+                    line.style.width = `${length}px`;
+                    line.style.left = `${x1}px`;
+                    line.style.top = `${y1}px`;
+                    line.style.transform = `rotate(${angle}deg)`;
+                    line.style.transformOrigin = '0 0';
+                    
+                    container.appendChild(line);
+                }
+            }
+        }
+        
+        // Create neural network visualization
+        function createNeuralNetwork() {
+            const container = document.getElementById('neural-network');
+            container.innerHTML = '';
+            
+            const layers = 5;
+            const neuronsPerLayer = [3, 4, 5, 4, 3];
+            const colors = ['from-blue-400 to-blue-600', 'from-purple-400 to-purple-600', 'from-pink-400 to-pink-600'];
+            
+            // Create neurons
+            const neurons = [];
+            for (let layer = 0; layer < layers; layer++) {
+                const layerNeurons = [];
+                for (let i = 0; i < neuronsPerLayer[layer]; i++) {
+                    const neuron = document.createElement('div');
+                    neuron.className = `ai-neuron bg-gradient-to-br ${colors[layer % colors.length]}`;
+                    neuron.textContent = Math.floor(Math.random() * 10);
+                    
+                    // Position neuron
+                    const x = 50 + (layer * 200);
+                    const y = 50 + (i * (500 / neuronsPerLayer[layer]));
+                    
+                    neuron.style.left = `${x}px`;
+                    neuron.style.top = `${y}px`;
+                    
+                    container.appendChild(neuron);
+                    layerNeurons.push(neuron);
+                }
+                neurons.push(layerNeurons);
+            }
+            
+            // Create connections
+            for (let layer = 0; layer < layers - 1; layer++) {
+                for (let i = 0; i < neurons[layer].length; i++) {
+                    for (let j = 0; j < neurons[layer+1].length; j++) {
+                        const neuron1 = neurons[layer][i];
+                        const neuron2 = neurons[layer+1][j];
+                        
+                        const x1 = parseFloat(neuron1.style.left) + 40;
+                        const y1 = parseFloat(neuron1.style.top) + 20;
+                        const x2 = parseFloat(neuron2.style.left);
+                        const y2 = parseFloat(neuron2.style.top) + 20;
+                        
+                        const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+                        const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+                        
+                        const connection = document.createElement('div');
+                        connection.className = 'ai-connection';
+                        connection.style.width = `${length}px`;
+                        connection.style.left = `${x1}px`;
+                        connection.style.top = `${y1}px`;
+                        connection.style.transform = `rotate(${angle}deg)`;
+                        
+                        container.appendChild(connection);
+                    }
+                }
+            }
+        }
+        
+        // Animate neural network training
+        function trainNeuralNetwork() {
+            const neurons = document.querySelectorAll('.ai-neuron');
+            const connections = document.querySelectorAll('.ai-connection');
+            
+            // Flash neurons
+            neurons.forEach(neuron => {
+                neuron.style.transform = 'scale(1.2)';
+                neuron.style.boxShadow = '0 0 25px rgba(167, 119, 227, 1)';
+                
+                setTimeout(() => {
+                    neuron.style.transform = 'scale(1)';
+                    neuron.style.boxShadow = '0 0 15px rgba(167, 119, 227, 0.7)';
+                    neuron.textContent = Math.floor(Math.random() * 10);
+                }, 500);
+            });
+            
+            // Pulse connections
+            connections.forEach(conn => {
+                conn.style.height = '5px';
+                conn.style.boxShadow = '0 0 10px rgba(167, 119, 227, 1)';
+                
+                setTimeout(() => {
+                    conn.style.height = '3px';
+                    conn.style.boxShadow = '0 0 5px rgba(167, 119, 227, 0.7)';
+                }, 500);
+            });
+            
+            // Show training complete message after animation
+            setTimeout(() => {
+                alert(document.querySelector('.en')?.style.display !== 'none' ? 
+                    "Neural network training complete! The AI has learned to recognize patterns in the cosmic data." :
+                    "Pelatihan jaringan saraf selesai! AI telah belajar mengenali pola dalam data kosmik.");
+            }, 1000);
+        }
+        
+        // Classify meteor example
+        function classifyMeteor() {
+            const display = document.getElementById('meteor-display');
+            const thinking = document.getElementById('ai-thinking');
+            const result = document.getElementById('ai-result');
+            const resultContent = document.getElementById('result-content');
+            
+            // Clear previous results
+            result.classList.add('hidden');
+            
+            // Show thinking animation
+            thinking.classList.remove('hidden');
+            
+            // Generate random cosmic object
+            const objects = [
+                { name: 'Meteor', emoji: '☄️', color: 'orange', desc: 'A fast-moving space rock burning up in the atmosphere', 
+                  descId: 'Batu ruang angkasa yang bergerak cepat terbakar di atmosfer' },
+                { name: 'Comet', emoji: '☄️', color: 'blue', desc: 'An icy cosmic visitor with a beautiful tail', 
+                  descId: 'Pengunjung kosmik ber-es dengan ekor yang indah' },
+                { name: 'Asteroid', emoji: '🪨', color: 'gray', desc: 'A rocky object orbiting the sun', 
+                  descId: 'Objek berbatu yang mengorbit matahari' },
+                { name: 'Space Junk', emoji: '🧊', color: 'silver', desc: 'Human-made debris orbiting Earth', 
+                  descId: 'Puing buatan manusia yang mengorbit Bumi' },
+                { name: 'UFO', emoji: '🛸', color: 'green', desc: 'An unidentified flying object of possible extraterrestrial origin', 
+                  descId: 'Objek terbang tak dikenal yang mungkin berasal dari luar bumi' }
+            ];
+            
+            // Show random object after delay
+            setTimeout(() => {
+                const obj = objects[Math.floor(Math.random() * objects.length)];
+                
+                display.innerHTML = `
+                    <div class="text-6xl animate-pulse" style="color: ${obj.color}">${obj.emoji}</div>
+                    <p class="mt-2 font-bold">${obj.name}</p>
+                `;
+                
+                // Hide thinking, show result
+                thinking.classList.add('hidden');
+                
+                resultContent.innerHTML = `
+                    <p><span class="font-bold">${obj.name}</span> - ${document.querySelector('.en')?.style.display !== 'none' ? obj.desc : obj.descId}</p>
+                    <p class="mt-2">
+                        <span class="en">The AI analyzed the object's speed, trajectory, and composition to make this classification.</span>
+                        <span class="id" style="display:none">AI menganalisis kecepatan, lintasan, dan komposisi objek untuk membuat klasifikasi ini.</span>
+                    </p>
+                `;
+                
+                result.classList.remove('hidden');
+            }, 1500);
+        }
+        
+        // Submit future idea
+        function submitFutureIdea() {
+            const input = document.getElementById('future-idea');
+            const ideasContainer = document.getElementById('ideas-container');
+            
+            if (input.value.trim() === '') return;
+            
+            const idea = document.createElement('div');
+            idea.className = 'bg-yellow-900 bg-opacity-70 rounded-lg p-3';
+            idea.innerHTML = `
+                <div class="flex items-start">
+                    <div class="bg-yellow-600 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mr-3">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div>
+                        <p>${input.value}</p>
+                        <p class="text-xs text-yellow-300 mt-1">
+                            ${new Date().toLocaleString()}
+                        </p>
+                    </div>
+                </div>
+            `;
+            
+            ideasContainer.prepend(idea);
+            input.value = '';
+        }
+        
+        // Navigation between sections
+        function setupNavigation() {
+            const navButtons = document.querySelectorAll('.nav-btn');
+            
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remove active class from all buttons and sections
+                    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('bg-indigo-800'));
+                    document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    button.classList.add('bg-indigo-800');
+                    
+                    // Show corresponding section
+                    const sectionId = button.getAttribute('data-section');
+                    document.getElementById(sectionId).classList.add('active');
+                    
+                    // Special setup for certain sections
+                    if (sectionId === 'what-is-ai') {
+                        createStarPattern();
+                    } else if (sectionId === 'how-ai-works') {
+                        createNeuralNetwork();
+                    }
+                });
+            });
+        }
+        
+        // Language toggle
+        function setLanguage(lang) {
+            if (lang === 'en') {
+                document.querySelectorAll('.en').forEach(el => el.style.display = '');
+                document.querySelectorAll('.id').forEach(el => el.style.display = 'none');
+            } else {
+                document.querySelectorAll('.en').forEach(el => el.style.display = 'none');
+                document.querySelectorAll('.id').forEach(el => el.style.display = '');
+            }
+        }
+        
+        // Initialize everything when page loads
+        window.onload = function() {
+            createStars();
+            createStarPattern();
+            createNeuralNetwork();
+            setupNavigation();
+            
+            // Set default language to English
+            setLanguage('en');
+        };
+    </script>
+</body>
+</html>

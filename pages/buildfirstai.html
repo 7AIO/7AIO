@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Lab AI Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .galaxy-bg {
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+        }
+        .space-card {
+            background: rgba(16, 18, 37, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .neon-blue {
+            color: #4fc3f7;
+            text-shadow: 0 0 5px #4fc3f7;
+        }
+        .neon-pink {
+            color: #ff4081;
+            text-shadow: 0 0 5px #ff4081;
+        }
+        .draggable {
+            cursor: grab;
+            transition: transform 0.2s;
+        }
+        .draggable:active {
+            cursor: grabbing;
+        }
+        .droppable {
+            transition: all 0.3s;
+        }
+        .droppable.highlight {
+            box-shadow: 0 0 15px #4fc3f7;
+        }
+        .console {
+            font-family: 'Courier New', monospace;
+            background-color: #011627;
+            color: #d6deeb;
+        }
+        .tab-active {
+            border-bottom: 3px solid #4fc3f7;
+        }
+        .language-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="galaxy-bg min-h-screen text-white">
+    <!-- Language Toggle -->
+    <div class="language-toggle">
+        <button id="langToggle" class="bg-indigo-800 hover:bg-indigo-700 text-white px-4 py-2 rounded-full flex items-center space-x-2 transition-all">
+            <i class="fas fa-globe"></i>
+            <span id="langLabel">EN</span>
+        </button>
+    </div>
+
+    <!-- Header -->
+    <header class="container mx-auto px-6 py-12 text-center">
+        <div class="flex justify-center mb-6">
+            <div class="relative">
+                <div class="absolute -inset-4 bg-blue-500 rounded-full blur opacity-50 animate-pulse"></div>
+                <div class="relative bg-indigo-900 rounded-full p-6">
+                    <i class="fas fa-robot text-5xl neon-blue"></i>
+                </div>
+            </div>
+        </div>
+        <h1 id="mainTitle" class="text-5xl font-bold mb-4 neon-blue">Space Lab AI Academy</h1>
+        <p id="mainSubtitle" class="text-xl max-w-2xl mx-auto opacity-90">
+            Build your first AI model to help our space robots explore the cosmos!
+        </p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 pb-20">
+        <!-- Introduction Section -->
+        <section class="space-card rounded-xl p-8 mb-12">
+            <div class="flex flex-col md:flex-row gap-8 items-center">
+                <div class="md:w-1/2">
+                    <h2 id="introTitle" class="text-3xl font-bold mb-4 neon-pink">What is AI Modeling?</h2>
+                    <p id="introText1" class="mb-4">
+                        Building an AI model means training a computer program to recognize patterns and make decisions based on data — similar to how a space robot might learn to detect asteroids or choose optimal travel paths.
+                    </p>
+                    <p id="introText2" class="mb-6">
+                        In this space lab, you'll train an AI to classify celestial objects using cosmic data. No prior experience needed - just your curiosity!
+                    </p>
+                    <div class="flex space-x-4">
+                        <button id="missionStartBtn" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center">
+                            <i class="fas fa-rocket mr-2"></i>
+                            <span id="missionStartText">Start Mission</span>
+                        </button>
+                        <button id="seeExamplesBtn" class="bg-purple-600 hover:bg-purple-500 text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center">
+                            <i class="fas fa-star mr-2"></i>
+                            <span id="seeExamplesText">Real-world Examples</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="md:w-1/2">
+                    <img src="https://illustrations.popsy.co/amber/astronaut.svg" alt="Astronaut with AI" class="w-full h-auto">
+                </div>
+            </div>
+        </section>
+
+        <!-- Mission Steps -->
+        <div id="missionContainer" class="hidden">
+            <!-- Step 1: Understanding Data -->
+            <section class="space-card rounded-xl p-8 mb-12">
+                <div class="flex items-center mb-6">
+                    <div class="bg-blue-600 rounded-full w-10 h-10 flex items-center justify-center mr-4">
+                        <span class="text-xl font-bold">1</span>
+                    </div>
+                    <h2 id="step1Title" class="text-3xl font-bold neon-pink">Understanding the Dataset</h2>
+                </div>
+                
+                <p id="step1Text1" class="mb-6">
+                    Our space telescope has collected data about different celestial objects. Each object has features like size, brightness, and temperature. 
+                    Help our AI learn by sorting these space objects into categories!
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <h3 id="step1Subtitle1" class="text-xl font-semibold mb-4 neon-blue">Drag to Classify</h3>
+                        <div class="grid grid-cols-3 gap-4 mb-6">
+                            <div id="planet" class="droppable border-2 border-blue-400 rounded-lg p-4 text-center">
+                                <i class="fas fa-globe-americas text-3xl mb-2 text-blue-400"></i>
+                                <p id="planetLabel">Planets</p>
+                            </div>
+                            <div id="star" class="droppable border-2 border-yellow-400 rounded-lg p-4 text-center">
+                                <i class="fas fa-star text-3xl mb-2 text-yellow-400"></i>
+                                <p id="starLabel">Stars</p>
+                            </div>
+                            <div id="comet" class="droppable border-2 border-purple-400 rounded-lg p-4 text-center">
+                                <i class="fas fa-meteor text-3xl mb-2 text-purple-400"></i>
+                                <p id="cometLabel">Comets</p>
+                            </div>
+                        </div>
+                        
+                        <div id="draggableObjects" class="grid grid-cols-2 gap-4">
+                            <!-- These will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 id="step1Subtitle2" class="text-xl font-semibold mb-4 neon-blue">Dataset Features</h3>
+                        <div class="space-card rounded-lg p-6 mb-6">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-blue-500 rounded-full w-8 h-8 flex items-center justify-center mr-3">
+                                    <i class="fas fa-database text-sm"></i>
+                                </div>
+                                <h4 id="featuresTitle" class="text-lg font-medium">Key Features:</h4>
+                            </div>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <i class="fas fa-circle text-xs mt-1.5 mr-2 text-blue-400"></i>
+                                    <span id="feature1">Size (km diameter)</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-circle text-xs mt-1.5 mr-2 text-blue-400"></i>
+                                    <span id="feature2">Brightness (magnitude)</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-circle text-xs mt-1.5 mr-2 text-blue-400"></i>
+                                    <span id="feature3">Temperature (K)</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-circle text-xs mt-1.5 mr-2 text-blue-400"></i>
+                                    <span id="feature4">Orbital Speed (km/s)</span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-green-900 bg-opacity-30 rounded-lg p-4 border border-green-400">
+                            <div class="flex items-start">
+                                <i class="fas fa-lightbulb text-xl mr-3 mt-0.5 text-green-400"></i>
+                                <p id="tip1">
+                                    <strong>AI Insight:</strong> The AI will look for patterns in these numbers to learn how to classify new objects it hasn't seen before.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end">
+                    <button id="step1NextBtn" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg font-medium transition-all">
+                        <span id="step1NextText">Next: Train the Model</span> <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Step 2: Training the Model -->
+            <section id="step2" class="space-card rounded-xl p-8 mb-12 hidden">
+                <div class="flex items-center mb-6">
+                    <div class="bg-blue-600 rounded-full w-10 h-10 flex items-center justify-center mr-4">
+                        <span class="text-xl font-bold">2</span>
+                    </div>
+                    <h2 id="step2Title" class="text-3xl font-bold neon-pink">Training the AI Model</h2>
+                </div>
+                
+                <p id="step2Text1" class="mb-6">
+                    Now that we've sorted our data, let's train the AI model! The model will analyze the patterns in the data to learn how to classify celestial objects on its own.
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <h3 id="step2Subtitle1" class="text-xl font-semibold mb-4 neon-blue">Training Process</h3>
+                        
+                        <div class="space-card rounded-lg p-6 mb-6">
+                            <div class="flex items-center mb-4">
+                                <div class="animate-spin-slow bg-gradient-to-r from-blue-500 to-purple-600 rounded-full w-8 h-8 flex items-center justify-center mr-3">
+                                    <i class="fas fa-cog text-sm"></i>
+                                </div>
+                                <h4 id="trainingTitle" class="text-lg font-medium">How Training Works:</h4>
+                            </div>
+                            <ol class="space-y-4">
+                                <li class="flex items-start">
+                                    <span class="bg-blue-500 rounded-full w-6 h-6 flex items-center justify-center mr-3 text-sm font-bold">1</span>
+                                    <span id="trainingStep1">The model makes initial random guesses</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-blue-500 rounded-full w-6 h-6 flex items-center justify-center mr-3 text-sm font-bold">2</span>
+                                    <span id="trainingStep2">It checks how wrong its guesses are (loss)</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-blue-500 rounded-full w-6 h-6 flex items-center justify-center mr-3 text-sm font-bold">3</span>
+                                    <span id="trainingStep3">It adjusts its internal parameters (learning)</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-blue-500 rounded-full w-6 h-6 flex items-center justify-center mr-3 text-sm font-bold">4</span>
+                                    <span id="trainingStep4">Repeats until accurate (epochs)</span>
+                                </li>
+                            </ol>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4 mb-6">
+                            <button id="trainModelBtn" class="bg-green-600 hover:bg-green-500 text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center">
+                                <i class="fas fa-play mr-2"></i>
+                                <span id="trainModelText">Train Model</span>
+                            </button>
+                            <div id="trainingStatus" class="text-sm opacity-80 italic hidden">
+                                <i class="fas fa-spinner fa-spin mr-1"></i>
+                                <span id="trainingStatusText">Training in progress...</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 id="step2Subtitle2" class="text-xl font-semibold mb-4 neon-blue">Code Example</h3>
+                        
+                        <div class="mb-4">
+                            <div class="flex border-b border-gray-700">
+                                <button class="tab-btn py-2 px-4 font-medium tab-active" data-tab="python">Python</button>
+                                <button class="tab-btn py-2 px-4 font-medium" data-tab="explanation">Explanation</button>
+                            </div>
+                            
+                            <div id="pythonTab" class="tab-content console p-4 rounded-b-lg">
+                                <pre><code class="text-sm"># Import machine learning library
+from sklearn import tree
+
+# Create the AI model (decision tree)
+space_classifier = tree.DecisionTreeClassifier()
+
+# Train the model with our data
+space_classifier.fit(training_features, training_labels)
+
+# Now it's ready to make predictions!
+predictions = space_classifier.predict(new_space_objects)</code></pre>
+                            </div>
+                            
+                            <div id="explanationTab" class="tab-content p-4 rounded-b-lg hidden">
+                                <p id="codeExplanation1" class="mb-3">
+                                    This simple Python code uses scikit-learn, a popular machine learning library. We create a decision tree classifier - one of the simplest AI models.
+                                </p>
+                                <p id="codeExplanation2" class="mb-3">
+                                    The <code class="bg-gray-800 px-1 rounded">fit()</code> method trains the model using our labeled data (features and correct answers).
+                                </p>
+                                <p id="codeExplanation3">
+                                    After training, we can use <code class="bg-gray-800 px-1 rounded">predict()</code> to classify new celestial objects the model hasn't seen before.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-yellow-900 bg-opacity-30 rounded-lg p-4 border border-yellow-400">
+                            <div class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-xl mr-3 mt-0.5 text-yellow-400"></i>
+                                <p id="warning1">
+                                    <strong>Note:</strong> Real AI projects often use more complex models, but the basic process remains the same!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="trainingResults" class="hidden mb-6">
+                    <h3 class="text-xl font-semibold mb-4 neon-blue">Training Results</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="space-card rounded-lg p-4 text-center">
+                            <div class="text-3xl font-bold text-green-400 mb-2">92%</div>
+                            <div id="accuracyLabel" class="text-sm opacity-80">Accuracy</div>
+                        </div>
+                        <div class="space-card rounded-lg p-4 text-center">
+                            <div class="text-3xl font-bold text-blue-400 mb-2">0.08</div>
+                            <div id="lossLabel" class="text-sm opacity-80">Loss</div>
+                        </div>
+                        <div class="space-card rounded-lg p-4 text-center">
+                            <div class="text-3xl font-bold text-purple-400 mb-2">50</div>
+                            <div id="epochsLabel" class="text-sm opacity-80">Epochs</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end">
+                    <button id="step2NextBtn" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg font-medium transition-all">
+                        <span id="step2NextText">Next: Make Predictions</span> <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Step 3: Making Predictions -->
+            <section id="step3" class="space-card rounded-xl p-8 mb-12 hidden">
+                <div class="flex items-center mb-6">
+                    <div class="bg-blue-600 rounded-full w-10 h-10 flex items-center justify-center mr-4">
+                        <span class="text-xl font-bold">3</span>
+                    </div>
+                    <h2 id="step3Title" class="text-3xl font-bold neon-pink">Testing Your AI Model</h2>
+                </div>
+                
+                <p id="step3Text1" class="mb-6">
+                    Our AI model is trained! Now let's test it with new cosmic data from our deep space probes. Enter some feature values below and see if the AI can correctly classify the celestial object.
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <h3 id="step3Subtitle1" class="text-xl font-semibold mb-4 neon-blue">Input Features</h3>
+                        
+                        <div class="space-card rounded-lg p-6 mb-6">
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="sizeInput" id="sizeLabel" class="block mb-1">Size (km diameter)</label>
+                                    <input type="range" id="sizeInput" min="1" max="500000" value="12742" class="w-full">
+                                    <div class="flex justify-between text-xs opacity-70 mt-1">
+                                        <span>1</span>
+                                        <span>500,000</span>
+                                    </div>
+                                    <div class="text-center mt-1">
+                                        <span id="sizeValue">12,742</span> km
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label for="brightnessInput" id="brightnessLabel" class="block mb-1">Brightness (magnitude)</label>
+                                    <input type="range" id="brightnessInput" min="-30" max="30" value="-26" class="w-full">
+                                    <div class="flex justify-between text-xs opacity-70 mt-1">
+                                        <span>-30</span>
+                                        <span>30</span>
+                                    </div>
+                                    <div class="text-center mt-1">
+                                        <span id="brightnessValue">-26</span> mag
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label for="tempInput" id="tempLabel" class="block mb-1">Temperature (K)</label>
+                                    <input type="range" id="tempInput" min="0" max="60000" value="5778" class="w-full">
+                                    <div class="flex justify-between text-xs opacity-70 mt-1">
+                                        <span>0</span>
+                                        <span>60,000</span>
+                                    </div>
+                                    <div class="text-center mt-1">
+                                        <span id="tempValue">5,778</span> K
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label for="speedInput" id="speedLabel" class="block mb-1">Orbital Speed (km/s)</label>
+                                    <input type="range" id="speedInput" min="0" max="1000" value="30" class="w-full">
+                                    <div class="flex justify-between text-xs opacity-70 mt-1">
+                                        <span>0</span>
+                                        <span>1,000</span>
+                                    </div>
+                                    <div class="text-center mt-1">
+                                        <span id="speedValue">30</span> km/s
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button id="predictBtn" class="bg-purple-600 hover:bg-purple-500 text-white px-6 py-3 rounded-lg font-medium transition-all w-full">
+                            <i class="fas fa-brain mr-2"></i>
+                            <span id="predictText">Predict Celestial Object</span>
+                        </button>
+                    </div>
+                    
+                    <div>
+                        <h3 id="step3Subtitle2" class="text-xl font-semibold mb-4 neon-blue">AI Prediction</h3>
+                        
+                        <div id="predictionResult" class="space-card rounded-lg p-6 h-full flex flex-col items-center justify-center">
+                            <div class="text-center">
+                                <i class="fas fa-question-circle text-6xl mb-4 text-gray-500"></i>
+                                <p id="predictionText" class="text-lg">Enter features and click "Predict" to see what the AI thinks!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-indigo-900 bg-opacity-30 rounded-lg p-4 border border-indigo-400 mb-6">
+                    <div class="flex items-start">
+                        <i class="fas fa-chart-line text-xl mr-3 mt-0.5 text-indigo-400"></i>
+                        <div>
+                            <h4 id="realWorldTitle" class="font-semibold mb-2">Real-world AI Applications</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-start">
+                                    <i class="fas fa-car text-xs mt-1.5 mr-2 text-blue-400"></i>
+                                    <span id="app1">Traffic prediction based on location data</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-tv text-xs mt-1.5 mr-2 text-blue-400"></i>
+                                    <span id="app2">YouTube video recommendations</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-heartbeat text-xs mt-1.5 mr-2 text-blue-400"></i>
+                                    <span id="app3">Smartwatch health monitoring</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-between">
+                    <button id="step3BackBtn" class="bg-gray-600 hover:bg-gray-500 text-white px-6 py-2 rounded-lg font-medium transition-all">
+                        <i class="fas fa-arrow-left mr-2"></i> <span id="backText">Back</span>
+                    </button>
+                    <button id="step3RestartBtn" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg font-medium transition-all">
+                        <i class="fas fa-redo mr-2"></i> <span id="restartText">Start New Mission</span>
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <!-- Examples Modal -->
+        <div id="examplesModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+            <div class="space-card rounded-xl p-8 max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 id="examplesTitle" class="text-2xl font-bold neon-pink">Real-world AI Examples</h3>
+                    <button id="closeExamplesBtn" class="text-gray-400 hover:text-white">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-6">
+                    <div class="flex items-start">
+                        <div class="bg-blue-500 rounded-full w-10 h-10 flex items-center justify-center mr-4 mt-1">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div>
+                            <h4 id="example1Title" class="text-lg font-semibold mb-2">Traffic Prediction</h4>
+                            <p id="example1Text">
+                                AI analyzes location data from millions of phones to predict traffic patterns. It learns from historical data, weather, and events to estimate travel times and suggest optimal routes.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="bg-purple-500 rounded-full w-10 h-10 flex items-center justify-center mr-4 mt-1">
+                            <i class="fas fa-tv"></i>
+                        </div>
+                        <div>
+                            <h4 id="example2Title" class="text-lg font-semibold mb-2">Video Recommendations</h4>
+                            <p id="example2Text">
+                                YouTube's AI studies what you watch, how long you watch, and what similar users enjoy to suggest videos you might like next. It's constantly learning from your interactions.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="bg-green-500 rounded-full w-10 h-10 flex items-center justify-center mr-4 mt-1">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <div>
+                            <h4 id="example3Title" class="text-lg font-semibold mb-2">Health Monitoring</h4>
+                            <p id="example3Text">
+                                Smartwatches use AI to detect your heartbeat patterns. They can identify irregularities, track sleep quality, and suggest when you should rest or be more active.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 text-center">
+                    <button id="closeExamplesBtn2" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg font-medium transition-all">
+                        <span id="closeExamplesText">Got It!</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-black bg-opacity-50 py-8">
+        <div class="container mx-auto px-6 text-center opacity-80">
+            <p id="footerText">© 2023 Space Lab AI Academy | An interactive learning experience</p>
+        </div>
+    </footer>
+
+    <script>
+        // Language content
+        const content = {
+            en: {
+                mainTitle: "Space Lab AI Academy",
+                mainSubtitle: "Build your first AI model to help our space robots explore the cosmos!",
+                introTitle: "What is AI Modeling?",
+                introText1: "Building an AI model means training a computer program to recognize patterns and make decisions based on data — similar to how a space robot might learn to detect asteroids or choose optimal travel paths.",
+                introText2: "In this space lab, you'll train an AI to classify celestial objects using cosmic data. No prior experience needed - just your curiosity!",
+                missionStartText: "Start Mission",
+                seeExamplesText: "Real-world Examples",
+                step1Title: "Understanding the Dataset",
+                step1Text1: "Our space telescope has collected data about different celestial objects. Each object has features like size, brightness, and temperature. Help our AI learn by sorting these space objects into categories!",
+                planetLabel: "Planets",
+                starLabel: "Stars",
+                cometLabel: "Comets",
+                featuresTitle: "Key Features:",
+                feature1: "Size (km diameter)",
+                feature2: "Brightness (magnitude)",
+                feature3: "Temperature (K)",
+                feature4: "Orbital Speed (km/s)",
+                tip1: "AI Insight: The AI will look for patterns in these numbers to learn how to classify new objects it hasn't seen before.",
+                step1NextText: "Next: Train the Model",
+                step2Title: "Training the AI Model",
+                step2Text1: "Now that we've sorted our data, let's train the AI model! The model will analyze the patterns in the data to learn how to classify celestial objects on its own.",
+                trainingTitle: "How Training Works:",
+                trainingStep1: "The model makes initial random guesses",
+                trainingStep2: "It checks how wrong its guesses are (loss)",
+                trainingStep3: "It adjusts its internal parameters (learning)",
+                trainingStep4: "Repeats until accurate (epochs)",
+                trainModelText: "Train Model",
+                trainingStatusText: "Training in progress...",
+                accuracyLabel: "Accuracy",
+                lossLabel: "Loss",
+                epochsLabel: "Epochs",
+                step2NextText: "Next: Make Predictions",
+                codeExplanation1: "This simple Python code uses scikit-learn, a popular machine learning library. We create a decision tree classifier - one of the simplest AI models.",
+                codeExplanation2: "The fit() method trains the model using our labeled data (features and correct answers).",
+                codeExplanation3: "After training, we can use predict() to classify new celestial objects the model hasn't seen before.",
+                warning1: "Note: Real AI projects often use more complex models, but the basic process remains the same!",
+                step3Title: "Testing Your AI Model",
+                step3Text1: "Our AI model is trained! Now let's test it with new cosmic data from our deep space probes. Enter some feature values below and see if the AI can correctly classify the celestial object.",
+                sizeLabel: "Size (km diameter)",
+                brightnessLabel: "Brightness (magnitude)",
+                tempLabel: "Temperature (K)",
+                speedLabel: "Orbital Speed (km/s)",
+                predictText: "Predict Celestial Object",
+                predictionText: "Enter features and click \"Predict\" to see what the AI thinks!",
+                realWorldTitle: "Real-world AI Applications",
+                app1: "Traffic prediction based on location data",
+                app2: "YouTube video recommendations",
+                app3: "Smartwatch health monitoring",
+                backText: "Back",
+                restartText: "Start New Mission",
+                examplesTitle: "Real-world AI Examples",
+                example1Title: "Traffic Prediction",
+                example1Text: "AI analyzes location data from millions of phones to predict traffic patterns. It learns from historical data, weather, and events to estimate travel times and suggest optimal routes.",
+                example2Title: "Video Recommendations",
+                example2Text: "YouTube's AI studies what you watch, how long you watch, and what similar users enjoy to suggest videos you might like next. It's constantly learning from your interactions.",
+                example3Title: "Health Monitoring",
+                example3Text: "Smartwatches use AI to detect your heartbeat patterns. They can identify irregularities, track sleep quality, and suggest when you should rest or be more active.",
+                closeExamplesText: "Got It!",
+                footerText: "© 2023 Space Lab AI Academy | An interactive learning experience"
+            },
+            id: {
+                mainTitle: "Akademi AI Lab Antariksa",
+                mainSubtitle: "Buat model AI pertamamu untuk membantu robot antariksa kita menjelajahi kosmos!",
+                introTitle: "Apa itu Pemodelan AI?",
+                introText1: "Membangun model AI berarti melatih program komputer untuk mengenali pola dan membuat keputusan berdasarkan data — mirip dengan bagaimana robot antariksa mungkin belajar mendeteksi asteroid atau memilih rute perjalanan optimal.",
+                introText2: "Di lab antariksa ini, Anda akan melatih AI untuk mengklasifikasikan objek langit menggunakan data kosmik. Tidak perlu pengalaman sebelumnya - hanya rasa ingin tahu Anda!",
+                missionStartText: "Mulai Misi",
+                seeExamplesText: "Contoh Dunia Nyata",
+                step1Title: "Memahami Dataset",
+                step1Text1: "Teleskop antariksa kami telah mengumpulkan data tentang berbagai objek langit. Setiap objek memiliki fitur seperti ukuran, kecerahan, dan suhu. Bantu AI kami belajar dengan mengurutkan objek antariksa ini ke dalam kategori!",
+                planetLabel: "Planet",
+                starLabel: "Bintang",
+                cometLabel: "Komet",
+                featuresTitle: "Fitur Utama:",
+                feature1: "Ukuran (diameter km)",
+                feature2: "Kecerahan (magnitudo)",
+                feature3: "Suhu (K)",
+                feature4: "Kecepatan Orbit (km/s)",
+                tip1: "Wawasan AI: AI akan mencari pola dalam angka-angka ini untuk mempelajari cara mengklasifikasikan objek baru yang belum pernah dilihat sebelumnya.",
+                step1NextText: "Lanjut: Latih Model",
+                step2Title: "Melatih Model AI",
+                step2Text1: "Setelah data kita urutkan, mari latih model AI! Model akan menganalisis pola dalam data untuk mempelajari cara mengklasifikasikan objek langit sendiri.",
+                trainingTitle: "Cara Pelatihan Bekerja:",
+                trainingStep1: "Model membuat tebakan acak awal",
+                trainingStep2: "Memeriksa seberapa salah tebakannya (loss)",
+                trainingStep3: "Menyesuaikan parameter internalnya (pembelajaran)",
+                trainingStep4: "Ulangi hingga akurat (epochs)",
+                trainModelText: "Latih Model",
+                trainingStatusText: "Pelatihan sedang berlangsung...",
+                accuracyLabel: "Akurasi",
+                lossLabel: "Loss",
+                epochsLabel: "Epochs",
+                step2NextText: "Lanjut: Buat Prediksi",
+                codeExplanation1: "Kode Python sederhana ini menggunakan scikit-learn, library machine learning populer. Kami membuat classifier pohon keputusan - salah satu model AI paling sederhana.",
+                codeExplanation2: "Metode fit() melatih model menggunakan data berlabel kami (fitur dan jawaban benar).",
+                codeExplanation3: "Setelah pelatihan, kita bisa menggunakan predict() untuk mengklasifikasikan objek langit baru yang belum pernah dilihat model.",
+                warning1: "Catatan: Proyek AI nyata sering menggunakan model lebih kompleks, tetapi proses dasarnya tetap sama!",
+                step3Title: "Menguji Model AI Anda",
+                step3Text1: "Model AI kami sudah terlatih! Sekarang mari uji dengan data kosmik baru dari penyelidikan antariksa kami. Masukkan beberapa nilai fitur di bawah ini dan lihat apakah AI dapat mengklasifikasikan objek langit dengan benar.",
+                sizeLabel: "Ukuran (diameter km)",
+                brightnessLabel: "Kecerahan (magnitudo)",
+                tempLabel: "Suhu (K)",
+                speedLabel: "Kecepatan Orbit (km/s)",
+                predictText: "Prediksi Objek Langit",
+                predictionText: "Masukkan fitur dan klik \"Prediksi\" untuk melihat apa yang dipikirkan AI!",
+                realWorldTitle: "Aplikasi AI Dunia Nyata",
+                app1: "Prediksi lalu lintas berdasarkan data lokasi",
+                app2: "Rekomendasi video YouTube",
+                app3: "Pemantauan kesehatan smartwatch",
+                backText: "Kembali",
+                restartText: "Mulai Misi Baru",
+                examplesTitle: "Contoh AI Dunia Nyata",
+                example1Title: "Prediksi Lalu Lintas",
+                example1Text: "AI menganalisis data lokasi dari jutaan telepon untuk memprediksi pola lalu lintas. Belajar dari data historis, cuaca, dan acara untuk memperkirakan waktu perjalanan dan menyarankan rute optimal.",
+                example2Title: "Rekomendasi Video",
+                example2Text: "AI YouTube mempelajari apa yang Anda tonton, berapa lama Anda menonton, dan apa yang disukai pengguna serupa untuk menyarankan video yang mungkin Anda sukai berikutnya. Terus belajar dari interaksi Anda.",
+                example3Title: "Pemantauan Kesehatan",
+                example3Text: "Smartwatch menggunakan AI untuk mendeteksi pola detak jantung Anda. Dapat mengidentifikasi ketidakteraturan, melacak kualitas tidur, dan menyarankan kapan Anda harus beristirahat atau lebih aktif.",
+                closeExamplesText: "Mengerti!",
+                footerText: "© 2023 Akademi AI Lab Antariksa | Pengalaman belajar interaktif"
+            }
+        };
+
+        // Current language
+        let currentLang = 'en';
+        const langToggle = document.getElementById('langToggle');
+        const langLabel = document.getElementById('langLabel');
+
+        // Toggle language
+        langToggle.addEventListener('click', () => {
+            currentLang = currentLang === 'en' ? 'id' : 'en';
+            langLabel.textContent = currentLang === 'en' ? 'EN' : 'ID';
+            updateContent();
+        });
+
+        // Update all content based on current language
+        function updateContent() {
+            const langContent = content[currentLang];
+            for (const key in langContent) {
+                const element = document.getElementById(key);
+                if (element) {
+                    if (element.tagName === 'INPUT' && element.type === 'range') {
+                        // Skip range inputs
+                        continue;
+                    }
+                    if (element.tagName === 'CODE') {
+                        // Skip code blocks
+                        continue;
+                    }
+                    element.textContent = langContent[key];
+                }
+            }
+        }
+
+        // Initialize draggable objects
+        const celestialObjects = [
+            { id: 'obj1', name: 'Earth', type: 'planet', size: 12742, brightness: -26, temp: 288, speed: 30, icon: 'globe-americas', color: 'blue' },
+            { id: 'obj2', name: 'Sun', type: 'star', size: 1392700, brightness: -26.74, temp: 5778, speed: 0, icon: 'sun', color: 'yellow' },
+            { id: 'obj3', name: 'Halley', type: 'comet', size: 11, brightness: 4, temp: 170, speed: 70, icon: 'meteor', color: 'purple' },
+            { id: 'obj4', name: 'Jupiter', type: 'planet', size: 139820, brightness: -1.6, temp: 165, speed: 13, icon: 'globe-americas', color: 'blue' },
+            { id: 'obj5', name: 'Sirius', type: 'star', size: 2510000, brightness: -1.46, temp: 9940, speed: 0, icon: 'star', color: 'yellow' },
+            { id: 'obj6', name: 'Hale-Bopp', type: 'comet', size: 40, brightness: -1, temp: 150, speed: 50, icon: 'meteor', color: 'purple' }
+        ];
+
+        const draggableContainer = document.getElementById('draggableObjects');
+        
+        function createDraggableObjects() {
+            draggableContainer.innerHTML = '';
+            celestialObjects.forEach(obj => {
+                const div = document.createElement('div');
+                div.id = obj.id;
+                div.className = `draggable bg-gray-800 rounded-lg p-3 flex items-center border border-${obj.color}-400`;
+                div.setAttribute('draggable', 'true');
+                div.setAttribute('data-type', obj.type);
+                div.innerHTML = `
+                    <i class="fas fa-${obj.icon} text-${obj.color}-400 text-xl mr-3"></i>
+                    <div>
+                        <div class="font-medium">${obj.name}</div>
+                        <div class="text-xs opacity-70">Size: ${obj.size.toLocaleString()} km</div>
+                    </div>
+                `;
+                draggableContainer.appendChild(div);
+                
+                // Add drag events
+                div.addEventListener('dragstart', dragStart);
+            });
+        }
+        
+        // Drag and drop functionality
+        function dragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.id);
+            setTimeout(() => {
+                e.target.classList.add('opacity-0');
+            }, 0);
+        }
+        
+        const droppables = document.querySelectorAll('.droppable');
+        droppables.forEach(dropzone => {
+            dropzone.addEventListener('dragenter', dragEnter);
+            dropzone.addEventListener('dragover', dragOver);
+            dropzone.addEventListener('dragleave', dragLeave);
+            dropzone.addEventListener('drop', drop);
+        });
+        
+        function dragEnter(e) {
+            e.preventDefault();
+            e.target.classList.add('highlight');
+        }
+        
+        function dragOver(e) {
+            e.preventDefault();
+        }
+        
+        function dragLeave(e) {
+            e.target.classList.remove('highlight');
+        }
+        
+        function drop(e) {
+            e.preventDefault();
+            e.target.classList.remove('highlight');
+            
+            const id = e.dataTransfer.getData('text/plain');
+            const draggable = document.getElementById(id);
+            const type = draggable.getAttribute('data-type');
+            
+            // Check if dropped in correct zone
+            if (e.target.id === type) {
+                e.target.appendChild(draggable);
+                draggable.classList.remove('opacity-0');
+                draggable.classList.add('cursor-default', 'opacity-100');
+                draggable.setAttribute('draggable', 'false');
+                
+                // Show success feedback
+                const icon = draggable.querySelector('i');
+                icon.classList.remove(`text-${icon.classList[2].split('-')[1]}-400`);
+                icon.classList.add('text-green-400');
+                
+                // Check if all sorted
+                checkAllSorted();
+            } else {
+                draggable.classList.remove('opacity-0');
+                // Return to original position with shake animation
+                draggable.classList.add('animate-shake');
+                setTimeout(() => {
+                    draggable.classList.remove('animate-shake');
+                }, 500);
+            }
+        }
+        
+        function checkAllSorted() {
+            const draggables = document.querySelectorAll('.draggable');
+            const allSorted = Array.from(draggables).every(d => !d.draggable);
+            
+            if (allSorted) {
+                setTimeout(() => {
+                    document.getElementById('step1NextBtn').classList.remove('opacity-50');
+                    document.getElementById('step1NextBtn').disabled = false;
+                    
+                    // Show celebration
+                    const confetti = document.createElement('div');
+                    confetti.className = 'fixed inset-0 flex items-center justify-center z-50 pointer-events-none';
+                    confetti.innerHTML = `
+                        <div class="text-6xl text-yellow-400 animate-bounce">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    `;
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 1500);
+                }, 500);
+            }
+        }
+        
+        // Mission navigation
+        document.getElementById('missionStartBtn').addEventListener('click', () => {
+            document.getElementById('missionContainer').classList.remove('hidden');
+            createDraggableObjects();
+            
+            // Disable next button initially
+            document.getElementById('step1NextBtn').classList.add('opacity-50');
+            document.getElementById('step1NextBtn').disabled = true;
+        });
+        
+        document.getElementById('step1NextBtn').addEventListener('click', () => {
+            document.getElementById('step2').classList.remove('hidden');
+            document.getElementById('step1NextBtn').scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        document.getElementById('step2NextBtn').addEventListener('click', () => {
+            document.getElementById('step3').classList.remove('hidden');
+            document.getElementById('step2NextBtn').scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        document.getElementById('step3BackBtn').addEventListener('click', () => {
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('step2').scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        document.getElementById('step3RestartBtn').addEventListener('click', () => {
+            document.getElementById('missionContainer').classList.add('hidden');
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('missionStartBtn').scrollIntoView({ behavior: 'smooth' });
+            
+            // Reset draggables
+            createDraggableObjects();
+        });
+        
+        // Train model button
+        document.getElementById('trainModelBtn').addEventListener('click', () => {
+            const btn = document.getElementById('trainModelBtn');
+            const status = document.getElementById('trainingStatus');
+            const results = document.getElementById('trainingResults');
+            
+            btn.disabled = true;
+            status.classList.remove('hidden');
+            
+            // Simulate training
+            setTimeout(() => {
+                status.innerHTML = `
+                    <i class="fas fa-check-circle mr-1 text-green-400"></i>
+                    <span>Training complete!</span>
+                `;
+                
+                results.classList.remove('hidden');
+                document.getElementById('step2NextBtn').classList.remove('opacity-50');
+                document.getElementById('step2NextBtn').disabled = false;
+            }, 3000);
+        });
+        
+        // Tab switching for code examples
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all buttons
+                tabBtns.forEach(b => b.classList.remove('tab-active'));
+                // Add active class to clicked button
+                btn.classList.add('tab-active');
+                
+                // Hide all tab contents
+                tabContents.forEach(content => content.classList.add('hidden'));
+                // Show selected tab content
+                const tabId = btn.getAttribute('data-tab') + 'Tab';
+                document.getElementById(tabId).classList.remove('hidden');
+            });
+        });
+        
+        // Examples modal
+        const examplesModal = document.getElementById('examplesModal');
+        document.getElementById('seeExamplesBtn').addEventListener('click', () => {
+            examplesModal.classList.remove('hidden');
+        });
+        
+        document.getElementById('closeExamplesBtn').addEventListener('click', () => {
+            examplesModal.classList.add('hidden');
+        });
+        
+        document.getElementById('closeExamplesBtn2').addEventListener('click', () => {
+            examplesModal.classList.add('hidden');
+        });
+        
+        // Range inputs
+        const sizeInput = document.getElementById('sizeInput');
+        const brightnessInput = document.getElementById('brightnessInput');
+        const tempInput = document.getElementById('tempInput');
+        const speedInput = document.getElementById('speedInput');
+        
+        sizeInput.addEventListener('input', () => {
+            document.getElementById('sizeValue').textContent = parseInt(sizeInput.value).toLocaleString();
+        });
+        
+        brightnessInput.addEventListener('input', () => {
+            document.getElementById('brightnessValue').textContent = brightnessInput.value;
+        });
+        
+        tempInput.addEventListener('input', () => {
+            document.getElementById('tempValue').textContent = parseInt(tempInput.value).toLocaleString();
+        });
+        
+        speedInput.addEventListener('input', () => {
+            document.getElementById('speedValue').textContent = speedInput.value;
+        });
+        
+        // Prediction button
+        document.getElementById('predictBtn').addEventListener('click', () => {
+            const size = parseInt(sizeInput.value);
+            const brightness = parseFloat(brightnessInput.value);
+            const temp = parseInt(tempInput.value);
+            const speed = parseInt(speedInput.value);
+            
+            // Simple decision logic (not real ML)
+            let prediction, icon, color;
+            
+            if (size > 1000000) {
+                prediction = currentLang === 'en' ? 'Star' : 'Bintang';
+                icon = 'sun';
+                color = 'yellow';
+            } else if (speed > 40) {
+                prediction = currentLang === 'en' ? 'Comet' : 'Komet';
+                icon = 'meteor';
+                color = 'purple';
+            } else {
+                prediction = currentLang === 'en' ? 'Planet' : 'Planet';
+                icon = 'globe-americas';
+                color = 'blue';
+            }
+            
+            const resultDiv = document.getElementById('predictionResult');
+            resultDiv.innerHTML = `
+                <div class="text-center fade-in">
+                    <i class="fas fa-${icon} text-6xl mb-4 text-${color}-400"></i>
+                    <h4 class="text-xl font-bold mb-2">${prediction}</h4>
+                    <p class="opacity-80">${currentLang === 'en' ? 'The AI thinks this is a' : 'AI mengira ini adalah'} ${prediction.toLowerCase()}</p>
+                </div>
+            `;
+        });
+        
+        // Initialize
+        updateContent();
+    </script>
+</body>
+</html>

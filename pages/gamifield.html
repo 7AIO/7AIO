@@ -1,0 +1,1794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic AI Brain Games</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap');
+        
+        :root {
+            --primary: #6e45e2;
+            --secondary: #88d3ce;
+            --accent: #ff7e5f;
+            --dark: #1a1a2e;
+            --darker: #0f0f1a;
+        }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--darker);
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .neon-text {
+            text-shadow: 0 0 5px #fff, 0 0 10px var(--secondary), 0 0 15px var(--secondary), 0 0 20px var(--primary);
+        }
+        
+        .neon-box {
+            box-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary), inset 0 0 10px var(--primary);
+            border: 1px solid var(--primary);
+        }
+        
+        .neon-button {
+            transition: all 0.3s;
+            box-shadow: 0 0 5px var(--primary);
+        }
+        
+        .neon-button:hover {
+            box-shadow: 0 0 15px var(--primary), 0 0 25px var(--accent);
+            transform: translateY(-2px);
+        }
+        
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .game-container {
+            perspective: 1000px;
+        }
+        
+        .game-card {
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+        }
+        
+        .game-card:hover {
+            transform: rotateY(10deg) scale(1.02);
+        }
+        
+        .xp-bar {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            box-shadow: 0 0 10px var(--primary);
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+        
+        /* Game specific styles */
+        #tetris-grid {
+            background-color: rgba(30, 30, 60, 0.5);
+            border: 2px solid var(--primary);
+        }
+        
+        .tetris-block {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-sizing: border-box;
+        }
+        
+        #memory-grid {
+            display: grid;
+            gap: 10px;
+        }
+        
+        .memory-card {
+            background: linear-gradient(135deg, var(--dark), var(--darker));
+            border: 1px solid var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: all 0.5s;
+        }
+        
+        .memory-card.flipped {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, var(--primary), #9a4fea);
+        }
+        
+        #binary-game {
+            background: rgba(20, 20, 40, 0.7);
+            border: 1px solid var(--secondary);
+        }
+        
+        .binary-option {
+            background: rgba(110, 69, 226, 0.3);
+            border: 1px solid var(--secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .binary-option:hover {
+            background: rgba(110, 69, 226, 0.6);
+            box-shadow: 0 0 10px var(--secondary);
+        }
+        
+        #dodge-game {
+            position: relative;
+            background: rgba(10, 10, 20, 0.5);
+            border: 1px solid var(--accent);
+        }
+        
+        #spaceship {
+            position: absolute;
+            background-color: var(--secondary);
+            border-radius: 50% 50% 0 0;
+        }
+        
+        .data-point {
+            position: absolute;
+            background-color: var(--secondary);
+            border-radius: 50%;
+        }
+        
+        .obstacle {
+            position: absolute;
+            background-color: var(--accent);
+            border-radius: 50%;
+        }
+        
+        /* Particle effects */
+        .particle {
+            position: absolute;
+            background-color: var(--secondary);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        /* Wormhole effect */
+        .wormhole {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--primary), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s, transform 0.5s;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .game-card {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen relative overflow-x-hidden">
+    <!-- Star background -->
+    <div id="starfield"></div>
+    
+    <!-- Language switcher -->
+    <div class="absolute top-4 right-4 z-50">
+        <button id="language-toggle" class="neon-button bg-indigo-900 text-white px-4 py-2 rounded-full orbitron">
+            <span class="en">EN</span>
+            <span class="id hidden">ID</span>
+        </button>
+    </div>
+    
+    <!-- Main container -->
+    <div class="container mx-auto px-4 py-8 relative z-10">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-5xl md:text-6xl font-bold mb-4 neon-text orbitron">COSMIC AI TRAINING</h1>
+            <p class="text-xl md:text-2xl text-indigo-300 max-w-3xl mx-auto" data-lang="en">
+                Boost your cognitive abilities with these futuristic brain games
+            </p>
+            <p class="text-xl md:text-2xl text-indigo-300 max-w-3xl mx-auto hidden" data-lang="id">
+                Tingkatkan kemampuan kognitif Anda dengan game otak futuristik ini
+            </p>
+        </header>
+        
+        <!-- User profile and progress -->
+        <div class="bg-indigo-900/50 backdrop-blur-md rounded-xl p-6 mb-12 neon-box">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mr-4">
+                        <i class="fas fa-robot text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold orbitron">AI TRAINEE</h3>
+                        <div class="flex items-center">
+                            <span id="user-rank" class="text-yellow-400 orbitron mr-2">NEURAL CADET</span>
+                            <span id="user-level" class="text-sm bg-indigo-700 px-2 py-1 rounded">Lv. 1</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-full md:w-1/2">
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm orbitron" data-lang="en">XP PROGRESS</span>
+                        <span class="text-sm orbitron hidden" data-lang="id">PROGRES XP</span>
+                        <span id="xp-display" class="text-sm">0/1000</span>
+                    </div>
+                    <div class="h-4 bg-indigo-950 rounded-full overflow-hidden">
+                        <div id="xp-bar" class="xp-bar rounded-full" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Games grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <!-- Neuro-Tetris -->
+            <div class="game-container">
+                <div class="game-card bg-indigo-900/30 rounded-xl p-6 neon-box hover:shadow-xl transition-all duration-300 h-full">
+                    <div class="flex flex-col h-full">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-2xl font-bold orbitron">NEURO-TETRIS</h3>
+                            <span class="bg-purple-600 px-3 py-1 rounded-full text-xs orbitron" data-lang="en">SPATIAL</span>
+                            <span class="bg-purple-600 px-3 py-1 rounded-full text-xs orbitron hidden" data-lang="id">SPASIAL</span>
+                        </div>
+                        
+                        <p class="text-indigo-200 mb-4 flex-grow" data-lang="en">
+                            Build neural connections by clearing lines. Speed increases as you level up!
+                        </p>
+                        <p class="text-indigo-200 mb-4 flex-grow hidden" data-lang="id">
+                            Bangun koneksi neural dengan menghapus garis. Kecepatan meningkat seiring level Anda!
+                        </p>
+                        
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <span class="text-sm text-indigo-300" data-lang="en">High Score:</span>
+                                <span id="tetris-highscore" class="font-bold ml-2">0</span>
+                            </div>
+                            <div>
+                                <span class="text-sm text-indigo-300" data-lang="en">Rank:</span>
+                                <span id="tetris-rank" class="font-bold ml-2">Novice</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-grow flex items-center justify-center mb-4">
+                            <div id="tetris-grid" class="w-full max-w-md h-96 mx-auto"></div>
+                        </div>
+                        
+                        <div class="flex justify-between">
+                            <button id="tetris-start" class="neon-button bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-full orbitron" data-lang="en">
+                                START
+                            </button>
+                            <button id="tetris-start-id" class="neon-button bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-full orbitron hidden" data-lang="id">
+                                MULAI
+                            </button>
+                            <button id="tetris-pause" class="neon-button bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-2 rounded-full orbitron hidden" data-lang="en">
+                                PAUSE
+                            </button>
+                            <button id="tetris-pause-id" class="neon-button bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-2 rounded-full orbitron hidden" data-lang="id">
+                                JEDA
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI Memory Grid -->
+            <div class="game-container">
+                <div class="game-card bg-indigo-900/30 rounded-xl p-6 neon-box hover:shadow-xl transition-all duration-300 h-full">
+                    <div class="flex flex-col h-full">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-2xl font-bold orbitron">AI MEMORY GRID</h3>
+                            <span class="bg-blue-600 px-3 py-1 rounded-full text-xs orbitron">MEMORY</span>
+                        </div>
+                        
+                        <p class="text-indigo-200 mb-4 flex-grow" data-lang="en">
+                            Match AI concepts to unlock wormholes. Perfect matches trigger cosmic bonuses!
+                        </p>
+                        <p class="text-indigo-200 mb-4 flex-grow hidden" data-lang="id">
+                            Cocokkan konsep AI untuk membuka wormhole. Perfect match memicu bonus kosmik!
+                        </p>
+                        
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <span class="text-sm text-indigo-300" data-lang="en">High Score:</span>
+                                <span id="memory-highscore" class="font-bold ml-2">0</span>
+                            </div>
+                            <div>
+                                <span class="text-sm text-indigo-300" data-lang="en">Streak:</span>
+                                <span id="memory-streak" class="font-bold ml-2">0</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-grow flex items-center justify-center mb-4">
+                            <div id="memory-grid" class="grid grid-cols-4 gap-2 w-full max-w-md"></div>
+                        </div>
+                        
+                        <div class="flex justify-between">
+                            <button id="memory-start" class="neon-button bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full orbitron" data-lang="en">
+                                START
+                            </button>
+                            <button id="memory-start-id" class="neon-button bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full orbitron hidden" data-lang="id">
+                                MULAI
+                            </button>
+                            <div id="memory-timer" class="text-xl orbitron text-center flex-grow mx-4 flex items-center justify-center">
+                                <span class="text-indigo-300">00:30</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Binary Blaster -->
+            <div class="game-container">
+                <div class="game-card bg-indigo-900/30 rounded-xl p-6 neon-box hover:shadow-xl transition-all duration-300 h-full">
+                    <div class="flex flex-col h-full">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-2xl font-bold orbitron">BINARY BLASTER</h3>
+                            <span class="bg-green-600 px-3 py-1 rounded-full text-xs orbitron">LOGIC</span>
+                        </div>
+                        
+                        <p class="text-indigo-200 mb-4 flex-grow" data-lang="en">
+                            Decode binary patterns to launch space drones. React quickly for bonus points!
+                        </p>
+                        <p class="text-indigo-200 mb-4 flex-grow hidden" data-lang="id">
+                            Dekode pola biner untuk meluncurkan drone luar angkasa. Reaksi cepat untuk poin bonus!
+                        </p>
+                        
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <span class="text-sm text-indigo-300" data-lang="en">High Score:</span>
+                                <span id="binary-highscore" class="font-bold ml-2">0</span>
+                            </div>
+                            <div>
+                                <span class="text-sm text-indigo-300" data-lang="en">Combo:</span>
+                                <span id="binary-combo" class="font-bold ml-2">0</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-grow flex flex-col items-center justify-center mb-4">
+                            <div id="binary-game" class="w-full max-w-md h-32 rounded-lg mb-4 flex items-center justify-center">
+                                <div id="binary-question" class="text-3xl orbitron">01000001</div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 w-full max-w-md">
+                                <button class="binary-option h-16 rounded-lg flex items-center justify-center orbitron" data-value="A">A</button>
+                                <button class="binary-option h-16 rounded-lg flex items-center justify-center orbitron" data-value="B">B</button>
+                                <button class="binary-option h-16 rounded-lg flex items-center justify-center orbitron" data-value="C">C</button>
+                                <button class="binary-option h-16 rounded-lg flex items-center justify-center orbitron" data-value="D">D</button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-center">
+                            <button id="binary-start" class="neon-button bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-full orbitron" data-lang="en">
+                                START CHALLENGE
+                            </button>
+                            <button id="binary-start-id" class="neon-button bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-full orbitron hidden" data-lang="id">
+                                MULAI TANTANGAN
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Data Stream Dodge -->
+            <div class="game-container">
+                <div class="game-card bg-indigo-900/30 rounded-xl p-6 neon-box hover:shadow-xl transition-all duration-300 h-full">
+                    <div class="flex flex-col h-full">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-2xl font-bold orbitron">DATA STREAM DODGE</h3>
+                            <span class="bg-red-600 px-3 py-1 rounded-full text-xs orbitron">REFLEX</span>
+                        </div>
+                        
+                        <p class="text-indigo-200 mb-4 flex-grow" data-lang="en">
+                            Navigate through corrupted data streams while collecting valuable information.
+                        </p>
+                        <p class="text-indigo-200 mb-4 flex-grow hidden" data-lang="id">
+                            Navigasi melalui aliran data korup sambil mengumpulkan informasi berharga.
+                        </p>
+                        
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <span class="text-sm text-indigo-300" data-lang="en">High Score:</span>
+                                <span id="dodge-highscore" class="font-bold ml-2">0</span>
+                            </div>
+                            <div>
+                                <span class="text-sm text-indigo-300" data-lang="en">Speed:</span>
+                                <span id="dodge-speed" class="font-bold ml-2">1x</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-grow flex items-center justify-center mb-4 relative">
+                            <div id="dodge-game" class="w-full max-w-md h-64 rounded-lg relative overflow-hidden">
+                                <div id="spaceship" style="width: 20px; height: 30px; bottom: 10px; left: 50%;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between">
+                            <button id="dodge-start" class="neon-button bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-full orbitron" data-lang="en">
+                                LAUNCH
+                            </button>
+                            <button id="dodge-start-id" class="neon-button bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-full orbitron hidden" data-lang="id">
+                                LUNCURKAN
+                            </button>
+                            <div id="dodge-score" class="text-xl orbitron text-center flex-grow mx-4 flex items-center justify-center">
+                                <span class="text-indigo-300">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Leaderboard -->
+        <div class="bg-indigo-900/50 backdrop-blur-md rounded-xl p-6 mb-12 neon-box">
+            <h2 class="text-3xl font-bold mb-6 orbitron text-center neon-text" data-lang="en">COSMIC LEADERBOARD</h2>
+            <h2 class="text-3xl font-bold mb-6 orbitron text-center neon-text hidden" data-lang="id">PAPAN PERINGKAT KOSMIK</h2>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-indigo-700">
+                            <th class="text-left pb-4 orbitron" data-lang="en">RANK</th>
+                            <th class="text-left pb-4 orbitron hidden" data-lang="id">PERINGKAT</th>
+                            <th class="text-left pb-4 orbitron" data-lang="en">PLAYER</th>
+                            <th class="text-left pb-4 orbitron hidden" data-lang="id">PEMAIN</th>
+                            <th class="text-left pb-4 orbitron">XP</th>
+                            <th class="text-left pb-4 orbitron" data-lang="en">LEVEL</th>
+                            <th class="text-left pb-4 orbitron hidden" data-lang="id">TINGKAT</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body">
+                        <tr class="border-b border-indigo-800 hover:bg-indigo-800/50">
+                            <td class="py-3 text-yellow-400 orbitron">#1</td>
+                            <td class="py-3 flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mr-3">
+                                    <i class="fas fa-robot text-xs"></i>
+                                </div>
+                                <span>QuantumAI</span>
+                            </td>
+                            <td class="py-3">12,450</td>
+                            <td class="py-3 orbitron">NEURAL OVERLORD</td>
+                        </tr>
+                        <tr class="border-b border-indigo-800 hover:bg-indigo-800/50">
+                            <td class="py-3 text-gray-300 orbitron">#2</td>
+                            <td class="py-3 flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mr-3">
+                                    <i class="fas fa-robot text-xs"></i>
+                                </div>
+                                <span>StellarMind</span>
+                            </td>
+                            <td class="py-3">9,780</td>
+                            <td class="py-3 orbitron">COSMIC ANALYST</td>
+                        </tr>
+                        <tr class="border-b border-indigo-800 hover:bg-indigo-800/50">
+                            <td class="py-3 text-amber-600 orbitron">#3</td>
+                            <td class="py-3 flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mr-3">
+                                    <i class="fas fa-robot text-xs"></i>
+                                </div>
+                                <span>DataVoyager</span>
+                            </td>
+                            <td class="py-3">8,120</td>
+                            <td class="py-3 orbitron">QUANTUM SPECIALIST</td>
+                        </tr>
+                        <tr class="hover:bg-indigo-800/50">
+                            <td class="py-3 orbitron">#4</td>
+                            <td class="py-3 flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mr-3">
+                                    <i class="fas fa-robot text-xs"></i>
+                                </div>
+                                <span>NeuroPilot</span>
+                            </td>
+                            <td class="py-3">6,450</td>
+                            <td class="py-3 orbitron">STAR NAVIGATOR</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Badges collection -->
+        <div class="bg-indigo-900/50 backdrop-blur-md rounded-xl p-6 neon-box">
+            <h2 class="text-3xl font-bold mb-6 orbitron text-center neon-text" data-lang="en">ACHIEVEMENT BADGES</h2>
+            <h2 class="text-3xl font-bold mb-6 orbitron text-center neon-text hidden" data-lang="id">LENCANA PRESTASI</h2>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <div class="bg-indigo-800/50 rounded-lg p-4 flex flex-col items-center">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center mb-2">
+                        <i class="fas fa-star text-xl"></i>
+                    </div>
+                    <span class="text-sm text-center orbitron" data-lang="en">First Game</span>
+                    <span class="text-sm text-center orbitron hidden" data-lang="id">Game Pertama</span>
+                    <span class="text-xs text-indigo-300 mt-1" data-lang="en">Unlocked!</span>
+                    <span class="text-xs text-indigo-300 mt-1 hidden" data-lang="id">Terbuka!</span>
+                </div>
+                
+                <div class="bg-indigo-800/50 rounded-lg p-4 flex flex-col items-center opacity-50">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center mb-2">
+                        <i class="fas fa-brain text-xl"></i>
+                    </div>
+                    <span class="text-sm text-center orbitron" data-lang="en">100 Neural Links</span>
+                    <span class="text-sm text-center orbitron hidden" data-lang="id">100 Link Neural</span>
+                    <span class="text-xs text-indigo-300 mt-1" data-lang="en">Locked</span>
+                    <span class="text-xs text-indigo-300 mt-1 hidden" data-lang="id">Terkunci</span>
+                </div>
+                
+                <div class="bg-indigo-800/50 rounded-lg p-4 flex flex-col items-center opacity-50">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-teal-500 flex items-center justify-center mb-2">
+                        <i class="fas fa-bolt text-xl"></i>
+                    </div>
+                    <span class="text-sm text-center orbitron" data-lang="en">Fast Thinker</span>
+                    <span class="text-sm text-center orbitron hidden" data-lang="id">Pemikir Cepat</span>
+                    <span class="text-xs text-indigo-300 mt-1" data-lang="en">Locked</span>
+                    <span class="text-xs text-indigo-300 mt-1 hidden" data-lang="id">Terkunci</span>
+                </div>
+                
+                <div class="bg-indigo-800/50 rounded-lg p-4 flex flex-col items-center opacity-50">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center mb-2">
+                        <i class="fas fa-infinity text-xl"></i>
+                    </div>
+                    <span class="text-sm text-center orbitron" data-lang="en">Perfect Memory</span>
+                    <span class="text-sm text-center orbitron hidden" data-lang="id">Memori Sempurna</span>
+                    <span class="text-xs text-indigo-300 mt-1" data-lang="en">Locked</span>
+                    <span class="text-xs text-indigo-300 mt-1 hidden" data-lang="id">Terkunci</span>
+                </div>
+                
+                <div class="bg-indigo-800/50 rounded-lg p-4 flex flex-col items-center opacity-50">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center mb-2">
+                        <i class="fas fa-rocket text-xl"></i>
+                    </div>
+                    <span class="text-sm text-center orbitron" data-lang="en">Space Explorer</span>
+                    <span class="text-sm text-center orbitron hidden" data-lang="id">Penjelajah Angkasa</span>
+                    <span class="text-xs text-indigo-300 mt-1" data-lang="en">Locked</span>
+                    <span class="text-xs text-indigo-300 mt-1 hidden" data-lang="id">Terkunci</span>
+                </div>
+                
+                <div class="bg-indigo-800/50 rounded-lg p-4 flex flex-col items-center opacity-50">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center mb-2">
+                        <i class="fas fa-trophy text-xl"></i>
+                    </div>
+                    <span class="text-sm text-center orbitron" data-lang="en">AI Champion</span>
+                    <span class="text-sm text-center orbitron hidden" data-lang="id">Juara AI</span>
+                    <span class="text-xs text-indigo-300 mt-1" data-lang="en">Locked</span>
+                    <span class="text-xs text-indigo-300 mt-1 hidden" data-lang="id">Terkunci</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Audio elements -->
+    <audio id="bg-music" loop>
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-loop-229.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="click-sound">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="success-sound">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="fail-sound">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-retro-arcade-lose-2027.mp3" type="audio/mpeg">
+    </audio>
+    
+    <script>
+        // Starfield background
+        function createStarfield() {
+            const starfield = document.getElementById('starfield');
+            const starCount = 200;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Random size between 1-3px
+                const size = Math.random() * 2 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                // Random position
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                
+                // Random animation duration (3-8s)
+                star.style.setProperty('--duration', `${Math.random() * 5 + 3}s`);
+                
+                starfield.appendChild(star);
+            }
+        }
+        
+        // Language toggle
+        document.getElementById('language-toggle').addEventListener('click', function() {
+            document.querySelectorAll('.en').forEach(el => el.classList.toggle('hidden'));
+            document.querySelectorAll('.id').forEach(el => el.classList.toggle('hidden'));
+            document.querySelectorAll('[data-lang="en"]').forEach(el => el.classList.toggle('hidden'));
+            document.querySelectorAll('[data-lang="id"]').forEach(el => el.classList.toggle('hidden'));
+            
+            // Play click sound
+            document.getElementById('click-sound').play();
+        });
+        
+        // XP and level system
+        let xp = 0;
+        let level = 1;
+        const xpThresholds = [0, 1000, 2500, 5000, 10000, 20000];
+        const ranks = ["NEURAL CADET", "QUANTUM LEARNER", "STAR ANALYST", "COSMIC SPECIALIST", "NEURAL OVERLORD"];
+        
+        function addXP(amount) {
+            xp += amount;
+            
+            // Check for level up
+            if (xp >= xpThresholds[level]) {
+                level++;
+                document.getElementById('user-level').textContent = `Lv. ${level}`;
+                document.getElementById('user-rank').textContent = ranks[Math.min(level - 1, ranks.length - 1)];
+                
+                // Play success sound
+                document.getElementById('success-sound').play();
+                
+                // Create particle effect
+                createParticles(50);
+            }
+            
+            // Update UI
+            const xpPercentage = Math.min((xp / xpThresholds[level]) * 100, 100);
+            document.getElementById('xp-bar').style.width = `${xpPercentage}%`;
+            document.getElementById('xp-display').textContent = `${xp}/${xpThresholds[level]}`;
+        }
+        
+        // Particle effects
+        function createParticles(count) {
+            const container = document.querySelector('.container');
+            
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random properties
+                const size = Math.random() * 4 + 2;
+                const color = `hsl(${Math.random() * 60 + 200}, 80%, 60%)`;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.backgroundColor = color;
+                
+                // Random position near the XP bar
+                const xpBar = document.getElementById('xp-bar').getBoundingClientRect();
+                const x = xpBar.left + Math.random() * xpBar.width;
+                const y = xpBar.top + Math.random() * xpBar.height;
+                
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                
+                // Animation
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 5 + 2;
+                const lifetime = Math.random() * 1000 + 500;
+                
+                container.appendChild(particle);
+                
+                let startTime = Date.now();
+                
+                function updateParticle() {
+                    const elapsed = Date.now() - startTime;
+                    const progress = elapsed / lifetime;
+                    
+                    if (progress >= 1) {
+                        particle.remove();
+                        return;
+                    }
+                    
+                    const xMove = Math.cos(angle) * velocity * progress * 100;
+                    const yMove = Math.sin(angle) * velocity * progress * 100;
+                    
+                    particle.style.transform = `translate(${xMove}px, ${yMove}px)`;
+                    particle.style.opacity = 1 - progress;
+                    
+                    requestAnimationFrame(updateParticle);
+                }
+                
+                requestAnimationFrame(updateParticle);
+            }
+        }
+        
+        // Wormhole effect
+        function createWormhole(x, y) {
+            const wormhole = document.createElement('div');
+            wormhole.classList.add('wormhole');
+            
+            wormhole.style.left = `${x - 50}px`;
+            wormhole.style.top = `${y - 50}px`;
+            wormhole.style.width = '100px';
+            wormhole.style.height = '100px';
+            
+            document.body.appendChild(wormhole);
+            
+            // Animate
+            setTimeout(() => {
+                wormhole.style.opacity = '1';
+                wormhole.style.transform = 'scale(1.5)';
+            }, 10);
+            
+            setTimeout(() => {
+                wormhole.style.opacity = '0';
+                wormhole.style.transform = 'scale(0.5)';
+                setTimeout(() => wormhole.remove(), 500);
+            }, 1000);
+        }
+        
+        // Initialize games
+        document.addEventListener('DOMContentLoaded', function() {
+            createStarfield();
+            
+            // Initialize Tetris
+            initTetris();
+            
+            // Initialize Memory Game
+            initMemoryGame();
+            
+            // Initialize Binary Game
+            initBinaryGame();
+            
+            // Initialize Dodge Game
+            initDodgeGame();
+            
+            // Add some initial XP
+            addXP(250);
+        });
+        
+        // Tetris Game
+        function initTetris() {
+            const grid = document.getElementById('tetris-grid');
+            const startBtn = document.getElementById('tetris-start');
+            const startBtnId = document.getElementById('tetris-start-id');
+            const pauseBtn = document.getElementById('tetris-pause');
+            const pauseBtnId = document.getElementById('tetris-pause-id');
+            const highscoreEl = document.getElementById('tetris-highscore');
+            const rankEl = document.getElementById('tetris-rank');
+            
+            // Game state
+            let isPlaying = false;
+            let isPaused = false;
+            let score = 0;
+            let highscore = localStorage.getItem('tetrisHighscore') || 0;
+            let gridArray = [];
+            const cols = 10;
+            const rows = 20;
+            const blockSize = 20;
+            
+            // Tetrominoes
+            const tetrominoes = [
+                { shape: [[1, 1, 1, 1]], color: '#6e45e2' }, // I
+                { shape: [[1, 1], [1, 1]], color: '#88d3ce' }, // O
+                { shape: [[0, 1, 0], [1, 1, 1]], color: '#ff7e5f' }, // T
+                { shape: [[1, 1, 0], [0, 1, 1]], color: '#ffcc5f' }, // S
+                { shape: [[0, 1, 1], [1, 1, 0]], color: '#9a4fea' }, // Z
+                { shape: [[1, 0, 0], [1, 1, 1]], color: '#58c7f3' }, // L
+                { shape: [[0, 0, 1], [1, 1, 1]], color: '#f3587d' }  // J
+            ];
+            
+            let currentPiece = null;
+            let nextPiece = null;
+            let currentX = 0;
+            let currentY = 0;
+            let dropInterval = 1000;
+            let dropStart;
+            let gameInterval;
+            
+            // Initialize grid
+            function initGrid() {
+                gridArray = Array(rows).fill().map(() => Array(cols).fill(0));
+                grid.innerHTML = '';
+                grid.style.width = `${cols * blockSize}px`;
+                grid.style.height = `${rows * blockSize}px`;
+                
+                // Create grid cells
+                for (let y = 0; y < rows; y++) {
+                    for (let x = 0; x < cols; x++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'tetris-block absolute';
+                        cell.style.width = `${blockSize}px`;
+                        cell.style.height = `${blockSize}px`;
+                        cell.style.left = `${x * blockSize}px`;
+                        cell.style.top = `${y * blockSize}px`;
+                        cell.dataset.x = x;
+                        cell.dataset.y = y;
+                        grid.appendChild(cell);
+                    }
+                }
+            }
+            
+            // Update grid display
+            function updateGrid() {
+                document.querySelectorAll('.tetris-block').forEach(cell => {
+                    const x = parseInt(cell.dataset.x);
+                    const y = parseInt(cell.dataset.y);
+                    
+                    // Check if this cell is part of the current piece
+                    let isCurrentPiece = false;
+                    if (currentPiece) {
+                        for (let py = 0; py < currentPiece.shape.length; py++) {
+                            for (let px = 0; px < currentPiece.shape[py].length; px++) {
+                                if (currentPiece.shape[py][px] && 
+                                    x === currentX + px && 
+                                    y === currentY + py) {
+                                    isCurrentPiece = true;
+                                    cell.style.backgroundColor = currentPiece.color;
+                                }
+                            }
+                        }
+                    }
+                    
+                    if (!isCurrentPiece) {
+                        cell.style.backgroundColor = gridArray[y][x] ? 
+                            getColorForBlock(gridArray[y][x]) : 'transparent';
+                    }
+                });
+            }
+            
+            function getColorForBlock(blockType) {
+                return tetrominoes[blockType - 1].color;
+            }
+            
+            // Get random piece
+            function getRandomPiece() {
+                return JSON.parse(JSON.stringify(tetrominoes[Math.floor(Math.random() * tetrominoes.length)]));
+            }
+            
+            // Start game
+            function startGame() {
+                if (isPlaying) return;
+                
+                isPlaying = true;
+                isPaused = false;
+                score = 0;
+                dropInterval = 1000;
+                
+                initGrid();
+                currentPiece = getRandomPiece();
+                nextPiece = getRandomPiece();
+                currentX = Math.floor(cols / 2) - Math.floor(currentPiece.shape[0].length / 2);
+                currentY = 0;
+                
+                startBtn.classList.add('hidden');
+                startBtnId.classList.add('hidden');
+                pauseBtn.classList.remove('hidden');
+                pauseBtnId.classList.remove('hidden');
+                
+                dropStart = Date.now();
+                gameInterval = setInterval(gameLoop, 100);
+                
+                // Play music
+                document.getElementById('bg-music').play();
+            }
+            
+            // Pause game
+            function pauseGame() {
+                if (!isPlaying) return;
+                
+                isPaused = !isPaused;
+                
+                if (isPaused) {
+                    clearInterval(gameInterval);
+                    pauseBtn.textContent = 'RESUME';
+                    pauseBtnId.textContent = 'LANJUTKAN';
+                } else {
+                    dropStart = Date.now();
+                    gameInterval = setInterval(gameLoop, 100);
+                    pauseBtn.textContent = 'PAUSE';
+                    pauseBtnId.textContent = 'JEDA';
+                }
+            }
+            
+            // Game loop
+            function gameLoop() {
+                const now = Date.now();
+                const delta = now - dropStart;
+                
+                if (delta > dropInterval) {
+                    moveDown();
+                    dropStart = now;
+                }
+                
+                updateGrid();
+            }
+            
+            // Move piece down
+            function moveDown() {
+                if (!collision(0, 1)) {
+                    currentY++;
+                    return true;
+                }
+                
+                // If we can't move down, lock the piece
+                lockPiece();
+                return false;
+            }
+            
+            // Move piece left
+            function moveLeft() {
+                if (!collision(-1, 0)) {
+                    currentX--;
+                    return true;
+                }
+                return false;
+            }
+            
+            // Move piece right
+            function moveRight() {
+                if (!collision(1, 0)) {
+                    currentX++;
+                    return true;
+                }
+                return false;
+            }
+            
+            // Rotate piece
+            function rotate() {
+                const originalShape = currentPiece.shape;
+                const originalX = currentX;
+                
+                // Transpose matrix
+                const rows = currentPiece.shape.length;
+                const cols = currentPiece.shape[0].length;
+                const newShape = Array(cols).fill().map(() => Array(rows).fill(0));
+                
+                for (let y = 0; y < rows; y++) {
+                    for (let x = 0; x < cols; x++) {
+                        newShape[x][rows - 1 - y] = currentPiece.shape[y][x];
+                    }
+                }
+                
+                currentPiece.shape = newShape;
+                
+                // If rotation causes collision, try wall kicks
+                if (collision(0, 0)) {
+                    if (!collision(1, 0)) {
+                        currentX++;
+                    } else if (!collision(-1, 0)) {
+                        currentX--;
+                    } else if (!collision(0, -1)) {
+                        currentY--;
+                    } else {
+                        // If all wall kicks fail, revert rotation
+                        currentPiece.shape = originalShape;
+                        currentX = originalX;
+                        return false;
+                    }
+                }
+                
+                return true;
+            }
+            
+            // Check for collision
+            function collision(offsetX, offsetY) {
+                for (let y = 0; y < currentPiece.shape.length; y++) {
+                    for (let x = 0; x < currentPiece.shape[y].length; x++) {
+                        if (!currentPiece.shape[y][x]) continue;
+                        
+                        const newX = currentX + x + offsetX;
+                        const newY = currentY + y + offsetY;
+                        
+                        // Check boundaries
+                        if (newX < 0 || newX >= cols || newY >= rows) {
+                            return true;
+                        }
+                        
+                        // Check for existing blocks
+                        if (newY >= 0 && gridArray[newY][newX]) {
+                            return true;
+                        }
+                    }
+                }
+                
+                return false;
+            }
+            
+            // Lock piece in place
+            function lockPiece() {
+                for (let y = 0; y < currentPiece.shape.length; y++) {
+                    for (let x = 0; x < currentPiece.shape[y].length; x++) {
+                        if (currentPiece.shape[y][x]) {
+                            // Find which tetromino this is
+                            const blockType = tetrominoes.findIndex(t => 
+                                JSON.stringify(t.shape) === JSON.stringify(currentPiece.shape)) + 1;
+                            
+                            if (currentY + y >= 0) {
+                                gridArray[currentY + y][currentX + x] = blockType;
+                            }
+                        }
+                    }
+                }
+                
+                // Check for completed lines
+                checkLines();
+                
+                // Spawn next piece
+                currentPiece = nextPiece;
+                nextPiece = getRandomPiece();
+                currentX = Math.floor(cols / 2) - Math.floor(currentPiece.shape[0].length / 2);
+                currentY = 0;
+                
+                // Check for game over
+                if (collision(0, 0)) {
+                    gameOver();
+                }
+            }
+            
+            // Check for completed lines
+            function checkLines() {
+                let linesCleared = 0;
+                
+                for (let y = rows - 1; y >= 0; y--) {
+                    if (gridArray[y].every(cell => cell !== 0)) {
+                        // Remove the line
+                        gridArray.splice(y, 1);
+                        // Add new empty line at top
+                        gridArray.unshift(Array(cols).fill(0));
+                        linesCleared++;
+                        y++; // Check the same row again
+                    }
+                }
+                
+                if (linesCleared > 0) {
+                    // Add score
+                    const points = [0, 100, 300, 500, 800][linesCleared];
+                    score += points;
+                    
+                    // Add XP
+                    addXP(points / 2);
+                    
+                    // Update highscore if needed
+                    if (score > highscore) {
+                        highscore = score;
+                        localStorage.setItem('tetrisHighscore', highscore);
+                        highscoreEl.textContent = highscore;
+                    }
+                    
+                    // Increase speed every 10 lines
+                    if (score > 0 && score % 1000 === 0) {
+                        dropInterval = Math.max(100, dropInterval - 100);
+                    }
+                    
+                    // Update rank
+                    const rankIndex = Math.min(Math.floor(score / 2000), 4);
+                    rankEl.textContent = ["Novice", "Apprentice", "Adept", "Expert", "Master"][rankIndex];
+                    
+                    // Play success sound
+                    document.getElementById('success-sound').play();
+                    
+                    // Create particle effect for each cleared line
+                    for (let i = 0; i < linesCleared * 5; i++) {
+                        createParticles(1);
+                    }
+                }
+            }
+            
+            // Game over
+            function gameOver() {
+                clearInterval(gameInterval);
+                isPlaying = false;
+                
+                startBtn.classList.remove('hidden');
+                startBtnId.classList.remove('hidden');
+                pauseBtn.classList.add('hidden');
+                pauseBtnId.classList.add('hidden');
+                
+                // Play fail sound
+                document.getElementById('fail-sound').play();
+                
+                // Add XP based on score
+                addXP(Math.floor(score / 10));
+            }
+            
+            // Event listeners
+            startBtn.addEventListener('click', startGame);
+            startBtnId.addEventListener('click', startGame);
+            pauseBtn.addEventListener('click', pauseGame);
+            pauseBtnId.addEventListener('click', pauseGame);
+            
+            // Keyboard controls
+            document.addEventListener('keydown', function(e) {
+                if (!isPlaying || isPaused) return;
+                
+                switch (e.key) {
+                    case 'ArrowLeft':
+                        moveLeft();
+                        break;
+                    case 'ArrowRight':
+                        moveRight();
+                        break;
+                    case 'ArrowDown':
+                        moveDown();
+                        break;
+                    case 'ArrowUp':
+                        rotate();
+                        break;
+                    case ' ':
+                        // Hard drop
+                        while (moveDown()) {}
+                        break;
+                }
+            });
+            
+            // Initialize highscore display
+            highscoreEl.textContent = highscore;
+        }
+        
+        // Memory Game
+        function initMemoryGame() {
+            const memoryGrid = document.getElementById('memory-grid');
+            const startBtn = document.getElementById('memory-start');
+            const startBtnId = document.getElementById('memory-start-id');
+            const timerEl = document.getElementById('memory-timer');
+            const highscoreEl = document.getElementById('memory-highscore');
+            const streakEl = document.getElementById('memory-streak');
+            
+            // Game state
+            let isPlaying = false;
+            let cards = [];
+            let flippedCards = [];
+            let matchedPairs = 0;
+            let totalPairs = 8;
+            let timeLeft = 30;
+            let timer;
+            let score = 0;
+            let highscore = localStorage.getItem('memoryHighscore') || 0;
+            let streak = 0;
+            
+            // AI symbols
+            const symbols = [
+                '🤖', '👾', '🛸', '🚀', '🧠', '⚡', '🔭', '🌌',
+                '💻', '📊', '🔢', '🧮', '🔍', '📡', '🛰️', '🌠'
+            ];
+            
+            // Start game
+            function startGame() {
+                if (isPlaying) return;
+                
+                isPlaying = true;
+                matchedPairs = 0;
+                timeLeft = 30;
+                streak = 0;
+                
+                // Create card pairs
+                const selectedSymbols = symbols.slice(0, totalPairs);
+                cards = [...selectedSymbols, ...selectedSymbols];
+                
+                // Shuffle cards
+                shuffleArray(cards);
+                
+                // Create grid
+                memoryGrid.innerHTML = '';
+                memoryGrid.style.gridTemplateColumns = `repeat(4, 1fr)`;
+                
+                cards.forEach((symbol, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'memory-card aspect-square';
+                    card.dataset.index = index;
+                    card.dataset.symbol = symbol;
+                    
+                    card.addEventListener('click', flipCard);
+                    memoryGrid.appendChild(card);
+                });
+                
+                // Start timer
+                timer = setInterval(updateTimer, 1000);
+                updateTimerDisplay();
+                
+                startBtn.classList.add('hidden');
+                startBtnId.classList.add('hidden');
+                
+                // Play music
+                document.getElementById('bg-music').play();
+            }
+            
+            // Flip card
+            function flipCard() {
+                if (!isPlaying || flippedCards.length >= 2) return;
+                
+                const card = this;
+                
+                // Don't flip already matched or flipped cards
+                if (card.classList.contains('flipped') || 
+                    flippedCards.some(c => c.dataset.index === card.dataset.index)) {
+                    return;
+                }
+                
+                // Flip the card
+                card.classList.add('flipped');
+                card.textContent = card.dataset.symbol;
+                flippedCards.push(card);
+                
+                // Play click sound
+                document.getElementById('click-sound').play();
+                
+                // Check for match if two cards are flipped
+                if (flippedCards.length === 2) {
+                    checkForMatch();
+                }
+            }
+            
+            // Check for matching cards
+            function checkForMatch() {
+                const [card1, card2] = flippedCards;
+                
+                if (card1.dataset.symbol === card2.dataset.symbol) {
+                    // Match found
+                    matchedPairs++;
+                    streak++;
+                    streakEl.textContent = streak;
+                    
+                    // Add score based on time left
+                    const points = 100 + (streak * 20);
+                    score += points;
+                    
+                    // Add XP
+                    addXP(points / 5);
+                    
+                    // Update highscore if needed
+                    if (score > highscore) {
+                        highscore = score;
+                        localStorage.setItem('memoryHighscore', highscore);
+                        highscoreEl.textContent = highscore;
+                    }
+                    
+                    // Create wormhole effect
+                    const rect1 = card1.getBoundingClientRect();
+                    const rect2 = card2.getBoundingClientRect();
+                    createWormhole(rect1.left + rect1.width / 2, rect1.top + rect1.height / 2);
+                    createWormhole(rect2.left + rect2.width / 2, rect2.top + rect2.height / 2);
+                    
+                    // Play success sound
+                    document.getElementById('success-sound').play();
+                    
+                    // Check for win
+                    if (matchedPairs === totalPairs) {
+                        winGame();
+                    }
+                    
+                    flippedCards = [];
+                } else {
+                    // No match
+                    streak = 0;
+                    streakEl.textContent = streak;
+                    
+                    setTimeout(() => {
+                        card1.classList.remove('flipped');
+                        card2.classList.remove('flipped');
+                        card1.textContent = '';
+                        card2.textContent = '';
+                        flippedCards = [];
+                    }, 1000);
+                    
+                    // Play fail sound
+                    document.getElementById('fail-sound').play();
+                }
+            }
+            
+            // Update timer
+            function updateTimer() {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }
+            
+            // Update timer display
+            function updateTimerDisplay() {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerEl.innerHTML = `<span class="text-indigo-300">${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}</span>`;
+            }
+            
+            // Win game
+            function winGame() {
+                clearInterval(timer);
+                isPlaying = false;
+                
+                // Bonus points for time left
+                const bonus = timeLeft * 10;
+                score += bonus;
+                
+                // Add XP
+                addXP(bonus / 2);
+                
+                // Update highscore if needed
+                if (score > highscore) {
+                    highscore = score;
+                    localStorage.setItem('memoryHighscore', highscore);
+                    highscoreEl.textContent = highscore;
+                }
+                
+                // Play success sound
+                document.getElementById('success-sound').play();
+                
+                // Create particle effect
+                createParticles(50);
+                
+                // Show restart button after delay
+                setTimeout(() => {
+                    startBtn.classList.remove('hidden');
+                    startBtnId.classList.remove('hidden');
+                }, 2000);
+            }
+            
+            // End game (time out)
+            function endGame() {
+                clearInterval(timer);
+                isPlaying = false;
+                
+                // Play fail sound
+                document.getElementById('fail-sound').play();
+                
+                // Show restart button
+                startBtn.classList.remove('hidden');
+                startBtnId.classList.remove('hidden');
+            }
+            
+            // Helper function to shuffle array
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+            
+            // Event listeners
+            startBtn.addEventListener('click', startGame);
+            startBtnId.addEventListener('click', startGame);
+            
+            // Initialize highscore display
+            highscoreEl.textContent = highscore;
+        }
+        
+        // Binary Game
+        function initBinaryGame() {
+            const binaryQuestion = document.getElementById('binary-question');
+            const options = document.querySelectorAll('.binary-option');
+            const startBtn = document.getElementById('binary-start');
+            const startBtnId = document.getElementById('binary-start-id');
+            const highscoreEl = document.getElementById('binary-highscore');
+            const comboEl = document.getElementById('binary-combo');
+            
+            // Game state
+            let isPlaying = false;
+            let score = 0;
+            let highscore = localStorage.getItem('binaryHighscore') || 0;
+            let combo = 0;
+            let timeLeft = 60;
+            let timer;
+            let currentAnswer = '';
+            
+            // Binary to letter mapping
+            const binaryMap = {
+                '01000001': 'A',
+                '01000010': 'B',
+                '01000011': 'C',
+                '01000100': 'D',
+                '01000101': 'E',
+                '01000110': 'F',
+                '01000111': 'G',
+                '01001000': 'H'
+            };
+            
+            // Start game
+            function startGame() {
+                if (isPlaying) return;
+                
+                isPlaying = true;
+                score = 0;
+                combo = 0;
+                timeLeft = 60;
+                
+                startBtn.classList.add('hidden');
+                startBtnId.classList.add('hidden');
+                
+                // Generate first question
+                generateQuestion();
+                
+                // Start timer
+                timer = setInterval(updateTimer, 1000);
+                
+                // Play music
+                document.getElementById('bg-music').play();
+            }
+            
+            // Generate new question
+            function generateQuestion() {
+                const binaryCodes = Object.keys(binaryMap);
+                const correctBinary = binaryCodes[Math.floor(Math.random() * binaryCodes.length)];
+                currentAnswer = binaryMap[correctBinary];
+                
+                binaryQuestion.textContent = correctBinary;
+                
+                // Generate options (one correct, three random)
+                const optionsArray = [currentAnswer];
+                while (optionsArray.length < 4) {
+                    const randomLetter = String.fromCharCode(65 + Math.floor(Math.random() * 8));
+                    if (!optionsArray.includes(randomLetter)) {
+                        optionsArray.push(randomLetter);
+                    }
+                }
+                
+                // Shuffle options
+                shuffleArray(optionsArray);
+                
+                // Assign to buttons
+                options.forEach((option, index) => {
+                    option.dataset.value = optionsArray[index];
+                    option.textContent = optionsArray[index];
+                });
+            }
+            
+            // Check answer
+            function checkAnswer(selectedValue) {
+                if (!isPlaying) return;
+                
+                if (selectedValue === currentAnswer) {
+                    // Correct answer
+                    combo++;
+                    comboEl.textContent = combo;
+                    
+                    // Calculate points (base + combo bonus)
+                    const points = 100 + (combo * 20);
+                    score += points;
+                    
+                    // Add XP
+                    addXP(points / 10);
+                    
+                    // Update highscore if needed
+                    if (score > highscore) {
+                        highscore = score;
+                        localStorage.setItem('binaryHighscore', highscore);
+                        highscoreEl.textContent = highscore;
+                    }
+                    
+                    // Play success sound
+                    document.getElementById('success-sound').play();
+                    
+                    // Create particle effect
+                    createParticles(5);
+                    
+                    // Generate new question
+                    generateQuestion();
+                } else {
+                    // Wrong answer
+                    combo = 0;
+                    comboEl.textContent = combo;
+                    
+                    // Play fail sound
+                    document.getElementById('fail-sound').play();
+                    
+                    // Generate new question after short delay
+                    setTimeout(generateQuestion, 500);
+                }
+            }
+            
+            // Update timer
+            function updateTimer() {
+                timeLeft--;
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }
+            
+            // End game
+            function endGame() {
+                clearInterval(timer);
+                isPlaying = false;
+                
+                // Add XP based on score
+                addXP(Math.floor(score / 20));
+                
+                // Show start button
+                startBtn.classList.remove('hidden');
+                startBtnId.classList.remove('hidden');
+            }
+            
+            // Helper function to shuffle array
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+            
+            // Event listeners
+            startBtn.addEventListener('click', startGame);
+            startBtnId.addEventListener('click', startGame);
+            
+            options.forEach(option => {
+                option.addEventListener('click', function() {
+                    checkAnswer(this.dataset.value);
+                });
+            });
+            
+            // Initialize highscore display
+            highscoreEl.textContent = highscore;
+        }
+        
+        // Dodge Game
+        function initDodgeGame() {
+            const dodgeGame = document.getElementById('dodge-game');
+            const spaceship = document.getElementById('spaceship');
+            const startBtn = document.getElementById('dodge-start');
+            const startBtnId = document.getElementById('dodge-start-id');
+            const scoreEl = document.getElementById('dodge-score');
+            const highscoreEl = document.getElementById('dodge-highscore');
+            const speedEl = document.getElementById('dodge-speed');
+            
+            // Game state
+            let isPlaying = false;
+            let score = 0;
+            let highscore = localStorage.getItem('dodgeHighscore') || 0;
+            let gameSpeed = 1;
+            let gameInterval;
+            let dataPoints = [];
+            let obstacles = [];
+            let spaceshipX = 50;
+            let keysPressed = {};
+            
+            // Start game
+            function startGame() {
+                if (isPlaying) return;
+                
+                isPlaying = true;
+                score = 0;
+                gameSpeed = 1;
+                spaceshipX = 50;
+                
+                dataPoints = [];
+                obstacles = [];
+                
+                startBtn.classList.add('hidden');
+                startBtnId.classList.add('hidden');
+                
+                scoreEl.textContent = '0';
+                speedEl.textContent = '1x';
+                
+                // Position spaceship
+                updateSpaceshipPosition();
+                
+                // Start game loop
+                gameInterval = setInterval(gameLoop, 20);
+                
+                // Play music
+                document.getElementById('bg-music').play();
+            }
+            
+            // Game loop
+            function gameLoop() {
+                if (!isPlaying) return;
+                
+                // Move spaceship
+                if (keysPressed['ArrowLeft'] && spaceshipX > 0) {
+                    spaceshipX -= 2 * gameSpeed;
+                }
+                if (keysPressed['ArrowRight'] && spaceshipX < 100) {
+                    spaceshipX += 2 * gameSpeed;
+                }
+                
+                updateSpaceshipPosition();
+                
+                // Generate data points and obstacles
+                if (Math.random() < 0.03) {
+                    createDataPoint();
+                }
+                if (Math.random() < 0.02) {
+                    createObstacle();
+                }
+                
+                // Move data points and obstacles
+                moveDataPoints();
+                moveObstacles();
+                
+                // Check collisions
+                checkCollisions();
+                
+                // Increase difficulty
+                if (score > 0 && score % 500 === 0) {
+                    gameSpeed = Math.min(3, gameSpeed + 0.2);
+                    speedEl.textContent = `${gameSpeed.toFixed(1)}x`;
+                }
+            }
+            
+            // Update spaceship position
+            function updateSpaceshipPosition() {
+                const gameWidth = dodgeGame.offsetWidth;
+                spaceship.style.left = `calc(${spaceshipX}% - 10px)`;
+            }
+            
+            // Create data point
+            function createDataPoint() {
+                const point = {
+                    x: Math.random() * 90 + 5, // 5-95%
+                    y: -10,
+                    size: Math.random() * 10 + 5, // 5-15px
+                    speed: Math.random() * 3 + 2 * gameSpeed,
+                    element: document.createElement('div')
+                };
+                
+                point.element.className = 'data-point';
+                point.element.style.width = `${point.size}px`;
+                point.element.style.height = `${point.size}px`;
+                point.element.style.left = `${point.x}%`;
+                point.element.style.top = `${point.y}px`;
+                
+                dodgeGame.appendChild(point.element);
+                dataPoints.push(point);
+            }
+            
+            // Create obstacle
+            function createObstacle() {
+                const obstacle = {
+                    x: Math.random() * 90 + 5, // 5-95%
+                    y: -20,
+                    size: Math.random() * 20 + 15, // 15-35px
+                    speed: Math.random() * 2 + 1 * gameSpeed,
+                    element: document.createElement('div')
+                };
+                
+                obstacle.element.className = 'obstacle';
+                obstacle.element.style.width = `${obstacle.size}px`;
+                obstacle.element.style.height = `${obstacle.size}px`;
+                obstacle.element.style.left = `${obstacle.x}%`;
+                obstacle.element.style.top = `${obstacle.y}px`;
+                
+                dodgeGame.appendChild(obstacle.element);
+                obstacles.push(obstacle);
+            }
+            
+            // Move data points
+            function moveDataPoints() {
+                for (let i = dataPoints.length - 1; i >= 0; i--) {
+                    const point = dataPoints[i];
+                    point.y += point.speed;
+                    point.element.style.top = `${point.y}px`;
+                    
+                    // Remove if out of bounds
+                    if (point.y > dodgeGame.offsetHeight) {
+                        point.element.remove();
+                        dataPoints.splice(i, 1);
+                    }
+                }
+            }
+            
+            // Move obstacles
+            function moveObstacles() {
+                for (let i = obstacles.length - 1; i >= 0; i--) {
+                    const obstacle = obstacles[i];
+                    obstacle.y += obstacle.speed;
+                    obstacle.element.style.top = `${obstacle.y}px`;
+                    
+                    // Remove if out of bounds
+                    if (obstacle.y > dodgeGame.offsetHeight) {
+                        obstacle.element.remove();
+                        obstacles.splice(i, 1);
+                    }
+                }
+            }
+            
+            // Check collisions
+            function checkCollisions() {
+                const shipRect = spaceship.getBoundingClientRect();
+                
+                // Check data point collisions
+                for (let i = dataPoints.length - 1; i >= 0; i--) {
+                    const point = dataPoints[i];
+                    const pointRect = point.element.getBoundingClientRect();
+                    
+                    if (isColliding(shipRect, pointRect)) {
+                        // Collect data point
+                        score += 50;
+                        scoreEl.textContent = score;
+                        
+                        // Add XP
+                        addXP(5);
+                        
+                        // Play success sound
+                        document.getElementById('success-sound').play();
+                        
+                        // Create particle effect
+                        createParticles(3);
+                        
+                        // Remove data point
+                        point.element.remove();
+                        dataPoints.splice(i, 1);
+                    }
+                }
+                
+                // Check obstacle collisions
+                for (let i = obstacles.length - 1; i >= 0; i--) {
+                    const obstacle = obstacles[i];
+                    const obstacleRect = obstacle.element.getBoundingClientRect();
+                    
+                    if (isColliding(shipRect, obstacleRect)) {
+                        // Game over
+                        endGame();
+                        break;
+                    }
+                }
+            }
+            
+            // Check if two elements are colliding
+            function isColliding(rect1, rect2) {
+                return !(
+                    rect1.right < rect2.left || 
+                    rect1.left > rect2.right || 
+                    rect1.bottom < rect2.top || 
+                    rect1.top > rect2.bottom
+                );
+            }
+            
+            // End game
+            function endGame() {
+                clearInterval(gameInterval);
+                isPlaying = false;
+                
+                // Remove all data points and obstacles
+                dataPoints.forEach(point => point.element.remove());
+                obstacles.forEach(obstacle => obstacle.element.remove());
+                dataPoints = [];
+                obstacles = [];
+                
+                // Update highscore if needed
+                if (score > highscore) {
+                    highscore = score;
+                    localStorage.setItem('dodgeHighscore', highscore);
+                    highscoreEl.textContent = highscore;
+                }
+                
+                // Add XP based on score
+                addXP(Math.floor(score / 10));
+                
+                // Play fail sound
+                document.getElementById('fail-sound').play();
+                
+                // Show start button
+                startBtn.classList.remove('hidden');
+                startBtnId.classList.remove('hidden');
+            }
+            
+            // Keyboard controls
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                    keysPressed[e.key] = true;
+                }
+                
+                // Space to start game if not playing
+                if (e.key === ' ' && !isPlaying) {
+                    startGame();
+                }
+            });
+            
+            document.addEventListener('keyup', function(e) {
+                if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                    keysPressed[e.key] = false;
+                }
+            });
+            
+            // Event listeners
+            startBtn.addEventListener('click', startGame);
+            startBtnId.addEventListener('click', startGame);
+            
+            // Initialize highscore display
+            highscoreEl.textContent = highscore;
+        }
+    </script>
+</body>
+</html>

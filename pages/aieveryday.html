@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI in Space Life</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .space-bg {
+            background: radial-gradient(ellipse at center, #0a0e2a 0%, #000000 100%);
+        }
+        .panel-glow {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+        .interactive-btn {
+            transition: all 0.3s ease;
+        }
+        .interactive-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+        .language-tab {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .language-tab.active {
+            background-color: #1e40af;
+            color: white;
+        }
+        .ai-character {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="space-bg text-white min-h-screen font-sans">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header with Language Toggle -->
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                <i class="fas fa-robot mr-2"></i> AI in Space Life
+            </h1>
+            <div class="flex space-x-2 bg-gray-800 rounded-lg p-1">
+                <div id="enTab" class="language-tab active px-4 py-1 rounded-md" onclick="switchLanguage('en')">English</div>
+                <div id="idTab" class="language-tab px-4 py-1 rounded-md" onclick="switchLanguage('id')">Bahasa Indonesia</div>
+            </div>
+        </div>
+
+        <!-- Introduction Section -->
+        <section class="mb-12 bg-gray-900 bg-opacity-50 rounded-xl p-6 panel-glow">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-2/3 md:pr-8">
+                    <div class="en-content">
+                        <h2 class="text-2xl font-semibold mb-4 text-blue-300"><i class="fas fa-rocket mr-2"></i> Welcome to Space Station Omega!</h2>
+                        <p class="mb-4 text-gray-300">
+                            Artificial Intelligence (AI) is the ability of machines to mimic human thinking and decision-making to make life easier. 
+                            Here on our futuristic space station, AI helps with everything from climate control to meal planning!
+                        </p>
+                        <p class="mb-6 text-gray-300">
+                            Just like how your smartphone learns your habits, our space station's AI learns from astronauts' behaviors to provide personalized assistance.
+                        </p>
+                    </div>
+                    <div class="id-content hidden">
+                        <h2 class="text-2xl font-semibold mb-4 text-blue-300"><i class="fas fa-rocket mr-2"></i> Selamat Datang di Stasiun Luar Angkasa Omega!</h2>
+                        <p class="mb-4 text-gray-300">
+                            Kecerdasan Buatan (AI) adalah kemampuan mesin untuk meniru pemikiran dan pengambilan keputusan manusia untuk mempermudah kehidupan.
+                            Di sini di stasiun luar angkasa futuristik kami, AI membantu segala hal mulai dari kontrol iklim hingga perencanaan makan!
+                        </p>
+                        <p class="mb-6 text-gray-300">
+                            Sama seperti bagaimana ponsel cerdas Anda mempelajari kebiasaan Anda, AI stasiun luar angkasa kami belajar dari perilaku astronot untuk memberikan bantuan yang dipersonalisasi.
+                        </p>
+                    </div>
+                    <button onclick="startLesson()" class="px-6 py-2 bg-blue-600 hover:bg-blue-500 rounded-full font-medium interactive-btn">
+                        <span class="en-content">Begin Tour <i class="fas fa-arrow-right ml-1"></i></span>
+                        <span class="id-content hidden">Mulai Tur <i class="fas fa-arrow-right ml-1"></i></span>
+                    </button>
+                </div>
+                <div class="md:w-1/3 mt-6 md:mt-0 flex justify-center">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1086/1086741.png" alt="AI Assistant" class="w-48 h-48 ai-character">
+                </div>
+            </div>
+        </section>
+
+        <!-- Lesson Content (Hidden Initially) -->
+        <div id="lessonContent" class="hidden">
+            <!-- Smart Devices Section -->
+            <section class="mb-12 bg-gray-900 bg-opacity-50 rounded-xl p-6 panel-glow fade-in">
+                <div class="flex flex-col md:flex-row items-center">
+                    <div class="md:w-1/2 mb-6 md:mb-0 md:pr-6">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1000" alt="Smart Space Station" class="w-full rounded-lg">
+                    </div>
+                    <div class="md:w-1/2">
+                        <div class="en-content">
+                            <h2 class="text-2xl font-semibold mb-4 text-blue-300"><i class="fas fa-home mr-2"></i> 1. Smart Station Systems</h2>
+                            <p class="mb-4 text-gray-300">
+                                Our space station uses AI to automatically adjust lighting, temperature, and oxygen levels - just like smart homes on Earth!
+                            </p>
+                            <p class="mb-4 text-gray-300">
+                                The AI learns your preferences and adjusts the environment before you even ask. If you always lower the temperature at 8 PM, it will start doing it automatically!
+                            </p>
+                        </div>
+                        <div class="id-content hidden">
+                            <h2 class="text-2xl font-semibold mb-4 text-blue-300"><i class="fas fa-home mr-2"></i> 1. Sistem Stasiun Cerdas</h2>
+                            <p class="mb-4 text-gray-300">
+                                Stasiun luar angkasa kami menggunakan AI untuk secara otomatis menyesuaikan pencahayaan, suhu, dan tingkat oksigen - seperti rumah pintar di Bumi!
+                            </p>
+                            <p class="mb-4 text-gray-300">
+                                AI mempelajari preferensi Anda dan menyesuaikan lingkungan bahkan sebelum Anda meminta. Jika Anda selalu menurunkan suhu pada pukul 8 malam, AI akan mulai melakukannya secara otomatis!
+                            </p>
+                        </div>
+                        
+                        <!-- Interactive Example -->
+                        <div class="mt-6 p-4 bg-gray-800 rounded-lg">
+                            <h4 class="font-medium mb-3 text-blue-300 en-content">Try it yourself:</h4>
+                            <h4 class="font-medium mb-3 text-blue-300 id-content hidden">Cobalah sendiri:</h4>
+                            <p class="text-sm mb-3 text-gray-300 en-content">The station AI notices you usually read at this time. What should it do?</p>
+                            <p class="text-sm mb-3 text-gray-300 id-content hidden">AI stasiun memperhatikan Anda biasanya membaca saat ini. Apa yang harus dilakukan?</p>
+                            <div class="space-y-2">
+                                <button onclick="checkAnswer(this, true)" class="w-full text-left px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded interactive-btn en-content">Adjust lights to reading brightness</button>
+                                <button onclick="checkAnswer(this, true)" class="w-full text-left px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded interactive-btn id-content hidden">Sesuaikan lampu ke kecerahan membaca</button>
+                                
+                                <button onclick="checkAnswer(this, false)" class="w-full text-left px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded interactive-btn en-content">Play loud music</button>
+                                <button onclick="checkAnswer(this, false)" class="w-full text-left px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded interactive-btn id-content hidden">Memainkan musik keras</button>
+                                
+                                <button onclick="checkAnswer(this, false)" class="w-full text-left px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded interactive-btn en-content">Turn off all lights</button>
+                                <button onclick="checkAnswer(this, false)" class="w-full text-left px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded interactive-btn id-content hidden">Matikan semua lampu</button>
+                            </div>
+                            <div id="feedback1" class="mt-3 text-sm hidden"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Voice Assistants Section -->
+            <section class="mb-12 bg-gray-900 bg-opacity-50 rounded-xl p-6 panel-glow fade-in">
+                <div class="flex flex-col md:flex-row items-center">
+                    <div class="md:w-1/2 mb-6 md:mb-0 md:pr-6">
+                        <div class="en-content">
+                            <h2 class="text-2xl font-semibold mb-4 text-blue-300"><i class="fas fa-microphone-alt mr-2"></i> 2. Voice Assistant AI</h2>
+                            <p class="mb-4 text-gray-300">
+                                Just like saying "Hey Google" or "Alexa" on Earth, our astronauts can say "Computer" followed by a command to control the station.
+                            </p>
+                            <p class="mb-4 text-gray-300">
+                                The AI understands natural language, so you can say "Computer, I'm cold" and it will raise the temperature, or "Lights please" to adjust lighting.
+                            </p>
+                        </div>
+                        <div class="id-content hidden">
+                            <h2 class="text-2xl font-semibold mb-4 text-blue-300"><i class="fas fa-microphone-alt mr-2"></i> 2. Asisten Suara AI</h2>
+                            <p class="mb-4 text-gray-300">
+                                Sama seperti mengatakan "Hey Google" atau "Alexa" di Bumi, astronot kami dapat mengatakan "Computer" diikuti dengan perintah untuk mengontrol stasiun.
+                            </p>
+                            <p class="mb-4 text-gray-300">
+                                AI memahami bahasa alami, jadi Anda bisa mengatakan "Computer, I'm cold" dan AI akan menaikkan suhu, atau "Lights please" untuk menyesuaikan pencahayaan.
+                            </p>
+                        </div>
+                        
+                        <!-- Interactive Voice Demo -->
+                        <div class="mt-6 p-4 bg-gray-800 rounded-lg">
+                            <h4 class="font-medium mb-3 text-blue-300 en-content">Voice Command Demo:</h4>
+                            <h4 class="font-medium mb-3 text-blue-300 id-content hidden">Demo Perintah Suara:</h4>
+                            
+                            <div class="mb-4 p-3 bg-gray-700 rounded-lg">
+                                <div class="flex items-center">
+                                    <button id="voiceBtn" onclick="startVoiceCommand()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-l-lg interactive-btn">
+                                        <i class="fas fa-microphone"></i>
+                                    </button>
+                                    <div id="voiceCommand" class="flex-1 px-3 py-2 bg-gray-600 rounded-r-lg en-content">Say "Computer" followed by a command</div>
+                                    <div id="voiceCommandId" class="flex-1 px-3 py-2 bg-gray-600 rounded-r-lg id-content hidden">Katakan "Computer" diikuti dengan perintah</div>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="demoCommand('Computer, lights at 50%')" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded text-sm interactive-btn en-content">Lights at 50%</button>
+                                <button onclick="demoCommand('Computer, lights at 50%')" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded text-sm interactive-btn id-content hidden">Lampu 50%</button>
+                                
+                                <button onclick="demoCommand('Computer, play relaxing music')" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded text-sm interactive-btn en-content">Play music</button>
+                                <button onclick="demoCommand('Computer, play relaxing music')" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded text-sm interactive-btn id-content hidden">Mainkan musik</button>
+                                
+                                <button onclick="demoCommand('Computer, what is my schedule?')" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded text-sm interactive-btn en-content">My schedule</button>
+                                <button onclick="demoCommand('Computer, what is my schedule?')" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded text-sm interactive-btn id-content hidden">Jadwal saya</button>
+                                
+                                <button onclick="demoCommand('Computer, order more space food')" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded text-sm interactive-btn en-content">Order food</button>
+                                <button onclick="demoCommand('Computer, order more space food')" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded text-sm interactive-btn id-content hidden">Pesan makanan</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="md:w-1/2">
+                        <img src="https://images.unsplash.com/photo-1573164713988-8665fc71eabe?q=80&w=1000" alt="Astronaut using voice commands" class="w-full rounded-lg">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recommendation Systems Section -->
+            <section class="mb-12 bg-gray-900 bg-opacity-50 rounded-xl p-6 panel-glow fade-in">
+                <div class="flex flex-col md:flex-row items-center">
+                    <div class="md:w-1/2 mb-6 md:mb-0 md:pr-6">
+                        <img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1000" alt="Space food" class="w-full rounded-lg">
+                    </div>
+                    <div class="md:w-1/2">
+                        <div class="en-content">
+                            <h2 class="text-2xl font-semibold mb-4 text-blue-300"><i class="fas fa-lightbulb mr-2"></i> 3. Smart Recommendations</h2>
+                            <p class="mb-4 text-gray-300">
+                                The station AI observes your habits to make helpful suggestions, just like how Netflix recommends shows or Amazon suggests products.
+                            </p>
+                            <p class="mb-4 text-gray-300">
+                                If you always drink coffee in the morning, it will have it ready. If you exercise at certain times, it will prepare the gym and suggest workout music!
+                            </p>
+                        </div>
+                        <div class="id-content hidden">
+                            <h2 class="text-2xl font-semibold mb-4 text-blue-300"><i class="fas fa-lightbulb mr-2"></i> 3. Rekomendasi Cerdas</h2>
+                            <p class="mb-4 text-gray-300">
+                                AI stasiun mengamati kebiasaan Anda untuk memberikan saran yang membantu, seperti bagaimana Netflix merekomendasikan acara atau Amazon menyarankan produk.
+                            </p>
+                            <p class="mb-4 text-gray-300">
+                                Jika Anda selalu minum kopi di pagi hari, AI akan menyiapkannya. Jika Anda berolahraga pada waktu tertentu, AI akan menyiapkan gym dan menyarankan musik olahraga!
+                            </p>
+                        </div>
+                        
+                        <!-- Recommendation Simulation -->
+                        <div class="mt-6 p-4 bg-gray-800 rounded-lg">
+                            <h4 class="font-medium mb-3 text-blue-300 en-content">Your Daily Recommendations:</h4>
+                            <h4 class="font-medium mb-3 text-blue-300 id-content hidden">Rekomendasi Harian Anda:</h4>
+                            
+                            <div id="recommendationContainer" class="space-y-3">
+                                <!-- Recommendations will appear here -->
+                            </div>
+                            
+                            <button onclick="generateRecommendations()" class="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded interactive-btn en-content">
+                                <i class="fas fa-sync-alt mr-2"></i> Get New Recommendations
+                            </button>
+                            <button onclick="generateRecommendations()" class="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded interactive-btn id-content hidden">
+                                <i class="fas fa-sync-alt mr-2"></i> Dapatkan Rekomendasi Baru
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Real-World Connection -->
+            <section class="mb-12 bg-gray-900 bg-opacity-50 rounded-xl p-6 panel-glow fade-in">
+                <div class="en-content">
+                    <h2 class="text-2xl font-semibold mb-4 text-blue-300"><i class="fas fa-globe-americas mr-2"></i> AI Back on Earth</h2>
+                    <p class="mb-4 text-gray-300">
+                        These same AI technologies are already part of your daily life on Earth:
+                    </p>
+                    <ul class="list-disc pl-6 mb-6 text-gray-300 space-y-2">
+                        <li><span class="font-medium text-blue-300">Smart Homes:</span> Thermostats that learn your schedule, lights that turn on automatically</li>
+                        <li><span class="font-medium text-blue-300">Voice Assistants:</span> Alexa, Siri and Google Assistant help with information and tasks</li>
+                        <li><span class="font-medium text-blue-300">Recommendations:</span> Netflix, Spotify, and shopping sites suggest content you might like</li>
+                    </ul>
+                </div>
+                <div class="id-content hidden">
+                    <h2 class="text-2xl font-semibold mb-4 text-blue-300"><i class="fas fa-globe-americas mr-2"></i> AI di Bumi</h2>
+                    <p class="mb-4 text-gray-300">
+                        Teknologi AI yang sama ini sudah menjadi bagian dari kehidupan sehari-hari Anda di Bumi:
+                    </p>
+                    <ul class="list-disc pl-6 mb-6 text-gray-300 space-y-2">
+                        <li><span class="font-medium text-blue-300">Rumah Pintar:</span> Termostat yang mempelajari jadwal Anda, lampu yang menyala secara otomatis</li>
+                        <li><span class="font-medium text-blue-300">Asisten Suara:</span> Alexa, Siri dan Google Assistant membantu dengan informasi dan tugas</li>
+                        <li><span class="font-medium text-blue-300">Rekomendasi:</span> Netflix, Spotify, dan situs belanja menyarankan konten yang mungkin Anda sukai</li>
+                    </ul>
+                </div>
+                
+                <div class="flex justify-center">
+                    <button onclick="resetLesson()" class="px-6 py-2 bg-purple-600 hover:bg-purple-500 rounded-full font-medium interactive-btn">
+                        <span class="en-content"><i class="fas fa-redo mr-1"></i> Start Over</span>
+                        <span class="id-content hidden"><i class="fas fa-redo mr-1"></i> Mulai Lagi</span>
+                    </button>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // Language Switching
+        function switchLanguage(lang) {
+            if (lang === 'en') {
+                document.getElementById('enTab').classList.add('active');
+                document.getElementById('idTab').classList.remove('active');
+                document.querySelectorAll('.en-content').forEach(el => el.classList.remove('hidden'));
+                document.querySelectorAll('.id-content').forEach(el => el.classList.add('hidden'));
+            } else {
+                document.getElementById('enTab').classList.remove('active');
+                document.getElementById('idTab').classList.add('active');
+                document.querySelectorAll('.en-content').forEach(el => el.classList.add('hidden'));
+                document.querySelectorAll('.id-content').forEach(el => el.classList.remove('hidden'));
+            }
+        }
+
+        // Lesson Navigation
+        function startLesson() {
+            document.getElementById('lessonContent').classList.remove('hidden');
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        function resetLesson() {
+            document.getElementById('lessonContent').classList.add('hidden');
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Interactive Quiz Functionality
+        function checkAnswer(button, isCorrect) {
+            const feedback = button.parentElement.nextElementSibling;
+            const allButtons = button.parentElement.querySelectorAll('button');
+            
+            // Disable all buttons
+            allButtons.forEach(btn => {
+                btn.disabled = true;
+                btn.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+                
+                if (btn === button) {
+                    if (isCorrect) {
+                        btn.classList.add('bg-green-600', 'hover:bg-green-500');
+                    } else {
+                        btn.classList.add('bg-red-600', 'hover:bg-red-500');
+                    }
+                }
+            });
+            
+            // Show feedback
+            feedback.classList.remove('hidden');
+            if (isCorrect) {
+                feedback.textContent = document.querySelector('.en-content:not(.hidden)') ? 
+                    '✓ Correct! The AI would adjust the environment to match your habits.' : 
+                    '✓ Benar! AI akan menyesuaikan lingkungan dengan kebiasaan Anda.';
+                feedback.className = 'mt-3 text-sm text-green-400';
+            } else {
+                feedback.textContent = document.querySelector('.en-content:not(.hidden)') ? 
+                    '✗ Not quite. The AI tries to anticipate your needs based on patterns.' : 
+                    '✗ Tidak tepat. AI mencoba mengantisipasi kebutuhan Anda berdasarkan pola.';
+                feedback.className = 'mt-3 text-sm text-red-400';
+            }
+        }
+
+        // Voice Command Demo
+        function startVoiceCommand() {
+            const voiceBtn = document.getElementById('voiceBtn');
+            const voiceCommand = document.querySelector('.en-content:not(.hidden)') ? 
+                document.getElementById('voiceCommand') : 
+                document.getElementById('voiceCommandId');
+            
+            voiceBtn.innerHTML = '<i class="fas fa-microphone fa-spin"></i>';
+            voiceBtn.classList.add('bg-purple-600');
+            
+            if (document.querySelector('.en-content:not(.hidden)')) {
+                voiceCommand.textContent = "Listening... say a command";
+            } else {
+                voiceCommand.textContent = "Mendengarkan... ucapkan perintah";
+            }
+            
+            setTimeout(() => {
+                voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+                voiceBtn.classList.remove('bg-purple-600');
+                
+                if (document.querySelector('.en-content:not(.hidden)')) {
+                    voiceCommand.textContent = 'Try tapping a sample command below';
+                } else {
+                    voiceCommand.textContent = 'Coba ketuk perintah contoh di bawah';
+                }
+            }, 2000);
+        }
+
+        function demoCommand(command) {
+            const voiceCommand = document.querySelector('.en-content:not(.hidden)') ? 
+                document.getElementById('voiceCommand') : 
+                document.getElementById('voiceCommandId');
+            
+            voiceCommand.textContent = `"${command}"`;
+            
+            // Show response based on command
+            setTimeout(() => {
+                let response = '';
+                
+                if (command.includes('lights')) {
+                    response = document.querySelector('.en-content:not(.hidden)') ? 
+                        "Adjusting lighting to requested level" : 
+                        "Menyesuaikan pencahayaan ke tingkat yang diminta";
+                } 
+                else if (command.includes('music')) {
+                    response = document.querySelector('.en-content:not(.hidden)') ? 
+                        "Playing relaxing space melodies" : 
+                        "Memainkan melodi luar angkasa yang menenangkan";
+                }
+                else if (command.includes('schedule')) {
+                    response = document.querySelector('.en-content:not(.hidden)') ? 
+                        "Your schedule shows exercise at 3 PM today" : 
+                        "Jadwal Anda menunjukkan olahraga pukul 3 sore hari ini";
+                }
+                else if (command.includes('food')) {
+                    response = document.querySelector('.en-content:not(.hidden)') ? 
+                        "Ordering your usual space food supplies" : 
+                        "Memesan persediaan makanan luar angkasa biasa Anda";
+                }
+                
+                voiceCommand.textContent = response;
+            }, 800);
+        }
+
+        // Recommendation System
+        const recommendations = {
+            en: [
+                "Your workout playlist: Cosmic Beats Mix",
+                "Meal suggestion: Space pasta with protein cubes (your favorite!)",
+                "Free time activity: Virtual Earth sightseeing tour",
+                "Sleep recommendation: Try going to bed 30 minutes earlier tonight",
+                "New podcast: 'The Science of Black Holes'"
+            ],
+            id: [
+                "Daftar putar olahraga Anda: Cosmic Beats Mix",
+                "Saran makan: Pasta luar angkasa dengan kubus protein (favorit Anda!)",
+                "Aktivitas waktu luang: Tur virtual melihat pemandangan Bumi",
+                "Rekomendasi tidur: Coba tidur 30 menit lebih awal malam ini",
+                "Podcast baru: 'Sains Lubang Hitam'"
+            ]
+        };
+
+        function generateRecommendations() {
+            const container = document.getElementById('recommendationContainer');
+            container.innerHTML = '';
+            
+            const isEnglish = document.querySelector('.en-content:not(.hidden)');
+            const recs = isEnglish ? recommendations.en : recommendations.id;
+            
+            // Shuffle and pick 3 recommendations
+            const shuffled = [...recs].sort(() => 0.5 - Math.random());
+            const selected = shuffled.slice(0, 3);
+            
+            selected.forEach(rec => {
+                const div = document.createElement('div');
+                div.className = 'p-3 bg-gray-700 rounded-lg flex items-start';
+                div.innerHTML = `
+                    <i class="fas fa-lightbulb text-yellow-300 mt-1 mr-3"></i>
+                    <span>${rec}</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            generateRecommendations();
+        });
+    </script>
+</body>
+</html>

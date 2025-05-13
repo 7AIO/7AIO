@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Basics: Cosmic Foundations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .planet {
+            transition: all 0.5s ease;
+        }
+        
+        .galaxy {
+            background: radial-gradient(circle, rgba(13,17,38,1) 0%, rgba(5,7,17,1) 100%);
+        }
+        
+        .toggle-language {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-language:hover {
+            transform: scale(1.1);
+        }
+        
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .ai-neuron { /* Reused for visual consistency if needed, though less direct for basics */
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            position: relative;
+            margin: 10px;
+            box-shadow: 0 0 15px rgba(167, 119, 227, 0.7);
+        }
+        
+        .ai-connection { /* Reused for visual consistency */
+            position: absolute;
+            background: linear-gradient(to right, #6e8efb, #a777e3);
+            height: 3px;
+            transform-origin: left center;
+            box-shadow: 0 0 5px rgba(167, 119, 227, 0.7);
+        }
+    </style>
+</head>
+<body class="galaxy text-white min-h-screen overflow-x-hidden">
+    <!-- Background stars -->
+    <div id="stars-container" class="fixed top-0 left-0 w-full h-full pointer-events-none"></div>
+    
+    <div class="container mx-auto px-4 py-12 relative z-10">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
+                <span class="en">AI Basics: Cosmic Foundations</span>
+                <span class="id" style="display:none">Dasar-Dasar AI: Fondasi Kosmik</span>
+            </h1>
+            <p class="text-xl text-blue-200 max-w-3xl mx-auto">
+                <span class="en">Understanding the fundamental particles of Artificial Intelligence</span>
+                <span class="id" style="display:none">Memahami partikel fundamental Kecerdasan Buatan</span>
+            </p>
+            
+            <!-- Language toggle -->
+            <div class="mt-6 flex justify-center space-x-4">
+                <span class="toggle-language px-4 py-2 rounded-full bg-blue-900 hover:bg-blue-800" onclick="setLanguage('en')">
+                    <i class="fas fa-globe-americas mr-2"></i> English
+                </span>
+                <span class="toggle-language px-4 py-2 rounded-full bg-blue-900 hover:bg-blue-800" onclick="setLanguage('id')">
+                    <i class="fas fa-globe-asia mr-2"></i> Bahasa Indonesia
+                </span>
+            </div>
+        </header>
+        
+        <!-- Navigation -->
+        <nav class="flex justify-center mb-12 overflow-x-auto py-4">
+            <div class="flex space-x-2">
+                <button class="nav-btn px-6 py-3 rounded-full bg-indigo-900 hover:bg-indigo-800 transition-all duration-300" data-section="ai-definition">
+                    <i class="fas fa-robot mr-2"></i>
+                    <span class="en">What is AI?</span>
+                    <span class="id" style="display:none">Apa itu AI?</span>
+                </button>
+                <button class="nav-btn px-6 py-3 rounded-full bg-indigo-900 hover:bg-indigo-800 transition-all duration-300" data-section="ai-types">
+                    <i class="fas fa-network-wired mr-2"></i>
+                    <span class="en">Types of AI</span>
+                    <span class="id" style="display:none">Jenis-Jenis AI</span>
+                </button>
+                <button class="nav-btn px-6 py-3 rounded-full bg-indigo-900 hover:bg-indigo-800 transition-all duration-300" data-section="key-concepts">
+                    <i class="fas fa-brain mr-2"></i>
+                    <span class="en">Core Concepts</span>
+                    <span class="id" style="display:none">Konsep Inti</span>
+                </button>
+                <button class="nav-btn px-6 py-3 rounded-full bg-indigo-900 hover:bg-indigo-800 transition-all duration-300" data-section="ai-impact">
+                    <i class="fas fa-satellite-dish mr-2"></i>
+                    <span class="en">AI's Cosmic Impact</span>
+                    <span class="id" style="display:none">Dampak Kosmik AI</span>
+                </button>
+            </div>
+        </nav>
+        
+        <!-- Content Sections -->
+        <div class="max-w-4xl mx-auto">
+            <!-- What is AI? -->
+            <section id="ai-definition" class="content-section active">
+                <div class="bg-gray-900 bg-opacity-70 rounded-xl p-8 backdrop-blur-sm">
+                    <h2 class="text-3xl font-bold mb-6 text-purple-400">
+                        <i class="fas fa-robot mr-3"></i>
+                        <span class="en">Defining Artificial Intelligence</span>
+                        <span class="id" style="display:none">Mendefinisikan Kecerdasan Buatan</span>
+                    </h2>
+                    
+                    <div class="flex flex-col lg:flex-row gap-8 items-center">
+                        <div class="lg:w-1/2">
+                            <p class="mb-4 text-lg">
+                                <span class="en">Artificial Intelligence (AI) is the science and engineering of making intelligent machines, especially intelligent computer programs. It's like teaching a starship's computer to think, learn, and solve problems independently.</span>
+                                <span class="id" style="display:none">Kecerdasan Buatan (AI) adalah ilmu dan rekayasa pembuatan mesin cerdas, terutama program komputer cerdas. Ini seperti mengajari komputer kapal luar angkasa untuk berpikir, belajar, dan memecahkan masalah secara mandiri.</span>
+                            </p>
+                            <p class="mb-6 text-lg">
+                                <span class="en">Imagine AI as a universal translator for cosmic signals. It deciphers complex patterns from the vast universe of data, much like how we try to understand messages from distant stars.</span>
+                                <span id_style="display:none">Bayangkan AI sebagai penerjemah universal untuk sinyal kosmik. Ia menguraikan pola-pola kompleks dari alam semesta data yang luas, sama seperti kita mencoba memahami pesan dari bintang-bintang yang jauh.</span>
+                            </p>
+                            
+                            <div class="bg-indigo-900 rounded-lg p-4 mb-6">
+                                <h3 class="font-bold text-xl mb-2 text-yellow-300">
+                                    <i class="fas fa-lightbulb mr-2"></i>
+                                    <span class="en">Cosmic Analogy</span>
+                                    <span class="id" style="display:none">Analogi Kosmik</span>
+                                </h3>
+                                <p>
+                                    <span class="en">If human intelligence is a single planet teeming with life, AI is the endeavor to create new, diverse forms of intelligence across the cosmic expanse – some specialized for specific environments (tasks), others potentially as vast as a galaxy.</span>
+                                    <span class="id" style="display:none">Jika kecerdasan manusia adalah satu planet yang penuh dengan kehidupan, AI adalah upaya untuk menciptakan bentuk-bentuk kecerdasan baru yang beragam di seluruh hamparan kosmik – beberapa terspesialisasi untuk lingkungan (tugas) tertentu, yang lain berpotensi seluas galaksi.</span>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="lg:w-1/2 flex justify-center">
+                            <div class="relative w-64 h-64">
+                                <div id="ai-universe" class="w-full h-full rounded-full border-2 border-purple-500 relative overflow-hidden">
+                                    <!-- Stars will be added by JavaScript -->
+                                </div>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="text-center">
+                                        <i class="fas fa-robot text-5xl text-purple-400 mb-2"></i>
+                                        <p class="font-bold">
+                                            <span class="en">Data Universe</span>
+                                            <span class="id" style="display:none">Alam Semesta Data</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="mt-8">
+                        <button class="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-full font-bold transition-all" onclick="createStarPattern()">
+                            <i class="fas fa-star mr-2"></i>
+                            <span class="en">Visualize Data Stars</span>
+                            <span class="id" style="display:none">Visualisasikan Bintang Data</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Types of AI -->
+            <section id="ai-types" class="content-section">
+                <div class="bg-gray-900 bg-opacity-70 rounded-xl p-8 backdrop-blur-sm">
+                    <h2 class="text-3xl font-bold mb-6 text-blue-400">
+                        <i class="fas fa-network-wired mr-3"></i>
+                        <span class="en">The Spectrum of AI: From Asteroids to Galaxies</span>
+                        <span class="id" style="display:none">Spektrum AI: Dari Asteroid hingga Galaksi</span>
+                    </h2>
+                    <p class="mb-6 text-lg">
+                        <span class="en">AI isn't a single entity, but a vast spectrum of capabilities, much like the diverse objects in our cosmos.</span>
+                        <span class="id" style="display:none">AI bukanlah entitas tunggal, melainkan spektrum kemampuan yang luas, seperti beragamnya objek di kosmos kita.</span>
+                    </p>
+                    <div class="space-y-6">
+                        <div class="bg-blue-900 rounded-lg p-6">
+                            <h3 class="font-bold text-xl mb-2 text-yellow-300"><i class="fas fa-meteor mr-2"></i>
+                                <span class="en">Artificial Narrow Intelligence (ANI) - The Task-Specific Asteroid</span>
+                                <span class="id" style="display:none">Kecerdasan Buatan Sempit (ANI) - Asteroid Spesifik Tugas</span>
+                            </h3>
+                            <p>
+                                <span class="en">ANI specializes in one or a few tasks. Think of an AI that navigates a specific asteroid belt or identifies particular types of stars. Most AI we use today is ANI (e.g., virtual assistants, recommendation algorithms).</span>
+                                <span class="id" style="display:none">ANI berspesialisasi dalam satu atau beberapa tugas. Bayangkan AI yang menavigasi sabuk asteroid tertentu atau mengidentifikasi jenis bintang tertentu. Sebagian besar AI yang kita gunakan saat ini adalah ANI (misalnya, asisten virtual, algoritma rekomendasi).</span>
+                            </p>
+                        </div>
+                        <div class="bg-blue-800 rounded-lg p-6">
+                            <h3 class="font-bold text-xl mb-2 text-yellow-300"><i class="fas fa-globe-americas mr-2"></i>
+                                <span class="en">Artificial General Intelligence (AGI) - The Sentient Planet</span>
+                                <span class="id" style="display:none">Kecerdasan Buatan Umum (AGI) - Planet Berkesadaran</span>
+                            </h3>
+                            <p>
+                                <span class="en">AGI would possess human-like intelligence, capable of understanding, learning, and applying knowledge across a wide range of tasks. This is like a sentient planet capable of diverse thought and adaptation, still largely theoretical.</span>
+                                <span class="id" style="display:none">AGI akan memiliki kecerdasan seperti manusia, mampu memahami, belajar, dan menerapkan pengetahuan di berbagai tugas. Ini seperti planet berkesadaran yang mampu melakukan beragam pemikiran dan adaptasi, sebagian besar masih bersifat teoretis.</span>
+                            </p>
+                        </div>
+                        <div class="bg-blue-700 rounded-lg p-6">
+                            <h3 class="font-bold text-xl mb-2 text-yellow-300"><i class="fas fa-sun mr-2"></i>
+                                <span class="en">Artificial Superintelligence (ASI) - The Galaxy-Brain</span>
+                                <span class="id" style="display:none">Kecerdasan Buatan Super (ASI) - Otak Galaksi</span>
+                            </h3>
+                            <p>
+                                <span class="en">ASI would surpass human intelligence and capabilities significantly. Imagine an intelligence as vast and complex as an entire galaxy, understanding cosmic laws we haven't even conceived. This is a future hypothetical stage.</span>
+                                <span class="id" style="display:none">ASI akan melampaui kecerdasan dan kemampuan manusia secara signifikan. Bayangkan kecerdasan seluas dan sekompleks seluruh galaksi, memahami hukum kosmik yang bahkan belum kita bayangkan. Ini adalah tahap hipotetis di masa depan.</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Key Concepts -->
+            <section id="key-concepts" class="content-section">
+                <div class="bg-gray-900 bg-opacity-70 rounded-xl p-8 backdrop-blur-sm">
+                    <h2 class="text-3xl font-bold mb-6 text-green-400">
+                        <i class="fas fa-brain mr-3"></i>
+                        <span class="en">Core Concepts: The Stardust of AI</span>
+                        <span class="id" style="display:none">Konsep Inti: Debu Bintang AI</span>
+                    </h2>
+                    <p class="mb-6 text-lg">
+                        <span class="en">AI is built upon fundamental concepts, like a galaxy formed from stardust and cosmic laws.</span>
+                        <span class="id" style="display:none">AI dibangun di atas konsep-konsep fundamental, seperti galaksi yang terbentuk dari debu bintang dan hukum kosmik.</span>
+                    </p>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="bg-green-900 rounded-lg p-6 text-center">
+                            <i class="fas fa-database text-4xl mb-3 text-green-400"></i>
+                            <h3 class="font-bold text-xl mb-2">
+                                <span class="en">Data</span>
+                                <span class="id" style="display:none">Data</span>
+                            </h3>
+                            <p>
+                                <span class="en">The raw material AI learns from – like vast clouds of cosmic dust and gas from which stars (insights) are born.</span>
+                                <span class="id" style="display:none">Bahan mentah tempat AI belajar – seperti awan debu dan gas kosmik yang luas tempat bintang (wawasan) lahir.</span>
+                            </p>
+                        </div>
+                        <div class="bg-green-900 rounded-lg p-6 text-center">
+                            <i class="fas fa-code text-4xl mb-3 text-green-400"></i>
+                            <h3 class="font-bold text-xl mb-2">
+                                <span class="en">Algorithms</span>
+                                <span class="id" style="display:none">Algoritma</span>
+                            </h3>
+                            <p>
+                                <span class="en">The set of rules or instructions AI follows – the fundamental forces and laws governing how celestial bodies interact and evolve.</span>
+                                <span class="id" style="display:none">Serangkaian aturan atau instruksi yang diikuti AI – kekuatan dan hukum fundamental yang mengatur bagaimana benda langit berinteraksi dan berevolusi.</span>
+                            </p>
+                        </div>
+                        <div class="bg-green-900 rounded-lg p-6 text-center">
+                            <i class="fas fa-lightbulb text-4xl mb-3 text-green-400"></i>
+                            <h3 class="font-bold text-xl mb-2">
+                                <span class="en">Learning</span>
+                                <span class="id" style="display:none">Pembelajaran</span>
+                            </h3>
+                            <p>
+                                <span class="en">The process by which AI improves its performance – like a cosmic cartographer refining maps of the universe with new discoveries.</span>
+                                <span class="id" style="display:none">Proses di mana AI meningkatkan kinerjanya – seperti kartografer kosmik yang menyempurnakan peta alam semesta dengan penemuan baru.</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-8 bg-green-800 rounded-lg p-6">
+                        <h3 class="font-bold text-xl mb-2 text-yellow-300">
+                            <i class="fas fa-rocket mr-2"></i>
+                            <span class="en">AI's Journey of Discovery</span>
+                            <span class="id" style="display:none">Perjalanan Penemuan AI</span>
+                        </h3>
+                        <p>
+                            <span class="en">AI uses data and algorithms to learn and make predictions or decisions. For example, by analyzing data from countless star systems (data), an AI could use astronomical algorithms to identify patterns (learning) and predict where new habitable planets might exist.</span>
+                            <span class="id" style="display:none">AI menggunakan data dan algoritma untuk belajar dan membuat prediksi atau keputusan. Misalnya, dengan menganalisis data dari sistem bintang yang tak terhitung jumlahnya (data), AI dapat menggunakan algoritma astronomi untuk mengidentifikasi pola (pembelajaran) dan memprediksi di mana planet baru yang dapat dihuni mungkin ada.</span>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI's Cosmic Impact -->
+            <section id="ai-impact" class="content-section">
+                <div class="bg-gray-900 bg-opacity-70 rounded-xl p-8 backdrop-blur-sm">
+                    <h2 class="text-3xl font-bold mb-6 text-yellow-400">
+                        <i class="fas fa-satellite-dish mr-3"></i>
+                        <span class="en">AI's Cosmic Impact: Shaping Our Universe</span>
+                        <span class="id" style="display:none">Dampak Kosmik AI: Membentuk Alam Semesta Kita</span>
+                    </h2>
+                    <p class="mb-6 text-lg">
+                        <span class="en">AI is already beginning to reshape our world, much like the discovery of new celestial mechanics reshaped our understanding of the cosmos. It has vast potential but also brings new challenges.</span>
+                        <span class="id" style="display:none">AI sudah mulai membentuk kembali dunia kita, sama seperti penemuan mekanika langit baru yang membentuk kembali pemahaman kita tentang kosmos. AI memiliki potensi besar tetapi juga membawa tantangan baru.</span>
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-yellow-900 rounded-lg p-6">
+                            <h3 class="font-bold text-xl mb-2 text-purple-300"><i class="fas fa-chart-line mr-2"></i>
+                                <span class="en">Positive Trajectories</span>
+                                <span class="id" style="display:none">Lintasan Positif</span>
+                            </h3>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><span class="en">Accelerating scientific discovery (e.g., analyzing telescope data).</span><span class="id" style="display:none">Mempercepat penemuan ilmiah (misalnya, menganalisis data teleskop).</span></li>
+                                <li><span class="en">Improving healthcare (e.g., diagnosing diseases).</span><span class="id" style="display:none">Meningkatkan layanan kesehatan (misalnya, mendiagnosis penyakit).</span></li>
+                                <li><span class="en">Enhancing daily life (e.g., smart assistants, personalized experiences).</span><span class="id" style="display:none">Meningkatkan kehidupan sehari-hari (misalnya, asisten pintar, pengalaman yang dipersonalisasi).</span></li>
+                                <li><span class="en">Solving complex global problems (e.g., climate change modeling).</span><span class="id" style="display:none">Memecahkan masalah global yang kompleks (misalnya, pemodelan perubahan iklim).</span></li>
+                            </ul>
+                        </div>
+                        <div class="bg-yellow-800 rounded-lg p-6">
+                            <h3 class="font-bold text-xl mb-2 text-purple-300"><i class="fas fa-exclamation-triangle mr-2"></i>
+                                <span class="en">Navigating Asteroid Fields (Challenges)</span>
+                                <span class="id" style="display:none">Menavigasi Medan Asteroid (Tantangan)</span>
+                            </h3>
+                             <ul class="list-disc pl-5 space-y-1">
+                                <li><span class="en">Ethical concerns (bias, privacy, accountability).</span><span class="id" style="display:none">Kekhawatiran etis (bias, privasi, akuntabilitas).</span></li>
+                                <li><span class="en">Job displacement due to automation.</span><span class="id" style="display:none">Perpindahan pekerjaan karena otomatisasi.</span></li>
+                                <li><span class="en">Potential misuse of AI technology.</span><span class="id" style="display:none">Potensi penyalahgunaan teknologi AI.</span></li>
+                                <li><span class="en">Ensuring AI systems are fair, transparent, and safe.</span><span class="id" style="display:none">Memastikan sistem AI adil, transparan, dan aman.</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="bg-yellow-700 rounded-lg p-6 text-center">
+                        <p class="text-lg">
+                            <span class="en">Understanding AI basics is the first step to responsibly navigating its future, ensuring it becomes a force for good across our 'Earth-ship' and beyond.</span>
+                            <span class="id" style="display:none">Memahami dasar-dasar AI adalah langkah pertama untuk menavigasi masa depannya secara bertanggung jawab, memastikan AI menjadi kekuatan untuk kebaikan di 'kapal Bumi' kita dan seterusnya.</span>
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <script>
+        // Create background stars
+        function createStars() {
+            const container = document.getElementById('stars-container');
+            if (!container) return;
+            const starCount = 200;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                const size = Math.random() * 3;
+                const duration = 2 + Math.random() * 3;
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.setProperty('--duration', `${duration}s`);
+                container.appendChild(star);
+            }
+        }
+        
+        // Create star pattern in AI universe visualization
+        function createStarPattern() {
+            const container = document.getElementById('ai-universe');
+            if (!container) return;
+            container.innerHTML = ''; 
+            
+            const starCount = 50;
+            const centerX = container.offsetWidth / 2;
+            const centerY = container.offsetHeight / 2;
+            const radius = Math.min(centerX, centerY) * 0.8;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const angle = (i / starCount) * Math.PI * 10;
+                const distance = (i / starCount) * radius;
+                const x = centerX + Math.cos(angle) * distance;
+                const y = centerY + Math.sin(angle) * distance;
+                const size = 1 + (1 - distance/radius) * 3;
+                star.style.left = `${x}px`;
+                star.style.top = `${y}px`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.setProperty('--duration', `${2 + Math.random() * 2}s`);
+                container.appendChild(star);
+            }
+            
+            const stars = container.querySelectorAll('.star');
+            for (let i = 0; i < stars.length - 1; i++) {
+                if (Math.random() > 0.7) { 
+                    const line = document.createElement('div');
+                    line.className = 'absolute bg-white opacity-30';
+                    line.style.height = '1px';
+                    const star1 = stars[i];
+                    const star2 = stars[i+1];
+                    const x1 = parseFloat(star1.style.left);
+                    const y1 = parseFloat(star1.style.top);
+                    const x2 = parseFloat(star2.style.left);
+                    const y2 = parseFloat(star2.style.top);
+                    const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+                    const angle_rad = Math.atan2(y2 - y1, x2 - x1);
+                    line.style.width = `${length}px`;
+                    line.style.left = `${x1 + (parseFloat(star1.style.width) / 2)}px`;
+                    line.style.top = `${y1 + (parseFloat(star1.style.height) / 2)}px`;
+                    line.style.transform = `rotate(${angle_rad * 180 / Math.PI}deg)`;
+                    line.style.transformOrigin = '0 0';
+                    container.appendChild(line);
+                }
+            }
+        }
+        
+        // Dummy functions from original example, to prevent errors if called.
+        // They are not directly used for interaction on this specific page but kept for script consistency.
+        function createNeuralNetwork() {
+            const container = document.getElementById('neural-network');
+            if (!container) return; 
+            // Minimal placeholder if this function were to be accidentally triggered on a page without the element
+            // container.innerHTML = '<p class="text-center">Neural Network Visualization Area</p>';
+        }
+        function trainNeuralNetwork() {
+            // alert("Training simulation (not active on this page).");
+        }
+        function classifyMeteor() {
+            // alert("Classification simulation (not active on this page).");
+        }
+        function submitFutureIdea() {
+            // alert("Idea submission (not active on this page).");
+        }
+
+        // Navigation between sections
+        function setupNavigation() {
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    navButtons.forEach(btn => btn.classList.remove('bg-indigo-700', 'text-white')); // Use a more distinct active style
+                    navButtons.forEach(btn => btn.classList.add('bg-indigo-900'));
+                    contentSections.forEach(section => section.classList.remove('active'));
+                    
+                    button.classList.remove('bg-indigo-900');
+                    button.classList.add('bg-indigo-700', 'text-white');
+                    
+                    const sectionId = button.getAttribute('data-section');
+                    const targetSection = document.getElementById(sectionId);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                        // Special setup for sections if needed when they become active
+                        if (sectionId === 'ai-definition') {
+                            createStarPattern(); // Re-create or ensure it's visible
+                        }
+                    }
+                });
+            });
+
+            // Set the first button as active initially
+            if (navButtons.length > 0) {
+                navButtons[0].classList.remove('bg-indigo-900');
+                navButtons[0].classList.add('bg-indigo-700', 'text-white');
+            }
+        }
+        
+        // Language toggle
+        function setLanguage(lang) {
+            const currentLangIsEn = document.querySelector('.en')?.style.display !== 'none';
+            if ((lang === 'en' && currentLangIsEn) || (lang === 'id' && !currentLangIsEn)) {
+                return; // No change needed
+            }
+
+            document.querySelectorAll('.en').forEach(el => el.style.display = (lang === 'en' ? '' : 'none'));
+            document.querySelectorAll('.id').forEach(el => el.style.display = (lang === 'id' ? '' : 'none'));
+            
+            // Update placeholders if any
+            const futureIdeaInput = document.getElementById('future-idea');
+            if (futureIdeaInput) {
+                if (lang === 'en') {
+                    futureIdeaInput.placeholder = "Your idea about AI's future...";
+                } else {
+                    futureIdeaInput.placeholder = "Ide Anda tentang masa depan AI...";
+                }
+            }
+        }
+        
+        window.onload = function() {
+            createStars();
+            setupNavigation();
+            setLanguage('en'); // Default language
+            
+            // Initialize visualization for the default active section
+            const activeSection = document.querySelector('.content-section.active');
+            if (activeSection && activeSection.id === 'ai-definition') {
+                createStarPattern();
+            }
+        };
+    </script>
+</body>
+</html>

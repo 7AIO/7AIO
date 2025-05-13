@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Networks: Cosmic Brains</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .planet {
+            transition: all 0.5s ease;
+        }
+        
+        .galaxy {
+            background: radial-gradient(circle, rgba(13,17,38,1) 0%, rgba(5,7,17,1) 100%);
+        }
+        
+        .toggle-language {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-language:hover {
+            transform: scale(1.1);
+        }
+        
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .ai-neuron {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            position: absolute; /* Changed for dynamic positioning */
+            margin: 5px; /* Reduced margin */
+            box-shadow: 0 0 15px rgba(167, 119, 227, 0.7);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .ai-connection {
+            position: absolute;
+            background: linear-gradient(to right, #6e8efb, #a777e3);
+            height: 2px; /* Thinner lines */
+            transform-origin: left center;
+            box-shadow: 0 0 5px rgba(167, 119, 227, 0.7);
+            opacity: 0.6;
+            transition: height 0.3s ease, box-shadow 0.3s ease;
+        }
+        #neural-network-visualization {
+            min-height: 300px; /* Ensure space for visualization */
+        }
+    </style>
+</head>
+<body class="galaxy text-white min-h-screen overflow-x-hidden">
+    <!-- Background stars -->
+    <div id="stars-container" class="fixed top-0 left-0 w-full h-full pointer-events-none"></div>
+    
+    <div class="container mx-auto px-4 py-12 relative z-10">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-cyan-600">
+                <span class="en">Neural Networks: Cosmic Brains</span>
+                <span class="id" style="display:none">Jaringan Saraf: Otak Kosmik</span>
+            </h1>
+            <p class="text-xl text-cyan-200 max-w-3xl mx-auto">
+                <span class="en">Peering into the interconnected constellations of AI's thought process</span>
+                <span class="id" style="display:none">Menyelami konstelasi yang saling terhubung dari proses berpikir AI</span>
+            </p>
+            
+            <div class="mt-6 flex justify-center space-x-4">
+                <span class="toggle-language px-4 py-2 rounded-full bg-cyan-900 hover:bg-cyan-800" onclick="setLanguage('en')">
+                    <i class="fas fa-globe-americas mr-2"></i> English
+                </span>
+                <span class="toggle-language px-4 py-2 rounded-full bg-cyan-900 hover:bg-cyan-800" onclick="setLanguage('id')">
+                    <i class="fas fa-globe-asia mr-2"></i> Bahasa Indonesia
+                </span>
+            </div>
+        </header>
+        
+        <!-- Navigation -->
+        <nav class="flex justify-center mb-12 overflow-x-auto py-4">
+            <div class="flex space-x-2">
+                <button class="nav-btn px-6 py-3 rounded-full bg-sky-900 hover:bg-sky-800 transition-all duration-300" data-section="intro-nn">
+                    <i class="fas fa-brain mr-2"></i>
+                    <span class="en">What are NNs?</span>
+                    <span class="id" style="display:none">Apa itu JS?</span>
+                </button>
+                <button class="nav-btn px-6 py-3 rounded-full bg-sky-900 hover:bg-sky-800 transition-all duration-300" data-section="components-nn">
+                    <i class="fas fa-atom mr-2"></i>
+                    <span class="en">Core Components</span>
+                    <span class="id" style="display:none">Komponen Inti</span>
+                </button>
+                <button class="nav-btn px-6 py-3 rounded-full bg-sky-900 hover:bg-sky-800 transition-all duration-300" data-section="learning-process-nn">
+                    <i class="fas fa-cogs mr-2"></i>
+                    <span class="en">How NNs Learn</span>
+                    <span class="id" style="display:none">Cara JS Belajar</span>
+                </button>
+                <button class="nav-btn px-6 py-3 rounded-full bg-sky-900 hover:bg-sky-800 transition-all duration-300" data-section="types-nn">
+                    <i class="fas fa-project-diagram mr-2"></i>
+                    <span class="en">Types of NNs</span>
+                    <span class="id" style="display:none">Jenis-Jenis JS</span>
+                </button>
+            </div>
+        </nav>
+        
+        <!-- Content Sections -->
+        <div class="max-w-4xl mx-auto">
+            <!-- What are NNs? -->
+            <section id="intro-nn" class="content-section active">
+                <div class="bg-gray-900 bg-opacity-70 rounded-xl p-8 backdrop-blur-sm">
+                    <h2 class="text-3xl font-bold mb-6 text-cyan-400">
+                        <i class="fas fa-brain mr-3"></i>
+                        <span class="en">Introduction to Neural Networks: The Cosmic Web of Thought</span>
+                        <span class="id" style="display:none">Pengantar Jaringan Saraf: Jaring Pemikiran Kosmik</span>
+                    </h2>
+                    <p class="mb-4 text-lg">
+                        <span class="en">Neural Networks (NNs) are computing systems inspired by the biological neural networks that constitute animal brains. They are like intricate webs of interconnected stars and nebulae, processing cosmic signals (data) to make sense of the universe.</span>
+                        <span class="id" style="display:none">Jaringan Saraf (JS) adalah sistem komputasi yang terinspirasi oleh jaringan saraf biologis yang membentuk otak hewan. Mereka seperti jaring rumit dari bintang dan nebula yang saling terhubung, memproses sinyal kosmik (data) untuk memahami alam semesta.</span>
+                    </p>
+                    <p class="mb-6 text-lg">
+                        <span class="en">Imagine each neuron as a star, and the connections as gravitational pathways. Information flows through this network, transforming and combining, much like light traveling through the cosmos, to ultimately form a coherent understanding or prediction.</span>
+                        <span class="id" style="display:none">Bayangkan setiap neuron sebagai bintang, dan koneksinya sebagai jalur gravitasi. Informasi mengalir melalui jaringan ini, berubah dan bergabung, seperti cahaya yang melakukan perjalanan melalui kosmos, untuk akhirnya membentuk pemahaman atau prediksi yang koheren.</span>
+                    </p>
+                    <div class="flex flex-col items-center">
+                        <div id="neural-network-visualization" class="relative w-full mb-8 flex justify-center items-center">
+                            <!-- Neural network visualization will be added by JavaScript -->
+                        </div>
+                        <button class="px-6 py-3 bg-cyan-600 hover:bg-cyan-700 rounded-full font-bold transition-all" onclick="animateNeuralNetwork()">
+                            <i class="fas fa-play-circle mr-2"></i>
+                            <span class="en">Animate Network Activity</span>
+                            <span class="id" style="display:none">Animasikan Aktivitas Jaringan</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Core Components -->
+            <section id="components-nn" class="content-section">
+                <div class="bg-gray-900 bg-opacity-70 rounded-xl p-8 backdrop-blur-sm">
+                    <h2 class="text-3xl font-bold mb-6 text-teal-400">
+                        <i class="fas fa-atom mr-3"></i>
+                        <span class="en">Core Components: The Building Blocks of Cosmic AI</span>
+                        <span class="id" style="display:none">Komponen Inti: Blok Bangunan AI Kosmik</span>
+                    </h2>
+                    <div class="space-y-6">
+                        <div class="bg-teal-900 p-4 rounded-lg">
+                            <h3 class="text-xl font-semibold mb-1"><i class="fas fa-star-of-life mr-2 text-teal-300"></i><span class="en">Neurons (Nodes)</span><span class="id" style="display:none">Neuron (Simpul)</span></h3>
+                            <p><span class="en">Individual processing units, like stars emitting light (signals). Each neuron receives inputs, performs a calculation, and produces an output.</span><span class="id" style="display:none">Unit pemrosesan individual, seperti bintang yang memancarkan cahaya (sinyal). Setiap neuron menerima input, melakukan perhitungan, dan menghasilkan output.</span></p>
+                        </div>
+                        <div class="bg-teal-900 p-4 rounded-lg">
+                            <h3 class="text-xl font-semibold mb-1"><i class="fas fa-layer-group mr-2 text-teal-300"></i><span class="en">Layers</span><span class="id" style="display:none">Lapisan</span></h3>
+                            <p><span class="en">Neurons are organized into layers: Input (receives raw data like a telescope array), Hidden (perform computations like galactic clusters processing signals), and Output (produces the final result like a decoded cosmic message).</span><span class="id" style="display:none">Neuron diatur dalam lapisan: Input (menerima data mentah seperti susunan teleskop), Tersembunyi (melakukan komputasi seperti gugus galaksi yang memproses sinyal), dan Output (menghasilkan hasil akhir seperti pesan kosmik yang didekodekan).</span></p>
+                        </div>
+                        <div class="bg-teal-900 p-4 rounded-lg">
+                            <h3 class="text-xl font-semibold mb-1"><i class="fas fa-link mr-2 text-teal-300"></i><span class="en">Weights and Biases</span><span class="id" style="display:none">Bobot dan Bias</span></h3>
+                            <p><span class="en">Weights determine the strength of connection between neurons, like gravitational pull influencing a star's path. Biases are added values that allow a neuron to activate even with zero input, like a star's intrinsic brightness.</span><span class="id" style="display:none">Bobot menentukan kekuatan koneksi antar neuron, seperti tarikan gravitasi yang memengaruhi jalur bintang. Bias adalah nilai tambah yang memungkinkan neuron aktif bahkan dengan input nol, seperti kecerahan intrinsik bintang.</span></p>
+                        </div>
+                        <div class="bg-teal-900 p-4 rounded-lg">
+                            <h3 class="text-xl font-semibold mb-1"><i class="fas fa-bolt mr-2 text-teal-300"></i><span class="en">Activation Functions</span><span class="id" style="display:none">Fungsi Aktivasi</span></h3>
+                            <p><span class="en">These decide if a neuron "fires" (activates) based on its input. Like a threshold for a star to go supernova, releasing a burst of energy (signal).</span><span class="id" style="display:none">Ini memutuskan apakah neuron "menembak" (aktif) berdasarkan inputnya. Seperti ambang batas bagi bintang untuk menjadi supernova, melepaskan semburan energi (sinyal).</span></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- How NNs Learn -->
+            <section id="learning-process-nn" class="content-section">
+                <div class="bg-gray-900 bg-opacity-70 rounded-xl p-8 backdrop-blur-sm">
+                    <h2 class="text-3xl font-bold mb-6 text-sky-400">
+                        <i class="fas fa-cogs mr-3"></i>
+                        <span class="en">How Neural Networks Learn: Charting Cosmic Courses</span>
+                        <span class="id" style="display:none">Cara Jaringan Saraf Belajar: Memetakan Jalur Kosmik</span>
+                    </h2>
+                    <p class="mb-4 text-lg">
+                        <span class="en">NNs learn by adjusting their weights and biases through a process often called "training." It's like an AI starship learning to navigate an unknown galaxy by trial and error, refining its course with each new observation.</span>
+                        <span class="id" style="display:none">JS belajar dengan menyesuaikan bobot dan biasnya melalui proses yang sering disebut "pelatihan". Ini seperti kapal luar angkasa AI yang belajar menavigasi galaksi tak dikenal melalui coba-coba, menyempurnakan jalurnya dengan setiap pengamatan baru.</span>
+                    </p>
+                    <ol class="list-decimal list-inside space-y-3 bg-sky-900 p-6 rounded-lg text-lg">
+                        <li><span class="font-semibold en">Feedforward:</span><span class="font-semibold id" style="display:none">Umpan Maju:</span> <span class="en">Input data (e.g., features of a newly discovered planet) is passed through the network, layer by layer.</span><span class="id" style="display:none">Data input (misalnya, fitur planet yang baru ditemukan) dilewatkan melalui jaringan, lapis demi lapis.</span></li>
+                        <li><span class="font-semibold en">Error Calculation:</span><span class="font-semibold id" style="display:none">Perhitungan Kesalahan:</span> <span class="en">The network's output is compared to the actual, known answer (e.g., if the planet is habitable). The difference is the "error."</span><span class="id" style="display:none">Output jaringan dibandingkan dengan jawaban aktual yang diketahui (misalnya, apakah planet tersebut dapat dihuni). Perbedaannya adalah "kesalahan."</span></li>
+                        <li><span class="font-semibold en">Backpropagation:</span><span class="font-semibold id" style="display:none">Propagasi Balik:</span> <span class="en">The error is sent backward through the network. This information is used to adjust the weights and biases of connections to reduce the error in future predictions.</span><span class="id" style="display:none">Kesalahan dikirim mundur melalui jaringan. Informasi ini digunakan untuk menyesuaikan bobot dan bias koneksi untuk mengurangi kesalahan dalam prediksi di masa depan.</span></li>
+                        <li><span class="font-semibold en">Iteration:</span><span class="font-semibold id" style="display:none">Iterasi:</span> <span class="en">This process is repeated many times with many examples, gradually improving the network's accuracy, like an astronomer refining a celestial map.</span><span class="id" style="display:none">Proses ini diulang berkali-kali dengan banyak contoh, secara bertahap meningkatkan akurasi jaringan, seperti seorang astronom yang menyempurnakan peta langit.</span></li>
+                    </ol>
+                    <div class="mt-6 text-center">
+                        <p class="text-xl"><span class="en">This iterative learning allows NNs to discover complex patterns in data, much like how scientists uncover the laws of the universe.</span><span class="id" style="display:none">Pembelajaran iteratif ini memungkinkan JS menemukan pola kompleks dalam data, sama seperti bagaimana ilmuwan mengungkap hukum alam semesta.</span></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Types of NNs -->
+            <section id="types-nn" class="content-section">
+                <div class="bg-gray-900 bg-opacity-70 rounded-xl p-8 backdrop-blur-sm">
+                    <h2 class="text-3xl font-bold mb-6 text-indigo-400">
+                        <i class="fas fa-project-diagram mr-3"></i>
+                        <span class="en">A Constellation of Networks: Types of NNs</span>
+                        <span class="id" style="display:none">Konstelasi Jaringan: Jenis-Jenis JS</span>
+                    </h2>
+                    <p class="mb-6 text-lg">
+                        <span class="en">Just as there are many types of celestial bodies, there are various types of Neural Networks, each suited for different cosmic tasks.</span>
+                        <span class="id" style="display:none">Sama seperti ada banyak jenis benda langit, ada berbagai jenis Jaringan Saraf, masing-masing cocok untuk tugas kosmik yang berbeda.</span>
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-indigo-900 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold mb-2 text-yellow-300"><i class="fas fa-stream mr-2"></i><span class="en">Feedforward Neural Networks (FNNs)</span><span class="id" style="display:none">Jaringan Saraf Umpan Maju (FNN)</span></h3>
+                            <p><span class="en">The simplest type, where information flows in one direction. Good for basic classification and regression tasks, like predicting a meteor's trajectory based on initial data.</span><span class="id" style="display:none">Jenis paling sederhana, di mana informasi mengalir dalam satu arah. Baik untuk tugas klasifikasi dan regresi dasar, seperti memprediksi lintasan meteor berdasarkan data awal.</span></p>
+                        </div>
+                        <div class="bg-indigo-900 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold mb-2 text-yellow-300"><i class="fas fa-image mr-2"></i><span class="en">Convolutional Neural Networks (CNNs)</span><span class="id" style="display:none">Jaringan Saraf Konvolusional (CNN)</span></h3>
+                            <p><span class="en">Excellent for processing grid-like data, such as images. Used to analyze galactic images, identify celestial objects, or even find patterns in cosmic microwave background radiation.</span><span class="id" style="display:none">Sangat baik untuk memproses data seperti kisi, seperti gambar. Digunakan untuk menganalisis gambar galaksi, mengidentifikasi objek langit, atau bahkan menemukan pola dalam radiasi latar belakang gelombang mikro kosmik.</span></p>
+                        </div>
+                        <div class="bg-indigo-900 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold mb-2 text-yellow-300"><i class="fas fa-history mr-2"></i><span class="en">Recurrent Neural Networks (RNNs)</span><span class="id" style="display:none">Jaringan Saraf Rekuren (RNN)</span></h3>
+                            <p><span class="en">Designed for sequential data, where order matters. Useful for tracking the paths of comets over time, understanding stellar evolution sequences, or processing streams of telemetry data from space probes.</span><span class="id" style="display:none">Dirancang untuk data sekuensial, di mana urutan penting. Berguna untuk melacak jalur komet dari waktu ke waktu, memahami urutan evolusi bintang, atau memproses aliran data telemetri dari wahana antariksa.</span></p>
+                        </div>
+                         <div class="bg-indigo-900 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold mb-2 text-yellow-300"><i class="fas fa-brain mr-2"></i><span class="en">Transformers</span><span class="id" style="display:none">Transformer</span></h3>
+                            <p><span class="en">Powerful models excelling at understanding context and relationships in data, especially text. Imagine them deciphering complex alien languages or understanding the narratives hidden in vast astronomical datasets.</span><span class="id" style="display:none">Model kuat yang unggul dalam memahami konteks dan hubungan dalam data, terutama teks. Bayangkan mereka menguraikan bahasa alien yang kompleks atau memahami narasi yang tersembunyi dalam kumpulan data astronomi yang luas.</span></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <script>
+        function createStars() {
+            const container = document.getElementById('stars-container');
+            if (!container) return;
+            const starCount = 200;
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                const size = Math.random() * 3;
+                const duration = 2 + Math.random() * 3;
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.setProperty('--duration', `${duration}s`);
+                container.appendChild(star);
+            }
+        }
+
+        function createNeuralNetworkVisualization() {
+            const container = document.getElementById('neural-network-visualization');
+            if (!container) return;
+            container.innerHTML = ''; // Clear previous
+            
+            const layerDefs = [3, 5, 4, 2]; // Neurons per layer: Input, Hidden1, Hidden2, Output
+            const layerSpacing = (container.clientWidth - 50) / (layerDefs.length -1) ; // Horizontal spacing
+            const neuronSize = 40;
+            const neuronMargin = 10;
+
+            let allNeurons = [];
+
+            layerDefs.forEach((numNeurons, layerIndex) => {
+                let layerNeurons = [];
+                const layerX = 25 + layerIndex * layerSpacing;
+                const totalLayerHeight = numNeurons * (neuronSize + neuronMargin) - neuronMargin;
+                let startY = (container.clientHeight - totalLayerHeight) / 2;
+                if (startY < 20) startY = 20; // Ensure some top margin
+
+                for (let i = 0; i < numNeurons; i++) {
+                    const neuron = document.createElement('div');
+                    neuron.className = 'ai-neuron';
+                    neuron.textContent = ''; // Or layer/neuron index
+                    const neuronY = startY + i * (neuronSize + neuronMargin);
+                    
+                    neuron.style.left = `${layerX - neuronSize / 2}px`;
+                    neuron.style.top = `${neuronY - neuronSize / 2}px`;
+                    
+                    container.appendChild(neuron);
+                    layerNeurons.push({element: neuron, x: layerX, y: neuronY});
+                }
+                allNeurons.push(layerNeurons);
+            });
+
+            // Create connections
+            for (let l = 0; l < allNeurons.length - 1; l++) {
+                allNeurons[l].forEach(neuron1 => {
+                    allNeurons[l+1].forEach(neuron2 => {
+                        const connection = document.createElement('div');
+                        connection.className = 'ai-connection';
+                        
+                        const x1 = neuron1.x;
+                        const y1 = neuron1.y;
+                        const x2 = neuron2.x;
+                        const y2 = neuron2.y;
+
+                        const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+                        const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+
+                        connection.style.width = `${length}px`;
+                        connection.style.left = `${x1}px`;
+                        connection.style.top = `${y1}px`;
+                        connection.style.transform = `rotate(${angle}deg)`;
+                        container.appendChild(connection);
+                    });
+                });
+            }
+        }
+
+        function animateNeuralNetwork() {
+            const neurons = document.querySelectorAll('#neural-network-visualization .ai-neuron');
+            const connections = document.querySelectorAll('#neural-network-visualization .ai-connection');
+            if (neurons.length === 0) return;
+
+            neurons.forEach((neuron, i) => {
+                setTimeout(() => {
+                    neuron.style.transform = 'scale(1.2)';
+                    neuron.style.boxShadow = '0 0 25px rgba(0, 255, 255, 1)'; // Cyan glow
+                    neuron.style.background = 'linear-gradient(135deg, #00FFFF, #00BFFF)'; // Brighter cyan
+                    setTimeout(() => {
+                        neuron.style.transform = 'scale(1)';
+                        neuron.style.boxShadow = '0 0 15px rgba(167, 119, 227, 0.7)'; // Original
+                        neuron.style.background = 'linear-gradient(135deg, #6e8efb, #a777e3)'; // Original
+                    }, 300);
+                }, i * 50); // Stagger animation
+            });
+
+            connections.forEach((conn, i) => {
+                 setTimeout(() => {
+                    conn.style.height = '4px';
+                    conn.style.opacity = '1';
+                    conn.style.background = 'linear-gradient(to right, #00FFFF, #00BFFF)';
+                    setTimeout(() => {
+                        conn.style.height = '2px';
+                        conn.style.opacity = '0.6';
+                        conn.style.background = 'linear-gradient(to right, #6e8efb, #a777e3)';
+                    }, 300);
+                }, i * 20 + (neurons.length * 50)); // Stagger connection animation after neurons
+            });
+        }
+        
+        // Dummy functions from original example, to prevent errors if called.
+        function createStarPattern() { /* Not used on this page */ }
+        function classifyMeteor() { /* Not used on this page */ }
+        function submitFutureIdea() { /* Not used on this page */ }
+
+        function setupNavigation() {
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const contentSections = document.querySelectorAll('.content-section');
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    navButtons.forEach(btn => btn.classList.remove('bg-sky-700', 'text-white'));
+                    navButtons.forEach(btn => btn.classList.add('bg-sky-900'));
+                    contentSections.forEach(section => section.classList.remove('active'));
+                    
+                    button.classList.remove('bg-sky-900');
+                    button.classList.add('bg-sky-700', 'text-white');
+                    
+                    const sectionId = button.getAttribute('data-section');
+                    const targetSection = document.getElementById(sectionId);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                        if (sectionId === 'intro-nn') {
+                           // Debounce or ensure it's only called if not already drawn
+                           if (!document.querySelector('#neural-network-visualization .ai-neuron')) {
+                               createNeuralNetworkVisualization();
+                           }
+                        }
+                    }
+                });
+            });
+            if (navButtons.length > 0) {
+                navButtons[0].classList.remove('bg-sky-900');
+                navButtons[0].classList.add('bg-sky-700', 'text-white');
+            }
+        }
+        
+        function setLanguage(lang) {
+            const currentLangIsEn = document.querySelector('.en')?.style.display !== 'none';
+            if ((lang === 'en' && currentLangIsEn) || (lang === 'id' && !currentLangIsEn)) return;
+            document.querySelectorAll('.en').forEach(el => el.style.display = (lang === 'en' ? '' : 'none'));
+            document.querySelectorAll('.id').forEach(el => el.style.display = (lang === 'id' ? '' : 'none'));
+        }
+        
+        window.onload = function() {
+            createStars();
+            setupNavigation();
+            setLanguage('en');
+            
+            const activeSection = document.querySelector('.content-section.active');
+            if (activeSection && activeSection.id === 'intro-nn') {
+                createNeuralNetworkVisualization();
+            }
+            // Ensure visualization resizes correctly
+            window.addEventListener('resize', () => {
+                if (document.getElementById('intro-nn')?.classList.contains('active')) {
+                    createNeuralNetworkVisualization();
+                }
+            });
+        };
+    </script>
+</body>
+</html>

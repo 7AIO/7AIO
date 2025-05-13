@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine Learning: The Cosmic Learner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite ease-in-out;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .planet {
+            transition: all 0.5s ease;
+        }
+        
+        .galaxy {
+            background: radial-gradient(circle, rgba(13,17,38,1) 0%, rgba(5,7,17,1) 100%);
+        }
+        
+        .toggle-language {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-language:hover {
+            transform: scale(1.1);
+        }
+        
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Styles for ML interactive examples */
+        .data-point {
+            width: 20px; height: 20px; border-radius: 50%;
+            position: absolute; cursor: grab; transition: transform 0.2s;
+        }
+        .data-point:active { cursor: grabbing; transform: scale(1.1); }
+        .drop-zone {
+            border: 2px dashed #4A5568; min-height: 100px;
+            display: flex; align-items: center; justify-content: center;
+            transition: background-color 0.3s;
+        }
+        .drop-zone.hovered { background-color: rgba(74, 85, 104, 0.5); }
+
+        #cluster-visualization { position: relative; height: 250px; background-color: rgba(0,0,0,0.2); border-radius: 0.5rem; }
+        .cluster-point { width: 10px; height: 10px; border-radius: 50%; position: absolute; transition: background-color 0.5s; }
+    </style>
+</head>
+<body class="galaxy text-white min-h-screen overflow-x-hidden">
+    <!-- Background stars -->
+    <div id="stars-container" class="fixed top-0 left-0 w-full h-full pointer-events-none"></div>
+    
+    <div class="container mx-auto px-4 py-12 relative z-10">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-600">
+                <span class="en">Machine Learning: The Cosmic Learner</span>
+                <span class="id" style="display:none">Pembelajaran Mesin: Pembelajar Kosmik</span>
+            </h1>
+            <p class="text-xl text-emerald-200 max-w-3xl mx-auto">
+                <span class="en">How AI charts new territories in the data universe</span>
+                <span class="id" style="display:none">Bagaimana AI memetakan wilayah baru di alam semesta data</span>
+            </p>
+            
+            <div class="mt-6 flex justify-center space-x-4">
+                <span class="toggle-language px-4 py-2 rounded-full bg-emerald-900 hover:bg-emerald-800" onclick="setLanguage('en')">
+                    <i class="fas fa-globe-americas mr-2"></i> English
+                </span>
+                <span class="toggle-language px-4 py-2 rounded-full bg-emerald-900 hover:bg-emerald-800" onclick="setLanguage('id')">
+                    <i class="fas fa-globe-asia mr-2"></i> Bahasa Indonesia
+                </span>
+            </div>
+        </header>
+        
+        <!-- Navigation -->
+        <nav class="flex justify-center mb-12 overflow-x-auto py-4">
+            <div class="flex space-x-2">
+                <button class="nav-btn px-6 py-3 rounded-full bg-lime-900 hover:bg-lime-800 transition-all duration-300" data-section="intro-ml">
+                    <i class="fas fa-graduation-cap mr-2"></i>
+                    <span class="en">What is ML?</span>
+                    <span class="id" style="display:none">Apa itu PM?</span>
+                </button>
+                <button class="nav-btn px-6 py-3 rounded-full bg-lime-900 hover:bg-lime-800 transition-all duration-300" data-section="types-ml">
+                    <i class="fas fa-sitemap mr-2"></i>
+                    <span class="en">Learning Paradigms</span>
+                    <span class="id" style="display:none">Paradigma Belajar</span>
+                </button>
+                <button class="nav-btn px-6 py-3 rounded-full bg-lime-900 hover:bg-lime-800 transition-all duration-300" data-section="process-ml">
+                    <i class="fas fa-tasks mr-2"></i>
+                    <span class="en">The ML Journey</span>
+                    <span class="id" style="display:none">Perjalanan PM</span>
+                </button>
+                <button class="nav-btn px-6 py-3 rounded-full bg-lime-900 hover:bg-lime-800 transition-all duration-300" data-section="applications-ml">
+                    <i class="fas fa-rocket mr-2"></i>
+                    <span class="en">ML in the Cosmos</span>
+                    <span class="id" style="display:none">PM di Kosmos</span>
+                </button>
+            </div>
+        </nav>
+        
+        <!-- Content Sections -->
+        <div class="max-w-4xl mx-auto">
+            <!-- What is ML? -->
+            <section id="intro-ml" class="content-section active">
+                <div class="bg-gray-900 bg-opacity-70 rounded-xl p-8 backdrop-blur-sm">
+                    <h2 class="text-3xl font-bold mb-6 text-green-400">
+                        <i class="fas fa-graduation-cap mr-3"></i>
+                        <span class="en">What is Machine Learning? The Art of Cosmic Cartography</span>
+                        <span class="id" style="display:none">Apa itu Pembelajaran Mesin? Seni Kartografi Kosmik</span>
+                    </h2>
+                    <p class="mb-4 text-lg">
+                        <span class="en">Machine Learning (ML) is a branch of Artificial Intelligence where systems learn from data, identify patterns, and make decisions with minimal human intervention. It's like an astronomer's advanced toolkit that automatically discovers new celestial laws by observing the universe.</span>
+                        <span class="id" style="display:none">Pembelajaran Mesin (PM) adalah cabang Kecerdasan Buatan di mana sistem belajar dari data, mengidentifikasi pola, dan membuat keputusan dengan intervensi manusia yang minimal. Ini seperti perangkat canggih seorang astronom yang secara otomatis menemukan hukum langit baru dengan mengamati alam semesta.</span>
+                    </p>
+                    <p class="mb-6 text-lg">
+                        <span class="en">Instead of being explicitly programmed for every scenario, an ML model is 'trained' on vast amounts of data (cosmic observations) to develop its own understanding and predictive capabilities, charting new, unknown territories in the data universe.</span>
+                        <span class="id" style="display:none">Alih-alih diprogram secara eksplisit untuk setiap skenario, model PM 'dilatih' pada sejumlah besar data (pengamatan kosmik) untuk mengembangkan pemahaman dan kemampuan prediktifnya sendiri, memetakan wilayah baru yang tidak diketahui di alam semesta data.</span>
+                    </p>
+                     <div class="bg-green-800 rounded-lg p-6">
+                        <h3 class="font-bold text-xl mb-4 text-yellow-300">
+                            <i class="fas fa-meteor mr-2"></i>
+                            <span class="en">Interactive Example: AI Meteor Classifier</span>
+                            <span class="id" style="display:none">Contoh Interaktif: Klasifikasi Meteor AI</span>
+                        </h3>
+                        <div class="flex flex-col md:flex-row gap-6 items-center">
+                            <div class="md:w-1/2">
+                                <div class="bg-black bg-opacity-50 rounded-lg p-4 mb-4">
+                                    <div id="meteor-display" class="h-48 flex items-center justify-center">
+                                        <p class="text-center">
+                                            <span class="en">Click to generate a cosmic object for ML to classify!</span>
+                                            <span class="id" style="display:none">Klik untuk menghasilkan objek kosmik untuk diklasifikasikan PM!</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <button class="w-full py-3 bg-green-600 hover:bg-green-700 rounded-lg font-bold" onclick="classifyObject()">
+                                    <i class="fas fa-wand-magic-sparkles mr-2"></i>
+                                    <span class="en">Generate & Classify</span>
+                                    <span class="id" style="display:none">Hasilkan & Klasifikasi</span>
+                                </button>
+                            </div>
+                            <div class="md:w-1/2">
+                                <div id="ml-thinking" class="hidden mb-4 text-center">
+                                    <div class="inline-flex space-x-2">
+                                        <div class="w-3 h-3 bg-green-400 rounded-full animate-bounce" style="animation-delay: 0s"></div>
+                                        <div class="w-3 h-3 bg-green-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                                        <div class="w-3 h-3 bg-green-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                                    </div>
+                                    <p class="mt-2">
+                                        <span class="en">ML model analyzing cosmic object...</span>
+                                        <span class="id" style="display:none">Model PM sedang menganalisis objek kosmik...</span>
+                                    </p>
+                                </div>
+                                <div id="ml-result" class="hidden bg-green-700 rounded-lg p-4">
+                                    <h4 class="font-bold mb-2">
+                                        <span class="en">ML Classification:</span>
+                                        <span class="id" style="display:none">Klasifikasi PM:</span>
+                                    </h4>
+                                    <div id="result-content"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Types of ML -->
+            <section id="types-ml" class="content-section">
+                <div class="bg-gray-900 bg-opacity-70 rounded-xl p-8 backdrop-blur-sm">
+                    <h2 class="text-3xl font-bold mb-6 text-emerald-400">
+                        <i class="fas fa-sitemap mr-3"></i>
+                        <span class="en">Learning Paradigms: Guiding the Cosmic Learner</span>
+                        <span class="id" style="display:none">Paradigma Belajar: Memandu Pembelajar Kosmik</span>
+                    </h2>
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-xl font-bold mb-2 text-yellow-300"><i class="fas fa-user-graduate mr-2"></i><span class="en">Supervised Learning: Learning with a Cosmic Tutor</span><span class="id" style="display:none">Pembelajaran Terarah: Belajar dengan Tutor Kosmik</span></h3>
+                            <p class="mb-2"><span class="en">The model learns from labeled data (like star charts with pre-identified celestial objects). It tries to map inputs to outputs. Example: Classifying galaxies based on images labeled with galaxy types.</span><span class="id" style="display:none">Model belajar dari data berlabel (seperti peta bintang dengan objek langit yang sudah diidentifikasi). Ia mencoba memetakan input ke output. Contoh: Mengklasifikasikan galaksi berdasarkan gambar yang diberi label jenis galaksi.</span></p>
+                            <div class="bg-emerald-900 p-4 rounded-lg">
+                                <p class="text-sm mb-2"><span class="en">Drag the cosmic phenomena to their correct classification zone:</span><span class="id" style="display:none">Seret fenomena kosmik ke zona klasifikasi yang benar:</span></p>
+                                <div class="flex space-x-2 mb-2" id="draggable-items-supervised">
+                                    <div class="data-point bg-red-500" draggable="true" data-type="star">S</div>
+                                    <div class="data-point bg-blue-500" draggable="true" data-type="planet">P</div>
+                                    <div class="data-point bg-yellow-500" draggable="true" data-type="star">S</div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="drop-zone p-2" data-accept="star"><span class="en">Star Zone</span><span class="id" style="display:none">Zona Bintang</span></div>
+                                    <div class="drop-zone p-2" data-accept="planet"><span class="en">Planet Zone</span><span class="id" style="display:none">Zona Planet</span></div>
+                                </div>
+                                <p id="supervised-feedback" class="text-xs mt-2"></p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-bold mb-2 text-yellow-300"><i class="fas fa-search-plus mr-2"></i><span class="en">Unsupervised Learning: Discovering Cosmic Constellations</span><span class="id" style="display:none">Pembelajaran Tak Terarah: Menemukan Konstelasi Kosmik</span></h3>
+                            <p class="mb-2"><span class="en">The model learns from unlabeled data, finding hidden patterns or structures on its own. Example: Grouping similar stars into new, undiscovered types of clusters based on their properties.</span><span class="id" style="display:none">Model belajar dari data tak berlabel, menemukan pola atau struktur tersembunyi sendiri. Contoh: Mengelompokkan bintang serupa ke dalam jenis gugus baru yang belum ditemukan berdasarkan sifatnya.</span></p>
+                            <div class="bg-emerald-900 p-4 rounded-lg">
+                                 <div id="cluster-visualization" class="mb-2"></div>
+                                 <button class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 rounded-lg font-bold" onclick="runClustering()">
+                                    <i class="fas fa-atom mr-2"></i> <span class="en">Find Clusters</span><span class="id" style="display:none">Temukan Gugus</span>
+                                 </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-xl font-bold mb-2 text-yellow-300"><i class="fas fa-robot mr-2"></i><span class="en">Reinforcement Learning: Navigating Asteroid Fields by Trial & Error</span><span class="id" style="display:none">Pembelajaran Penguatan: Menavigasi Medan Asteroid dengan Coba-Coba</span></h3>
+                            <p><span class="en">The model learns by interacting with an environment, receiving rewards or penalties for its actions. Example: An AI spaceship learning to navigate an asteroid field by being rewarded for safe passage and penalized for collisions.</span><span class="id" style="display:none">Model belajar dengan berinteraksi dengan lingkungan, menerima imbalan atau hukuman atas tindakannya. Contoh: Pesawat luar angkasa AI belajar menavigasi medan asteroid dengan diberi imbalan untuk lintasan aman dan dihukum karena tabrakan.</span></p>
+                             <div class="bg-emerald-900 p-4 rounded-lg text-center">
+                                <p class="mb-2"><span class="en">Imagine an AI pilot learning to dock:</span><span class="id" style="display:none">Bayangkan pilot AI belajar merapat:</span></p>
+                                <div id="rl-lander-status" class="text-2xl mb-2">🚀</div>
+                                <button class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-lg font-bold mr-2" onclick="simulateRL('good')"><span class="en">Successful Dock</span><span class="id" style="display:none">Merapat Sukses</span> (+100)</button>
+                                <button class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-bold" onclick="simulateRL('bad')"><span class="en">Failed Dock</span><span class="id" style="display:none">Merapat Gagal</span> (-50)</button>
+                                <p id="rl-feedback" class="text-sm mt-2"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- The ML Journey -->
+            <section id="process-ml" class="content-section">
+                <div class="bg-gray-900 bg-opacity-70 rounded-xl p-8 backdrop-blur-sm">
+                    <h2 class="text-3xl font-bold mb-6 text-lime-400">
+                        <i class="fas fa-tasks mr-3"></i>
+                        <span class="en">The Machine Learning Journey: From Stardust to Discovery</span>
+                        <span class="id" style="display:none">Perjalanan Pembelajaran Mesin: Dari Debu Bintang hingga Penemuan</span>
+                    </h2>
+                    <p class="mb-6 text-lg">
+                        <span class="en">Developing an ML model is a voyage with several key stages, much like planning and executing a deep space exploration mission.</span>
+                        <span class="id" style="display:none">Mengembangkan model PM adalah perjalanan dengan beberapa tahap kunci, seperti merencanakan dan melaksanakan misi eksplorasi luar angkasa.</span>
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex items-start p-3 bg-lime-900 rounded-lg">
+                            <div class="bg-lime-600 text-lime-900 rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0">1</div>
+                            <div><h4 class="font-bold"><span class="en">Data Collection & Preparation</span><span class="id" style="display:none">Pengumpulan & Persiapan Data</span></h4><p><span class="en">Gathering cosmic data (starlight, sensor readings) and cleaning it (removing noise, cosmic dust interference).</span><span class="id" style="display:none">Mengumpulkan data kosmik (cahaya bintang, pembacaan sensor) dan membersihkannya (menghilangkan noise, gangguan debu kosmik).</span></p></div>
+                        </div>
+                        <div class="flex items-start p-3 bg-lime-900 rounded-lg">
+                            <div class="bg-lime-600 text-lime-900 rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0">2</div>
+                            <div><h4 class="font-bold"><span class="en">Model Selection</span><span class="id" style="display:none">Pemilihan Model</span></h4><p><span class="en">Choosing the right type of "telescope" or "instrument" (ML algorithm) for the specific cosmic mystery to be solved.</span><span class="id" style="display:none">Memilih jenis "teleskop" atau "instrumen" (algoritma PM) yang tepat untuk misteri kosmik spesifik yang akan dipecahkan.</span></p></div>
+                        </div>
+                        <div class="flex items-start p-3 bg-lime-900 rounded-lg">
+                            <div class="bg-lime-600 text-lime-900 rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0">3</div>
+                            <div><h4 class="font-bold"><span class="en">Training the Model</span><span class="id" style="display:none">Melatih Model</span></h4><p><span class="en">"Showing" the model the prepared data, allowing it to learn patterns and relationships, like an astronomer meticulously observing the skies.</span><span class="id" style="display:none">"Menunjukkan" data yang disiapkan ke model, memungkinkannya mempelajari pola dan hubungan, seperti seorang astronom yang dengan cermat mengamati langit.</span></p></div>
+                        </div>
+                        <div class="flex items-start p-3 bg-lime-900 rounded-lg">
+                            <div class="bg-lime-600 text-lime-900 rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0">4</div>
+                            <div><h4 class="font-bold"><span class="en">Evaluation</span><span class="id" style="display:none">Evaluasi</span></h4><p><span class="en">Testing the model on new, unseen data to check its accuracy and performance – verifying if its predictions match reality.</span><span class="id" style="display:none">Menguji model pada data baru yang belum pernah dilihat untuk memeriksa akurasi dan kinerjanya – memverifikasi apakah prediksinya sesuai dengan kenyataan.</span></p></div>
+                        </div>
+                        <div class="flex items-start p-3 bg-lime-900 rounded-lg">
+                            <div class="bg-lime-600 text-lime-900 rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0">5</div>
+                            <div><h4 class="font-bold"><span class="en">Deployment & Monitoring</span><span class="id" style="display:none">Penerapan & Pemantauan</span></h4><p><span class="en">Using the trained model for new discoveries and continuously monitoring its performance, recalibrating as the universe (data) evolves.</span><span class="id" style="display:none">Menggunakan model terlatih untuk penemuan baru dan terus memantau kinerjanya, mengkalibrasi ulang seiring berkembangnya alam semesta (data).</span></p></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ML Applications -->
+            <section id="applications-ml" class="content-section">
+                <div class="bg-gray-900 bg-opacity-70 rounded-xl p-8 backdrop-blur-sm">
+                    <h2 class="text-3xl font-bold mb-6 text-yellow-400">
+                        <i class="fas fa-rocket mr-3"></i>
+                        <span class="en">Machine Learning in the Cosmos & Beyond</span>
+                        <span class="id" style="display:none">Pembelajaran Mesin di Kosmos & Selebihnya</span>
+                    </h2>
+                    <p class="mb-8 text-lg">
+                        <span class="en">Machine Learning is powering discoveries and innovations across many fields, from the deepest reaches of space to our daily lives.</span>
+                        <span class="id" style="display:none">Pembelajaran Mesin mendorong penemuan dan inovasi di berbagai bidang, dari jangkauan terdalam luar angkasa hingga kehidupan kita sehari-hari.</span>
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-yellow-900 rounded-lg p-6">
+                            <div class="flex items-center mb-3">
+                                <div class="bg-yellow-600 rounded-full w-10 h-10 flex items-center justify-center mr-3"><i class="fas fa-planet text-lg"></i></div>
+                                <h3 class="font-bold text-xl"><span class="en">Exoplanet Detection</span><span class="id" style="display:none">Deteksi Eksoplanet</span></h3>
+                            </div>
+                            <p><span class="en">ML algorithms sift through vast amounts of telescope data (like Kepler or TESS missions) to find the tiny dips in starlight that indicate a planet passing in front of its star.</span><span class="id" style="display:none">Algoritma PM menyaring sejumlah besar data teleskop (seperti misi Kepler atau TESS) untuk menemukan penurunan kecil dalam cahaya bintang yang menunjukkan sebuah planet melintas di depan bintangnya.</span></p>
+                        </div>
+                        <div class="bg-yellow-900 rounded-lg p-6">
+                            <div class="flex items-center mb-3">
+                                <div class="bg-yellow-600 rounded-full w-10 h-10 flex items-center justify-center mr-3"><i class="fas fa-brain text-lg"></i></div>
+                                <h3 class="font-bold text-xl"><span class="en">Medical Diagnosis</span><span class="id" style="display:none">Diagnosis Medis</span></h3>
+                            </div>
+                            <p><span class="en">ML models analyze medical images (X-rays, MRIs) to detect diseases like cancer with remarkable accuracy, sometimes spotting patterns invisible to the human eye.</span><span class="id" style="display:none">Model PM menganalisis gambar medis (X-ray, MRI) untuk mendeteksi penyakit seperti kanker dengan akurasi luar biasa, terkadang menemukan pola yang tidak terlihat oleh mata manusia.</span></p>
+                        </div>
+                        <div class="bg-yellow-900 rounded-lg p-6">
+                            <div class="flex items-center mb-3">
+                                <div class="bg-yellow-600 rounded-full w-10 h-10 flex items-center justify-center mr-3"><i class="fas fa-comments text-lg"></i></div>
+                                <h3 class="font-bold text-xl"><span class="en">Recommendation Systems</span><span class="id" style="display:none">Sistem Rekomendasi</span></h3>
+                            </div>
+                            <p><span class="en">Ever wondered how streaming services suggest new shows? ML analyzes your viewing habits to recommend content you might like, much like an AI suggesting new galaxies to explore based on your past interests.</span><span class="id" style="display:none">Pernah bertanya-tanya bagaimana layanan streaming menyarankan acara baru? PM menganalisis kebiasaan menonton Anda untuk merekomendasikan konten yang mungkin Anda sukai, seperti AI yang menyarankan galaksi baru untuk dijelajahi berdasarkan minat Anda sebelumnya.</span></p>
+                        </div>
+                        <div class="bg-yellow-900 rounded-lg p-6">
+                            <div class="flex items-center mb-3">
+                                <div class="bg-yellow-600 rounded-full w-10 h-10 flex items-center justify-center mr-3"><i class="fas fa-satellite text-lg"></i></div>
+                                <h3 class="font-bold text-xl"><span class="en">Climate Change Modeling</span><span class="id" style="display:none">Pemodelan Perubahan Iklim</span></h3>
+                            </div>
+                            <p><span class="en">ML helps analyze complex climate data to improve predictions, understand atmospheric phenomena, and develop strategies to mitigate climate change, like charting safe courses through cosmic weather.</span><span class="id" style="display:none">PM membantu menganalisis data iklim yang kompleks untuk meningkatkan prediksi, memahami fenomena atmosfer, dan mengembangkan strategi untuk mengurangi perubahan iklim, seperti memetakan jalur aman melalui cuaca kosmik.</span></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <script>
+        function createStars() {
+            const container = document.getElementById('stars-container');
+            if (!container) return;
+            const starCount = 200;
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                const size = Math.random() * 3;
+                const duration = 2 + Math.random() * 3;
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.setProperty('--duration', `${duration}s`);
+                container.appendChild(star);
+            }
+        }
+
+        function classifyObject() {
+            const display = document.getElementById('meteor-display');
+            const thinking = document.getElementById('ml-thinking');
+            const result = document.getElementById('ml-result');
+            const resultContent = document.getElementById('result-content');
+            
+            if (!display || !thinking || !result || !resultContent) return;
+
+            result.classList.add('hidden');
+            thinking.classList.remove('hidden');
+            
+            const objects = [
+                { nameEn: 'Hot Jupiter (Exoplanet)', nameId: 'Jupiter Panas (Eksoplanet)', emoji: '🪐', color: 'orange', descEn: 'A gas giant orbiting very close to its star.', descId: 'Raksasa gas yang mengorbit sangat dekat dengan bintangnya.' },
+                { nameEn: 'Pulsar (Neutron Star)', nameId: 'Pulsar (Bintang Neutron)', emoji: '💫', color: 'cyan', descEn: 'A rapidly rotating neutron star emitting beams of radiation.', descId: 'Bintang neutron yang berputar cepat memancarkan berkas radiasi.' },
+                { nameEn: 'Quasar', nameId: 'Quasar', emoji: '✨', color: 'magenta', descEn: 'An extremely luminous active galactic nucleus.', descId: 'Inti galaksi aktif yang sangat terang.' },
+                { nameEn: 'Cometary Globule', nameId: 'Globula Komet', emoji: '☄️', color: 'lightblue', descEn: 'A dense cloud of gas and dust with a comet-like tail.', descId: 'Awan gas dan debu padat dengan ekor seperti komet.' }
+            ];
+            
+            setTimeout(() => {
+                const obj = objects[Math.floor(Math.random() * objects.length)];
+                const langIsEn = document.querySelector('.en')?.style.display !== 'none';
+
+                display.innerHTML = `<div class="text-6xl" style="color: ${obj.color}">${obj.emoji}</div><p class="mt-2 font-bold">${langIsEn ? obj.nameEn : obj.nameId}</p>`;
+                thinking.classList.add('hidden');
+                resultContent.innerHTML = `
+                    <p><span class="font-bold">${langIsEn ? obj.nameEn : obj.nameId}</span> - ${langIsEn ? obj.descEn : obj.descId}</p>
+                    <p class="mt-2 text-sm"><span class="en">ML model analyzed spectral signature, brightness, and motion.</span><span class="id" style="display:none">Model PM menganalisis tanda spektral, kecerahan, dan gerakan.</span></p>`;
+                result.classList.remove('hidden');
+                setLanguage(langIsEn ? 'en' : 'id'); // Refresh language in result
+            }, 1500);
+        }
+
+        // Supervised Learning Drag & Drop
+        function setupSupervisedLearning() {
+            const draggables = document.querySelectorAll('#draggable-items-supervised .data-point');
+            const dropZones = document.querySelectorAll('#types-ml .drop-zone');
+            const feedbackEl = document.getElementById('supervised-feedback');
+            if (!draggables.length || !dropZones.length || !feedbackEl) return;
+
+            draggables.forEach(draggable => {
+                draggable.addEventListener('dragstart', () => {
+                    draggable.classList.add('opacity-50');
+                });
+                draggable.addEventListener('dragend', () => {
+                    draggable.classList.remove('opacity-50');
+                });
+            });
+
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    zone.classList.add('hovered');
+                });
+                zone.addEventListener('dragleave', () => {
+                    zone.classList.remove('hovered');
+                });
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    zone.classList.remove('hovered');
+                    const draggedId = document.querySelector('.opacity-50').dataset.type; // Simplistic way to get type
+                    const acceptedType = zone.dataset.accept;
+                    const langIsEn = document.querySelector('.en')?.style.display !== 'none';
+
+                    if (draggedId === acceptedType) {
+                        feedbackEl.textContent = langIsEn ? 'Correct classification!' : 'Klasifikasi benar!';
+                        feedbackEl.className = 'text-xs mt-2 text-green-400';
+                        document.querySelector('.opacity-50').remove(); // Remove if correct
+                    } else {
+                        feedbackEl.textContent = langIsEn ? 'Incorrect. Try again.' : 'Salah. Coba lagi.';
+                        feedbackEl.className = 'text-xs mt-2 text-red-400';
+                    }
+                });
+            });
+        }
+
+        // Unsupervised Learning Clustering
+        let clusterPoints = [];
+        function setupClusteringVisualization() {
+            const viz = document.getElementById('cluster-visualization');
+            if (!viz) return;
+            viz.innerHTML = ''; // Clear previous
+            clusterPoints = [];
+            const numPoints = 30;
+            const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']; // Initial random colors
+
+            for (let i = 0; i < numPoints; i++) {
+                const point = document.createElement('div');
+                point.className = 'cluster-point';
+                // Create some natural groupings for visual effect
+                let x, y;
+                if (i < numPoints / 3) { // Group 1
+                    x = Math.random() * 0.3 * viz.clientWidth + 0.1 * viz.clientWidth;
+                    y = Math.random() * 0.3 * viz.clientHeight + 0.1 * viz.clientHeight;
+                } else if (i < (numPoints * 2) / 3) { // Group 2
+                    x = Math.random() * 0.3 * viz.clientWidth + 0.6 * viz.clientWidth;
+                    y = Math.random() * 0.3 * viz.clientHeight + 0.2 * viz.clientHeight;
+                } else { // Group 3
+                    x = Math.random() * 0.3 * viz.clientWidth + 0.3 * viz.clientWidth;
+                    y = Math.random() * 0.3 * viz.clientHeight + 0.6 * viz.clientHeight;
+                }
+                point.style.left = `${x}px`;
+                point.style.top = `${y}px`;
+                point.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]; // Random initial
+                viz.appendChild(point);
+                clusterPoints.push({element: point, x: x, y: y, cluster: null });
+            }
+        }
+        function runClustering() {
+            if (clusterPoints.length === 0) setupClusteringVisualization(); // Initialize if not already
+            const viz = document.getElementById('cluster-visualization');
+            if (!viz || clusterPoints.length === 0) return;
+
+            // Simplified K-Means like clustering (visual only)
+            const k = 3; // Number of clusters
+            let centroids = [];
+            for(let i=0; i<k; i++) { // Random initial centroids
+                centroids.push({ 
+                    x: Math.random() * viz.clientWidth, 
+                    y: Math.random() * viz.clientHeight,
+                    color: ['#E74C3C', '#3498DB', '#F1C40F'][i % 3] // Distinct cluster colors
+                });
+            }
+
+            // Assign points to nearest centroid (simplified)
+            clusterPoints.forEach(p => {
+                let minDist = Infinity;
+                let bestCluster = 0;
+                centroids.forEach((c, index) => {
+                    const dist = Math.sqrt(Math.pow(p.x - c.x, 2) + Math.pow(p.y - c.y, 2));
+                    if (dist < minDist) {
+                        minDist = dist;
+                        bestCluster = index;
+                    }
+                });
+                p.cluster = bestCluster;
+                p.element.style.backgroundColor = centroids[bestCluster].color;
+            });
+        }
+        
+        // Reinforcement Learning Simulation
+        function simulateRL(action) {
+            const lander = document.getElementById('rl-lander-status');
+            const feedback = document.getElementById('rl-feedback');
+            if (!lander || !feedback) return;
+            const langIsEn = document.querySelector('.en')?.style.display !== 'none';
+
+            if (action === 'good') {
+                lander.textContent = '🚀✅';
+                feedback.textContent = langIsEn ? 'Pilot learned: This approach is good! +100 points.' : 'Pilot belajar: Pendekatan ini bagus! +100 poin.';
+                feedback.className = 'text-sm mt-2 text-green-400';
+            } else {
+                lander.textContent = '🚀💥';
+                feedback.textContent = langIsEn ? 'Pilot learned: Avoid this! -50 points.' : 'Pilot belajar: Hindari ini! -50 poin.';
+                feedback.className = 'text-sm mt-2 text-red-400';
+            }
+            setTimeout(() => { lander.textContent = '🚀'; feedback.textContent = ''; }, 2000);
+        }
+
+        // Dummy functions from original example, to prevent errors if called.
+        function createStarPattern() { /* Not used on this page */ }
+        function createNeuralNetworkVisualization() { /* Not used on this page */ }
+        function animateNeuralNetwork() { /* Not used on this page */ }
+        function submitFutureIdea() { /* Not used on this page */ }
+
+        function setupNavigation() {
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const contentSections = document.querySelectorAll('.content-section');
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    navButtons.forEach(btn => btn.classList.remove('bg-lime-700', 'text-white'));
+                    navButtons.forEach(btn => btn.classList.add('bg-lime-900'));
+                    contentSections.forEach(section => section.classList.remove('active'));
+                    
+                    button.classList.remove('bg-lime-900');
+                    button.classList.add('bg-lime-700', 'text-white');
+                    
+                    const sectionId = button.getAttribute('data-section');
+                    const targetSection = document.getElementById(sectionId);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                        if (sectionId === 'types-ml') {
+                           if (clusterPoints.length === 0) setupClusteringVisualization(); // Init clustering points if not done
+                           setupSupervisedLearning(); // Re-init draggable items if needed
+                        }
+                    }
+                });
+            });
+             if (navButtons.length > 0) {
+                navButtons[0].classList.remove('bg-lime-900');
+                navButtons[0].classList.add('bg-lime-700', 'text-white');
+            }
+        }
+        
+        function setLanguage(lang) {
+            const currentLangIsEn = document.querySelector('.en')?.style.display !== 'none';
+            if ((lang === 'en' && currentLangIsEn) || (lang === 'id' && !currentLangIsEn)) return;
+            document.querySelectorAll('.en').forEach(el => el.style.display = (lang === 'en' ? '' : 'none'));
+            document.querySelectorAll('.id').forEach(el => el.style.display = (lang === 'id' ? '' : 'none'));
+        }
+        
+        window.onload = function() {
+            createStars();
+            setupNavigation();
+            setLanguage('en');
+            
+            const activeSection = document.querySelector('.content-section.active');
+            if (activeSection) {
+                if (activeSection.id === 'intro-ml') {
+                    // any specific init for intro-ml
+                } else if (activeSection.id === 'types-ml') {
+                    setupSupervisedLearning();
+                    setupClusteringVisualization();
+                }
+            }
+            window.addEventListener('resize', () => {
+                if (document.getElementById('types-ml')?.classList.contains('active')) {
+                     if(clusterPoints.length > 0) runClustering(); // Re-run clustering on resize to adjust points
+                }
+            });
+        };
+    </script>
+</body>
+</html>
